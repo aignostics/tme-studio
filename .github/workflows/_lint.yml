@@ -1,0 +1,29 @@
+name: "Lint"
+
+on:
+  workflow_call:
+    # No inputs needed at this time
+    secrets:
+      GCP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Dev Environment
+        uses: ./.github/actions/setup-dev-env
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Lint
+        run: mise run lint

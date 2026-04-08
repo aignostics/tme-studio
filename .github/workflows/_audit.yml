@@ -1,0 +1,43 @@
+name: "Audit"
+
+on:
+  workflow_call:
+    # No inputs needed at this time
+    secrets:
+      GCP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Dev Environment
+        uses: ./.github/actions/setup-dev-env
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Audit
+        run: mise run audit
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        if: ${{ always() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
+        with:
+          name: audit-results
+          path: |
+            reports/sbom.json
+            reports/sbom.spdx
+            reports/licenses.csv
+            reports/licenses.json
+            reports/licenses_grouped.json
+            reports/vulnerabilities.json
+          retention-days: 30

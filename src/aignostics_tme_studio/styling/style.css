@@ -1,0 +1,106 @@
+@font-face {
+  font-family: Nexa; /* set name */
+  src: url(https://cdn.prod.website-files.com/67adb01f31489469b513304a/67afe91d4b77b1d5952c14ca_NexaTextBook.otf) format("opentype");
+}
+
+:root {
+  --aignx-primary: #483569;
+  --aignx-dark-purple: #282136;
+  --aignx-neutral: #545266;
+  --aignx-neutral-dark: #423D6B;
+  --aignx-darkest-purple: #231b2c;
+  --aignx-lilac: #9B95EC;
+  --aignx-lilac-light: #D2CCEA;
+  --aignx-pink: #FF7EA5;
+  --aignx-light-pink: #FF96B6;
+  --aignx-orange: #CA856A;
+  --aignx-orange-dark: #EE855D;
+  --aignx-white: #f0eefa;
+  --white: #ffffff;
+  --aignx-green: #47A3A3;
+  --aignx-blue: #261C8D;
+  --aignx-magenta: #861F98;
+}
+
+
+.cm-editor, .table{
+    background-color: light-dark(var(--white), var(--aignx-darkest-purple));
+
+}
+.console-output-area {
+  background-color: light-dark(var(--white), var(--aignx-darkest-purple));
+
+}
+.shadow-md {
+    background-color: light-dark(var(--aignx-white), var(--aignx-darkest-purple));
+    color: light-dark(var(--aignx-primary), var(--aignx-white));
+ }
+
+.shadow-accent {
+  border-color: light-dark(var(--aignx-pink), var(--aignx-neutral-dark));
+  color: light-dark(var(--aignx-pink), var(--aignx-pink));
+}
+.shadow-accent:hover {
+  background-color: light-dark(var(--aignx-lilac-light), var(--aignx-neutral-dark));
+  color: light-dark(var(--aignx-primary), var(--aignx-pink));
+}
+
+:root {
+  --heading-font:  "Nexa", "Cabin", "Poppins", sans-serif;
+  --text-font:  "Nexa", "Cabin", "Poppins", sans-serif;
+  --radius: 12px; /* Slightly softer corners for a gentler feel */
+
+  --text-color: var(--aignx-dark-purple);
+  --background: light-dark(var(--aignx-white), var(--aignx-dark-purple));
+  --foreground: light-dark(var(--aignx-primary), var(--aignx-white));
+
+    /* Muted elements (hover fullscreen, cell action) */
+  --muted: light-dark(var(--aignx-lilac), var(--aignx-neutral-dark));
+  --muted-foreground: light-dark(var(--aignx-neutral), hsl(155deg 5% 68.3%)); 
+
+    /* Popovers (menus, snippet panels) */
+  --popover: light-dark(var(--aignx-white), var(--aignx-dark-purple));
+  --popover-foreground:  light-dark(var(--aignx-dark-purple), var(--aignx-white)); 
+
+    /* Popovers (menus, snippet panels) */
+  --radix-popper: light-dark(var(--aignx-white), var(--aignx-primary));
+  --radix-popper-foreground:  light-dark(var(--aignx-dark-purple), var(--aignx-white)); 
+
+  /* Cards (even table rows; md tables) */
+  --card: light-dark(var(--white), var(--aignx-darkest-purple));
+  --card-foreground: light-dark(var(--aignx-primary), var(--aignx-white));
+
+  /* Borders, Inputs */
+  --border: light-dark(var(--aignx-lilac-light), var(--aignx-neutral-dark));
+  --input: light-dark(var(--aignx-lilac), var(--aignx-neutral-dark));
+
+    /* Primary (machine stats, doc headers) */
+  --primary: light-dark(var(--aignx-pink), var(--aignx-light-pink));
+  --primary-foreground: light-dark(var(--aignx-white), var(--aignx-darkest-purple));
+
+    /* Secondary */
+  --secondary: light-dark(var(--aignx-primary), var(--aignx-lilac));
+  --secondary-foreground: light-dark(var(--aignx-dark-purple), var(--aignx-dark-purple));
+
+  /* Accent (floating outlines, left panels) */
+  --accent: light-dark(var(--aignx-lilac), var(--aignx-primary));
+  --accent-foreground: light-dark(var(--aignx-dark-purple), var(--white));
+  
+  /* Feedback colors */
+  --error: var(--aignx-pink);
+  --error-foreground: var(--aignx-dark-purple);
+  --success: var(--aignx-green);
+  --success-foreground: var(--aignx-dark-purple);
+
+
+    /* Shadows */
+  --base-shadow: light-dark(
+    var(--aignx-lilac-light),
+    var(--aignx-neutral)
+  );
+  --base-shadow-darker: light-dark(
+    var(--aignx-lilac),
+    var(--aignx-neutral)
+  );
+  --base-shadow-opacity: 10%;
+}

@@ -1,0 +1,58 @@
+name: "+ CI/CD"
+
+on:
+  # Pull requests to main trigger feature deployment
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, closed]
+
+  # Pushes/merges to main and version tags trigger deployment
+  push:
+    branches: ["main"]
+    tags:
+      - "v*"
+
+  # Manual trigger for any branch
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+
+  lint:
+    if: (!contains(github.event.head_commit.message, '[skip ci]'))
+    uses: ./.github/workflows/_lint.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    secrets: inherit
+
+  audit:
+    if: (!contains(github.event.head_commit.message, '[skip ci]'))
+    uses: ./.github/workflows/_audit.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    secrets: inherit
+
+  test:
+    if: (!contains(github.event.head_commit.message, '[skip ci]'))
+    uses: ./.github/workflows/_test.yml
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+      packages: write
+    secrets: inherit
+
+  publish_package:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [lint, audit, test]
+    uses: ./.github/workflows/_package-publish.yml
+    permissions:
+      contents: write
+      id-token: write
