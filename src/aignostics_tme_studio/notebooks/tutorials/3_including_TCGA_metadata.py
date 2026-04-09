@@ -20,11 +20,13 @@ def _():
 
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _acc = mo.accordion({
+        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
-                         """})
+                         """
+    })
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -35,11 +37,14 @@ def _(hf_token):
     # Load dataframe
     import pandas as pd
     from huggingface_hub import hf_hub_download
+
     from aignostics_tme_studio.utils import config
 
     # Download the OpenTME bladder dataset
-    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None)
-    df = pd.read_csv(path) 
+    path = hf_hub_download(
+        repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None
+    )
+    df = pd.read_csv(path)
     return df, pd
 
 
@@ -54,7 +59,6 @@ def _(mo):
     Metadata can be linked to our outputs via the TCGA barcode (first 12 characters, e.g., TCGA-A2-A0T2), included in
     our `tme_features_RUO.csv` files.
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -100,7 +104,6 @@ def _(df, mo, tcga_id_columns):
         _text,
         row,
     ])
-    return
 
 
 @app.cell(hide_code=True)
@@ -109,7 +112,6 @@ def _(mo):
     Our example metadata contains the TCGA slide name in a column `Slide name`. We can merge the dataframe on this
     column to add the metadata to our OpenTME features.
     """)
-    return
 
 
 @app.cell
@@ -151,7 +153,6 @@ def _(df_all, dropdown_c, dropdown_x, dropdown_y, styling_utils):
         color=df_all[dropdown_c.value],
         color_discrete_map=color_map,
     )
-    return
 
 
 if __name__ == "__main__":

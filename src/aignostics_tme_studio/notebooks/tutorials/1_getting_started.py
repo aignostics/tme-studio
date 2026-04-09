@@ -37,7 +37,6 @@ def _(mo):
     *These tutorials are marimo notebooks.
     Not familiar with Marimo? Get started with [this tutorial](https://molab.marimo.io/notebooks/nb_TWVGCgZZK4L8zj5ziUBNVL)*
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -45,11 +44,13 @@ def _(mo):
     # Get Hugging Face token
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _acc = mo.accordion({
+        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
-                         """})
+                         """
+    })
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return (hf_token,)
@@ -76,7 +77,6 @@ def _(mo):
     * The available model output classes in `model_output_classes.yaml`
     *  The available statistics in `tme_features.yaml`
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -107,7 +107,6 @@ def _(mo):
     ```
     """)
     mo.accordion({"View directory structure of OpenTME": _dir})
-    return
 
 
 @app.cell(hide_code=True)
@@ -136,7 +135,6 @@ def _(mo):
     Each row in the `tme_features_RUO.csv` files relates to one slide. Let's load the features for the selected
     indication and view what's inside...
     """)
-    return
 
 
 @app.cell
@@ -145,8 +143,10 @@ def _(config, hf_token, tissue_selector):
     from huggingface_hub import hf_hub_download
 
     path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.TISSUE_FEATURES_FILES.format(tissue_selector.value), repo_type="dataset", 
-        token=hf_token.value or None
+        repo_id=config.REPO_ID,
+        filename=config.TISSUE_FEATURES_FILES.format(tissue_selector.value),
+        repo_type="dataset",
+        token=hf_token.value or None,
     )
     df = pd.read_csv(path)
     df
@@ -179,11 +179,10 @@ def _(config, df, dropdown, hf_hub_download, hf_token, mo, tissue_selector):
         repo_id=config.REPO_ID,
         filename=f"data/{tissue_selector.value}/thumbnails/{df.iloc[0].TCGA_FILE_NAME}/{dropdown.value}.png",
         repo_type="dataset",
-        token=hf_token.value or None
+        token=hf_token.value or None,
     )
 
     mo.image(img_path, style={"width": "auto", "height": "100%"})
-    return
 
 
 @app.cell(hide_code=True)
@@ -201,7 +200,6 @@ def _(mo):
     [tutorial 2 - description of all OpenTME features](
           /?file=src/aignostics_tme_studio/notebooks/tutorials/2_description_opentme_features.py).
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -209,7 +207,6 @@ def _(mo):
     mo.md(r"""
     Let's load `model_output_classes.yaml` to find all available tissue classes:
     """)
-    return
 
 
 @app.cell
@@ -218,8 +215,10 @@ def _(config, hf_hub_download, hf_token):
 
     # Load model output class settings
     class_settings_path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.CLASS_SETTINGS_FILENAME, repo_type="dataset",
-        token=hf_token.value or None
+        repo_id=config.REPO_ID,
+        filename=config.CLASS_SETTINGS_FILENAME,
+        repo_type="dataset",
+        token=hf_token.value or None,
     )
     model_output_classes = utils.load_munch(class_settings_path)
     model_output_classes["tissue_cls"]
@@ -231,7 +230,6 @@ def _(mo):
     mo.md(r"""
     # Example: Tissue areas
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -243,7 +241,6 @@ def _(mo):
     available tissue classed in the OpenTME dataset we loaded in the cell above).
     With this, we can find the respective feature column in the dataframe for each available tissue type.
     """)
-    return
 
 
 @app.cell
@@ -267,7 +264,6 @@ def _(mo):
 
     Now we have found our feature columns, we can plot the distribution over all slides in the dataset.
     """)
-    return
 
 
 @app.cell
@@ -277,7 +273,6 @@ def _(columns, df, pd):
     # Plotly expects dataframes in long form
     df_melt = pd.melt(df[columns], var_name="Tissue Class", value_name="Relative Area")
     px.box(df_melt, x="Tissue Class", y="Relative Area")
-    return
 
 
 @app.cell(hide_code=True)
@@ -287,7 +282,6 @@ def _(mo):
     [tutorial 2 - description of all OpenTME features](
           /?file=src/aignostics_tme_studio/notebooks/tutorials/2_description_opentme_features.py)
     """)
-    return
 
 
 if __name__ == "__main__":

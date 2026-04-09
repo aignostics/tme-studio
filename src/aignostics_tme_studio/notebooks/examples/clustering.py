@@ -16,13 +16,16 @@ def _():
 @app.cell(hide_code=True)
 def _():
     import marimo as mo
+
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _acc = mo.accordion({
+        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
-                         """})
+                         """
+    })
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -33,10 +36,13 @@ def _(hf_token):
     # Load dataframe
     import pandas as pd
     from huggingface_hub import hf_hub_download
+
     from aignostics_tme_studio.utils import config
 
     # Download the OpenTME bladder dataset
-    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None)
+    path = hf_hub_download(
+        repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None
+    )
     df = pd.read_csv(path)
     return (df,)
 
@@ -48,7 +54,6 @@ def _(mo):
 
     This tutorial shows how you can run a clustering algorithm on the features in OpenTME.
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -64,7 +69,6 @@ def _(mo):
     Additionally, the column `CELL_CLASSES` contains string values, namely a list of all cell types found on the slide.
     We drop this as well.
     """)
-    return
 
 
 @app.cell
@@ -85,7 +89,6 @@ def _(mo):
     Since these features simply depend on the size of the slide, they are not meaningful for us in this context. We
     drop them as well.
     """)
-    return
 
 
 @app.cell
@@ -115,7 +118,6 @@ def _(mo):
     the slide.
     For our purpose, we simply set all `NaN` values to zero.
     """)
-    return
 
 
 @app.cell
@@ -129,7 +131,6 @@ def _(mo):
     mo.md(r"""
     ## Clustering the dataframe
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -155,7 +156,6 @@ def _(mo):
 
     To visualize the clustering, let's embed our dataframe into 2-D space using Principle Component Analysis (PCA).
     """)
-    return
 
 
 @app.cell
@@ -173,7 +173,6 @@ def _(df_feat_no_nans, k_means, styling_utils):
 
     # Plot as a scatter plot
     px.scatter(x=pca[:, 0], y=pca[:, 1], color=labels, color_discrete_map=color_map)
-    return
 
 
 if __name__ == "__main__":

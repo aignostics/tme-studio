@@ -10,7 +10,6 @@ def _():
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
-    return
 
 
 @app.cell(hide_code=True)
@@ -20,11 +19,13 @@ def _():
 
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _acc = mo.accordion({
+        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
-                         """})
+                         """
+    })
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -39,7 +40,9 @@ def _(hf_token):
     from aignostics_tme_studio.utils import config
 
     # Download the OpenTME bladder dataset
-    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None)
+    path = hf_hub_download(
+        repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None
+    )
     df = pd.read_csv(path)
     return (df,)
 
@@ -67,7 +70,6 @@ def _(mo):
         ide_classification = desert
     ```
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -130,7 +132,6 @@ def _(carcinoma_thresh, df, dropdown, mo, stroma_thresh):
 
     tab = tab.style.format({"count": "{:,.2%}".format}).hide()
     mo.hstack([fig, tab], align="start", widths=[0.7, 0.3])
-    return
 
 
 if __name__ == "__main__":

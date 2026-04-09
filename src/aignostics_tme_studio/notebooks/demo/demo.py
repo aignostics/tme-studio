@@ -29,7 +29,6 @@ def _(mo):
     and cell classification (CC) models,
     and performing subsequent neighborhood analysis on the model outputs.
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -106,7 +105,6 @@ def _(df, grouping_column, mo):
         summary += f"The cohort consists of {len(df)} samples. No grouping was applied."
 
     mo.vstack([mo.md(summary), df])
-    return
 
 
 @app.cell(hide_code=True)
@@ -202,7 +200,6 @@ def _(
     }
 
     distributions.plot_distribution(_df, plot_type="box", grouping_column=grouping_column.value, **_kwargs)
-    return
 
 
 @app.cell(hide_code=True)
@@ -244,7 +241,6 @@ def _(
     }
 
     distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
-    return
 
 
 @app.cell(hide_code=True)
@@ -297,7 +293,6 @@ def _(
     }
 
     distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
-    return
 
 
 @app.cell(hide_code=True)
@@ -564,7 +559,6 @@ def _(
     else:
         _res = mo.md("""Select a value from the dropdown to plot a Kaplan Meyer curve.""")
     _res
-    return
 
 
 @app.cell(hide_code=True)
@@ -637,7 +631,6 @@ def _(df, dropdown_meta, dropdown_tme, mo, pd):
             mo.ui.plotly(fig),
         ])
     res
-    return
 
 
 if __name__ == "__main__":

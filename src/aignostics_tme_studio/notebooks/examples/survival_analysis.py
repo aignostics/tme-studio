@@ -10,7 +10,6 @@ def _():
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
-    return
 
 
 @app.cell(hide_code=True)
@@ -20,11 +19,13 @@ def _():
 
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _acc = mo.accordion({
+        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
-                         """})
+                         """
+    })
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -39,7 +40,9 @@ def _(hf_token, mo):
     from aignostics_tme_studio.utils import config
 
     # Download the OpenTME bladder dataset
-    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token = hf_token.value or None)
+    path = hf_hub_download(
+        repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None
+    )
     df_tme = pd.read_csv(path)
 
     # Load survival data
@@ -77,7 +80,6 @@ def _(df, mo):
     """),
         df[survival_columns],
     ])
-    return
 
 
 @app.cell(hide_code=True)
@@ -118,7 +120,6 @@ def _(mo):
 
     We use the column `Overall Survival Status` and find the feature that correlates most strongly with it.
     """)
-    return
 
 
 @app.cell
@@ -158,7 +159,6 @@ def _(df, event_col, feat, mo):
     fig = px.box(df, x=event_col, y=feat)
 
     mo.vstack([mo.md("""## Distribution of most correlated feature vs. survival status"""), mo.ui.plotly(fig)])
-    return
 
 
 @app.cell(hide_code=True)
@@ -211,7 +211,6 @@ def _(df_survival, event_col, feat, mo, np, slider, time_col):
     # Display results
     _title = f"Overall survival for patients split by `{feat}` larger or smaller than {slider.value:.2e}. \n"
     mo.vstack([mo.md(_title), mo.ui.plotly(_fig)])
-    return
 
 
 if __name__ == "__main__":

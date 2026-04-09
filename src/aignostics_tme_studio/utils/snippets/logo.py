@@ -3,9 +3,11 @@ import marimo
 __generated_with = "0.23.0"
 app = marimo.App(width="medium")
 
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("# Display logo")
+
 
 @app.cell(hide_code=True)
 def _():
@@ -18,6 +20,7 @@ def _():
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
