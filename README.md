@@ -127,21 +127,29 @@ mise tasks
 This runs `uv sync --all-extras` to install all dependencies (including private registry packages), then sets up pre-commit hooks.
 
 ### 🤗 Hugging Face access
+#### Creating an access token
 1. Make sure you have a Hugging Face account. If you don't have one, you can create one for free at [hf.co/join](https://hf.co/join).
-2. Get access to the dataset by going to https://huggingface.co/datasets/Aignostics/OpenTME and clicking "Access 
+2. Get access to the dataset by going to https://huggingface.co/datasets/Aignostics/OpenTME and clicking "Access"
 
 > Note: You will eceive an email from Hugging Face as soon as your access request has been reviewed. This may take a few working days.
 
 > Note: No need to download the dataset! The tutorials will show you how to access the dataset via the Hugging Face API. 
 
-2. Download the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli)
-3. Log into hugging face by calling
+3. Create an access token by going to https://huggingface.co/settings/tokens
+
+#### Authenticating with your token
+You can now use your token in two ways:
+1. Enter it in the designated box for it inside each notebook. You will have to repeat this action each time you open a notebook. 
+2. Log in via the Hugging Face CLI (recommended). In this case your token will be stored and you won't have to enter your token each time you open a notebook.
+
+    1. Download the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli)
+    2. Log into hugging face by calling
 ```
 hf auth login
 ```
-Enter your access token created on https://huggingface.co/settings/tokens.
+and log in with your access token.
 
-> Note: If you have an invalid token, you can force logging in by calling `hf auth login \--force`
+> Note: If you invalidated your token, you can force logging in with a new token by calling `hf auth login \--force`
 
 ### Starting Marimo
 You are now ready to explore the notebooks! 🎨
