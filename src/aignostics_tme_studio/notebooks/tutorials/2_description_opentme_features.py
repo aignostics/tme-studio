@@ -1,17 +1,33 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.23.0"
 app = marimo.App(width="medium")
 
 
 @app.cell(hide_code=True)
 def _():
-    import marimo as mo
-
+    # Show logo
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
-    return (mo,)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    # Get Hugging Face token
+    import marimo as mo
+
+    _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
+
+    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+        1. Go to "Repositories permissions".
+        2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
+        3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
+                         """})
+    hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
+    mo.vstack([_md, _acc, hf_token])
+    return hf_token, mo
 
 
 @app.cell(hide_code=True)
@@ -35,6 +51,7 @@ def _(mo):
 
     For a full description of the features and how they were computed, see the [Atlas H&E-TME user manual](TODO: LINK!)
     """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -42,6 +59,7 @@ def _(mo):
     mo.md(r"""
     We load the dataframe containing all OpenTME features:
     """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -52,6 +70,7 @@ def _(mo):
     loc = mo.notebook_location()
     img = mo.image(loc / "public" / "models_schematic.svg", height="540")
     mo.vstack([md, img])
+    return
 
 
 @app.cell(hide_code=True)
@@ -59,17 +78,19 @@ def _(mo):
     mo.md(r"""
     We load the dataframe containing all OpenTME features for the bladder dataset:
     """)
+    return
 
 
 @app.cell
-def _():
+def _(hf_token):
     # Download the OpenTME bladder dataset
     import pandas as pd
     from huggingface_hub import hf_hub_download
 
     from aignostics_tme_studio.utils import config
 
-    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset")
+    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset",
+                          token=hf_token.value or None)
     df = pd.read_csv(path)
     df
     return config, df, hf_hub_download, pd
@@ -91,20 +112,22 @@ def _(mo):
     - `settings/model_output_classes.yaml` lists all models' output classes.
     - `settings/tme_features.yaml` lists all available stats.
     """)
+    return
 
 
 @app.cell
-def _(config, hf_hub_download):
+def _(config, hf_hub_download, hf_token):
     from aignostics_tme_studio.utils import utils
 
     # load model output class settings
     class_settings_path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.CLASS_SETTINGS_FILENAME, repo_type="dataset"
+        repo_id=config.REPO_ID, filename=config.CLASS_SETTINGS_FILENAME, repo_type="dataset", token=hf_token.value or None
     )
     model_output_classes = utils.load_munch(class_settings_path)
 
     # load available features
-    features_path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEAT_SETTINGS_FILENAME, repo_type="dataset")
+    features_path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEAT_SETTINGS_FILENAME, repo_type="dataset", 
+                                   token=hf_token.value or None)
     features = utils.load_statistics(features_path)
     return features, model_output_classes, utils
 
@@ -114,11 +137,13 @@ def _(mo):
     mo.md(r"""
     Looking at `model_output_classes['cell_cls']`, we see all available cell classes:
     """)
+    return
 
 
 @app.cell
 def _(model_output_classes):
     model_output_classes["cell_cls"]
+    return
 
 
 @app.cell(hide_code=True)
@@ -126,11 +151,13 @@ def _(mo):
     mo.md(r"""
     Looking at `features['cell_cls']`, we see all available cell features:
     """)
+    return
 
 
 @app.cell
 def _(features):
     features["cell_stats"]
+    return
 
 
 @app.cell(hide_code=True)
@@ -139,6 +166,7 @@ def _(mo):
     Each statistic has a `formatter` property that we can use to find the feature columns
     in the dataset. The `formatter`s for the `CELL_STATS` contain a placeholder `{cell_cls}`. We will use this below.
     """)
+    return
 
 
 @app.cell
@@ -157,6 +185,7 @@ def _(features, mo):
     We replace `{{cell_cls}}` by our `CELL_CLASSES` to find the feature column in the dataframe
     for each available cell type.
     """)
+    return
 
 
 @app.cell
@@ -180,6 +209,7 @@ def _(mo):
 
     Now we have found our feature columns, we can plot the distribution over all slides in the dataset.
     """)
+    return
 
 
 @app.cell
@@ -189,6 +219,7 @@ def _(columns, df, pd):
     # Plotly expects dataframes in long form
     df_melt = pd.melt(df[columns])
     px.box(df_melt, x="variable", y="value")
+    return
 
 
 @app.cell(hide_code=True)
@@ -201,6 +232,7 @@ def _(mo):
     [tutorial 3 - including TCGA metadata](
           /?file=src/aignostics_tme_studio/notebooks/tutorials/3_including_tcga_metadata.py).
     """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -211,6 +243,7 @@ def _(mo):
     *Below you will find working examples for each feature in OpenTME.*
     """)
     })
+    return
 
 
 @app.cell(hide_code=True)
@@ -225,6 +258,7 @@ def _(df, mo):
     """
         )
     })
+    return
 
 
 @app.cell(hide_code=True)
@@ -248,6 +282,7 @@ def _(df, features, mo, model_output_classes, utils):
 
     # Display results
     mo.accordion({"### Tissue Quality Control (QC) 🛁": mo.vstack([_text, df[qc_columns].head()])})
+    return
 
 
 @app.cell(hide_code=True)
@@ -270,6 +305,7 @@ def _(df, features, mo, model_output_classes, utils):
             ts_columns.append(utils.to_allcaps(_column))
 
     mo.accordion({"### Tissue Segmentation 🖼️": mo.vstack([_text, df[ts_columns].head()])})
+    return
 
 
 @app.cell(hide_code=True)
@@ -291,6 +327,7 @@ def _(df, features, mo):
     cd_columns = [_stat.formatter for _stat in _stats]
 
     mo.accordion({"### Nucleus features 🎈": mo.vstack([_text, df[cd_columns].head()])})
+    return
 
 
 @app.cell(hide_code=True)
@@ -313,6 +350,7 @@ def _(df, features, mo, model_output_classes, utils):
             cc_columns.append(utils.to_allcaps(_column))
 
     mo.accordion({"### Cell Classification 🎨": mo.vstack([_text, df[cc_columns].head()])})
+    return
 
 
 @app.cell(hide_code=True)
@@ -376,6 +414,7 @@ def _(df, features, mo, model_output_classes, tissues_with_cells, utils):
                     _columns.append(utils.to_allcaps(_column))
 
     mo.accordion({"### Neighborhood features 🪄": mo.vstack([_text, df[_columns].head()])})
+    return
 
 
 if __name__ == "__main__":

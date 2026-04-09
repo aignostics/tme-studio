@@ -1,25 +1,44 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.23.0"
 app = marimo.App(width="medium")
 
 
 @app.cell(hide_code=True)
 def _():
-    # Load dataframe with metadata, show logo
+    # Show logo
+    from aignostics_tme_studio.styling import styling_utils
+
+    styling_utils.get_aignx_logo()
+    return (styling_utils,)
+
+
+@app.cell(hide_code=True)
+def _():
     import marimo as mo
+    _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
+
+    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+        1. Go to "Repositories permissions".
+        2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
+        3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
+                         """})
+    hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
+    mo.vstack([_md, _acc, hf_token])
+    return hf_token, mo
+
+
+@app.cell(hide_code=True)
+def _(hf_token):
+    # Load dataframe with metadata
     import pandas as pd
     from huggingface_hub import hf_hub_download
-
-    from aignostics_tme_studio.styling import styling_utils
     from aignostics_tme_studio.utils import config
 
     # Download the OpenTME bladder dataset
-    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset")
+    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None)
     df = pd.read_csv(path)
-
-    styling_utils.get_aignx_logo()
-    return config, df, hf_hub_download, mo, styling_utils
+    return config, df, hf_hub_download
 
 
 @app.cell(hide_code=True)
@@ -33,6 +52,7 @@ def _(config, mo):
     ## Loading the data
     We load the `RELATIVE_AREA_<qc_cls>` for each QC class in the `{config.CLASS_SETTINGS_FILENAME}` file.
     """)
+    return
 
 
 @app.cell
@@ -63,6 +83,7 @@ def _(mo):
 
     Additionally, we replace any `NaN` values with zero to allow sklearn estimators to process empty features.
     """)
+    return
 
 
 @app.cell
@@ -83,6 +104,7 @@ def _(mo):
     html#sklearn.ensemble.IsolationForest) and set the dataset contamination to 0.01, meaning we expect 1% of our data
     to be outliers.
     """)
+    return
 
 
 @app.cell
@@ -102,6 +124,7 @@ def _(mo):
     We visualize the outliers by performing a dimensional reduction of the data via PCA. We plot the first two
     components, and color the datapoint by whether they are in-distribution or outliers.
     """)
+    return
 
 
 @app.cell
@@ -137,14 +160,16 @@ def _(df, labels, mo):
 
 
 @app.cell
-def _(config, dropdown, hf_hub_download, mo):
+def _(config, dropdown, hf_hub_download, hf_token, mo):
     img_path = hf_hub_download(
         repo_id=config.REPO_ID,
         filename=f"data/{config.DEFAULT_INDICATION}/thumbnails/{dropdown.value}/tissue_qc.png",
         repo_type="dataset",
+        token=hf_token.value or None
     )
 
     mo.image(img_path, style={"height": "100%", "width": "auto"})
+    return
 
 
 if __name__ == "__main__":
