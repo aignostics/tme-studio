@@ -37,11 +37,14 @@ def _(hf_token, mo):
     import pandas as pd
     from huggingface_hub import hf_hub_download
 
-    from aignostics_tme_studio.utils import config
+    from aignostics_tme_studio.utils import config, utils
 
     # Download the OpenTME bladder dataset
     path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None
+        repo_id=config.REPO_ID,
+        filename=utils.get_features_file_for_indication(config.DEFAULT_INDICATION),
+        repo_type="dataset",
+        token=hf_token.value or None,
     )
     df_tme = pd.read_csv(path)
 

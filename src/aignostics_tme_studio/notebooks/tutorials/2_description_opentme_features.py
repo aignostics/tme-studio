@@ -84,14 +84,17 @@ def _(hf_token):
     import pandas as pd
     from huggingface_hub import hf_hub_download
 
-    from aignostics_tme_studio.utils import config
+    from aignostics_tme_studio.utils import config, utils
 
     path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None
+        repo_id=config.REPO_ID,
+        filename=utils.get_features_file_for_indication(config.DEFAULT_INDICATION),
+        repo_type="dataset",
+        token=hf_token.value or None,
     )
     df = pd.read_csv(path)
     df
-    return config, df, hf_hub_download, pd
+    return config, df, hf_hub_download, pd, utils
 
 
 @app.cell(hide_code=True)
@@ -113,9 +116,7 @@ def _(mo):
 
 
 @app.cell
-def _(config, hf_hub_download, hf_token):
-    from aignostics_tme_studio.utils import utils
-
+def _(config, hf_hub_download, hf_token, utils):
     # load model output class settings
     class_settings_path = hf_hub_download(
         repo_id=config.REPO_ID,
@@ -133,7 +134,7 @@ def _(config, hf_hub_download, hf_token):
         token=hf_token.value or None,
     )
     features = utils.load_statistics(features_path)
-    return features, model_output_classes, utils
+    return features, model_output_classes
 
 
 @app.cell(hide_code=True)

@@ -1,6 +1,7 @@
 import munch
 import yaml
 
+from .config import TISSUE_FEATURES_FILES
 from .data_classes import Statistic
 
 
@@ -38,3 +39,9 @@ def hex_to_rgb(h: str) -> tuple[int, ...]:
 def to_allcaps(s: str) -> str:
     """Return string capitalized and with spaces replaced by underscores."""
     return s.upper().replace(" ", "_")
+
+
+def get_features_file_for_indication(indication: str) -> str:
+    """Get features file for an indication."""
+    # there are two placeholders that both are filled by the indication name.
+    return TISSUE_FEATURES_FILES.format(indication, indication)
