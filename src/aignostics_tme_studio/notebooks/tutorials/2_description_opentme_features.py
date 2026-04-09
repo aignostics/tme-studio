@@ -1,17 +1,34 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.23.0"
 app = marimo.App(width="medium")
 
 
 @app.cell(hide_code=True)
 def _():
-    import marimo as mo
-
+    # Show logo
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
-    return (mo,)
+
+
+@app.cell(hide_code=True)
+def _():
+    # Get Hugging Face token
+    import marimo as mo
+
+    _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
+
+    _acc = mo.accordion({
+        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+        1. Go to "Repositories permissions".
+        2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
+        3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
+                         """
+    })
+    hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
+    mo.vstack([_md, _acc, hf_token])
+    return hf_token, mo
 
 
 @app.cell(hide_code=True)
@@ -62,14 +79,16 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(hf_token):
     # Download the OpenTME bladder dataset
     import pandas as pd
     from huggingface_hub import hf_hub_download
 
     from aignostics_tme_studio.utils import config
 
-    path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset")
+    path = hf_hub_download(
+        repo_id=config.REPO_ID, filename=config.FEATURES_FILENAME, repo_type="dataset", token=hf_token.value or None
+    )
     df = pd.read_csv(path)
     df
     return config, df, hf_hub_download, pd
@@ -94,17 +113,25 @@ def _(mo):
 
 
 @app.cell
-def _(config, hf_hub_download):
+def _(config, hf_hub_download, hf_token):
     from aignostics_tme_studio.utils import utils
 
     # load model output class settings
     class_settings_path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.CLASS_SETTINGS_FILENAME, repo_type="dataset"
+        repo_id=config.REPO_ID,
+        filename=config.CLASS_SETTINGS_FILENAME,
+        repo_type="dataset",
+        token=hf_token.value or None,
     )
     model_output_classes = utils.load_munch(class_settings_path)
 
     # load available features
-    features_path = hf_hub_download(repo_id=config.REPO_ID, filename=config.FEAT_SETTINGS_FILENAME, repo_type="dataset")
+    features_path = hf_hub_download(
+        repo_id=config.REPO_ID,
+        filename=config.FEAT_SETTINGS_FILENAME,
+        repo_type="dataset",
+        token=hf_token.value or None,
+    )
     features = utils.load_statistics(features_path)
     return features, model_output_classes, utils
 

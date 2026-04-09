@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.23.0"
 app = marimo.App(width="medium")
 
 
@@ -37,6 +37,23 @@ def _(mo):
     *These tutorials are marimo notebooks.
     Not familiar with Marimo? Get started with [this tutorial](https://molab.marimo.io/notebooks/nb_TWVGCgZZK4L8zj5ziUBNVL)*
     """)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    # Get Hugging Face token
+    _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
+
+    _acc = mo.accordion({
+        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+        1. Go to "Repositories permissions".
+        2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
+        3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
+                         """
+    })
+    hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
+    mo.vstack([_md, _acc, hf_token])
+    return (hf_token,)
 
 
 @app.cell(hide_code=True)
@@ -121,12 +138,15 @@ def _(mo):
 
 
 @app.cell
-def _(config, tissue_selector):
+def _(config, hf_token, tissue_selector):
     import pandas as pd
     from huggingface_hub import hf_hub_download
 
     path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.TISSUE_FEATURES_FILES.format(tissue_selector.value), repo_type="dataset"
+        repo_id=config.REPO_ID,
+        filename=config.TISSUE_FEATURES_FILES.format(tissue_selector.value),
+        repo_type="dataset",
+        token=hf_token.value or None,
     )
     df = pd.read_csv(path)
     df
@@ -154,11 +174,12 @@ def _(df, mo):
 
 
 @app.cell
-def _(config, df, dropdown, hf_hub_download, mo, tissue_selector):
+def _(config, df, dropdown, hf_hub_download, hf_token, mo, tissue_selector):
     img_path = hf_hub_download(
         repo_id=config.REPO_ID,
         filename=f"data/{tissue_selector.value}/thumbnails/{df.iloc[0].TCGA_FILE_NAME}/{dropdown.value}.png",
         repo_type="dataset",
+        token=hf_token.value or None,
     )
 
     mo.image(img_path, style={"width": "auto", "height": "100%"})
@@ -189,12 +210,15 @@ def _(mo):
 
 
 @app.cell
-def _(config, hf_hub_download):
+def _(config, hf_hub_download, hf_token):
     from aignostics_tme_studio.utils import utils
 
     # Load model output class settings
     class_settings_path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.CLASS_SETTINGS_FILENAME, repo_type="dataset"
+        repo_id=config.REPO_ID,
+        filename=config.CLASS_SETTINGS_FILENAME,
+        repo_type="dataset",
+        token=hf_token.value or None,
     )
     model_output_classes = utils.load_munch(class_settings_path)
     model_output_classes["tissue_cls"]
