@@ -6,6 +6,8 @@ TISSUE_FEATURES_FILES = "data/{}/tme_features_{}_RUO.csv"
 
 INDICATIONS = ["bladder_cancer", "breast_cancer", "lung_cancer", "colorectal_cancer", "liver_cancer"]
 
+THUMBNAIL_FILES = ["wsi.png", "tissue_qc.png", "tissue_segmentation.png", "cell_classification.png"]
+
 DEFAULT_INDICATION = INDICATIONS[0]
 
 CLASS_SETTINGS_FILENAME = "settings/model_output_classes.yaml"
