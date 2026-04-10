@@ -53,7 +53,7 @@ def _(hf_token):
         token=hf_token.value or None,
     )
     df = pd.read_csv(path)
-    return df, pd
+    return config, df, pd
 
 
 @app.cell(hide_code=True)
@@ -71,7 +71,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(df, mo):
-    tcga_id_columns = ["TCGA_FILE_NAME", "TCGA_SLIDE_ID", "TCGA_CASE_ID"]
+    tcga_id_columns = ["TCGA_FILE_NAME", "TCGA_SLIDE_ID", "TCGA_CASE_ID", "TCGA_PROJECT_ID"]
 
     _text = mo.md(f""" # TCGA case and file identifiers 🔬
 
@@ -91,7 +91,6 @@ def _(mo):
         mo.md("The TCGA file name contains a lot of information to help us identify the sample:"),
         mo.image(src=origin / "tcga_name_structure.png", width=600),
     ])
-    return (origin,)
 
 
 @app.cell(hide_code=True)
@@ -123,7 +122,7 @@ def _(mo):
 
 
 @app.cell
-def _(df, origin, pd, config):
+def _(config, df, pd):
     # Load metadata file from the Github repository
     df_meta = pd.read_csv(config.METADATA_FILE_PATH, index_col=0)
 
