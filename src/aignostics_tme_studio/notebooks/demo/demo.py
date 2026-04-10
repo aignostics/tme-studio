@@ -67,16 +67,23 @@ def _(hf_token, mo, pd):
     from aignostics_tme_studio.utils import config as hf_files
     from aignostics_tme_studio.utils import utils
 
-    token = hf_token.value or None
+    _token_warning = mo.md("""
+        ***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***""")
 
-    try:
+    def run_with_token(fn: callable):
+        token = hf_token.value or None  # don't pass an empty string, instead pass None
+        try:
+            return fn(token=token), None
+        except (errors.RepositoryNotFoundError, ValueError):
+            return None, _token_warning
+
+    def load_data(token: str | None):
         # Load data from Hugging Face
         path = hf_hub_download(
             repo_id=hf_files.REPO_ID,
             filename=utils.get_features_file_for_indication(hf_files.DEFAULT_INDICATION),
             repo_type="dataset",
             token=token,
-            force_download=True,
         )
         df_tme = pd.read_csv(path)
 
@@ -84,46 +91,55 @@ def _(hf_token, mo, pd):
         df_meta = pd.read_csv(hf_files.METADATA_FILE_PATH, index_col=0)
 
         df = df_tme.merge(df_meta, left_on="TCGA_FILE_NAME", right_on="Slide name", how="inner")
-        _res = None
-    except errors.RepositoryNotFoundError:
-        df_meta = pd.DataFrame()
+        return df, df_meta
+
+    _result, _warning = run_with_token(load_data)
+    if _warning:
         df = pd.DataFrame()
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
-    _res
-    return df, df_meta, errors, hf_files, hf_hub_download, token, utils
+        df_meta = pd.DataFrame()
+        _warning
+    else:
+        df, df_meta = _result
+    return df, df_meta, hf_files, hf_hub_download, run_with_token, utils
 
 
 @app.cell(hide_code=True)
-def _(df_meta, mo):
-    grouping_column = mo.ui.dropdown(label="Select grouping column", options=sorted(df_meta.columns))
-    grouping_column
+def _(df, df_meta, mo):
+    if len(df) > 0:
+        grouping_column = mo.ui.dropdown(label="Select grouping column", options=sorted(df_meta.columns))
+        _res = grouping_column
+    else:
+        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+    _res
     return (grouping_column,)
 
 
 @app.cell(hide_code=True)
 def _(df, grouping_column, mo):
-    _col = grouping_column.value
-    summary = "### Cohort overview \n"
-    if _col:
-        if _col not in df:
-            summary += f"{_col} does not exist in dataframe. No grouping was applied."
-        else:
-            if df[_col].isna().any():
-                summary += f"Column `{_col}` does not have a value for {df[_col].isna().sum()} samples.\n"
-            summary += f"Results are shown grouped by `{_col}`.\n"
-            summary += f"\n{df.groupby(_col)[_col].count().to_markdown()}"
+    if len(df) > 0:
+        _col = grouping_column.value
+        summary = "### Cohort overview \n"
+        if _col:
+            if _col not in df:
+                summary += f"{_col} does not exist in dataframe. No grouping was applied."
+            else:
+                if df[_col].isna().any():
+                    summary += f"Column `{_col}` does not have a value for {df[_col].isna().sum()} samples.\n"
+                summary += f"Results are shown grouped by `{_col}`.\n"
+                summary += f"\n{df.groupby(_col)[_col].count().to_markdown()}"
+                summary += f"The cohort consists of {len(df)} samples. No grouping was applied."
+        _res = mo.vstack([mo.md(summary), df])
     else:
-        summary += f"The cohort consists of {len(df)} samples. No grouping was applied."
-
-    mo.vstack([mo.md(summary), df])
+        _res = None
+    _res
 
 
 @app.cell(hide_code=True)
-def _(errors, hf_files, hf_hub_download, token, utils):
+def _(hf_files, hf_hub_download, run_with_token, utils):
     # Download the model output class settings and lists of available features.
     from aignostics_tme_studio.utils import column_selector
 
-    try:
+    def get_settings(token: str | None):
         class_settings_path = hf_hub_download(
             repo_id=hf_files.REPO_ID, filename=hf_files.CLASS_SETTINGS_FILENAME, repo_type="dataset", token=token
         )
@@ -133,9 +149,15 @@ def _(errors, hf_files, hf_hub_download, token, utils):
             repo_id=hf_files.REPO_ID, filename=hf_files.FEAT_SETTINGS_FILENAME, repo_type="dataset", token=token
         )
         features = utils.load_statistics(features_path)
-    except errors.RepositoryNotFoundError:
-        features = {}
-        model_output_classes = {}
+        return model_output_classes, features
+
+    _result, _warning = run_with_token(get_settings)
+    if _warning:
+        model_output_classes = None
+        features = None
+        _warning
+    else:
+        model_output_classes, features = _result
     return column_selector, features, model_output_classes
 
 
@@ -157,24 +179,30 @@ def _(column_selector, features, mo, model_output_classes):
 
 
 @app.cell(hide_code=True)
-def _(cc_col_selector, cc_dropdowns, df, features, grouping_column):
+def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
     from aignostics_tme_studio.plotting import distributions
 
-    _df = cc_col_selector.extract_feature_columns(df=df, **cc_dropdowns.value, grouping_column=grouping_column.value)
-    _formatter_str = cc_col_selector.get_column_format(cc_dropdowns.value.copy())
-    _stat = next(
-        iter([stat for stat in features["cell_in_tissue_stats"] if stat.formatter == cc_dropdowns["stat"].value])
-    )
-    _title = f"{_stat.name} of each cell type type per slide"
+    if len(df) > 0:
+        _df = cc_col_selector.extract_feature_columns(
+            df=df, **cc_dropdowns.value, grouping_column=grouping_column.value
+        )
+        _formatter_str = cc_col_selector.get_column_format(cc_dropdowns.value.copy())
+        _stat = next(
+            iter([stat for stat in features["cell_in_tissue_stats"] if stat.formatter == cc_dropdowns["stat"].value])
+        )
+        _title = f"{_stat.name} of each cell type type per slide"
 
-    _kwargs = {
-        "ytitle": str(_stat),
-        "xtitle": "Cell type",
-        "title": _title,
-        "subtitle": _formatter_str,
-    }
+        _kwargs = {
+            "ytitle": str(_stat),
+            "xtitle": "Cell type",
+            "title": _title,
+            "subtitle": _formatter_str,
+        }
 
-    distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
+        _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
+    else:
+        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+    _res
     return (distributions,)
 
 
@@ -208,25 +236,32 @@ def _(
     distributions,
     features,
     grouping_column,
+    mo,
     nb_col_selector,
     nb_dropdowns,
 ):
-    _df = nb_col_selector.extract_feature_columns(df=df, **nb_dropdowns.value, grouping_column=grouping_column.value)
-    _formatter_str = nb_col_selector.get_column_format(nb_dropdowns.value.copy()).upper()
+    if len(df) > 0:
+        _df = nb_col_selector.extract_feature_columns(
+            df=df, **nb_dropdowns.value, grouping_column=grouping_column.value
+        )
+        _formatter_str = nb_col_selector.get_column_format(nb_dropdowns.value.copy()).upper()
 
-    _stat = next(
-        iter([stat for stat in features["neighborhood_stats"] if stat.formatter == nb_dropdowns["stat"].value])
-    )
-    _title = f"{_stat.name} of each cell type type per slide"
+        _stat = next(
+            iter([stat for stat in features["neighborhood_stats"] if stat.formatter == nb_dropdowns["stat"].value])
+        )
+        _title = f"{_stat.name} of each cell type type per slide"
 
-    _kwargs = {
-        "ytitle": str(_stat),
-        "xtitle": "Cell type",
-        "title": _title,
-        "subtitle": _formatter_str,
-    }
+        _kwargs = {
+            "ytitle": str(_stat),
+            "xtitle": "Cell type",
+            "title": _title,
+            "subtitle": _formatter_str,
+        }
 
-    distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
+        _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
+    else:
+        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+    _res
 
 
 @app.cell(hide_code=True)
@@ -265,41 +300,45 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(df, dropdown_metric, mo):
-    _df = df.copy()
+    if len(df) > 0:
+        _df = df.copy()
 
-    if dropdown_metric.value == "Density":
-        carcinoma_col = _df.CELL_DENSITY_LYMPHOCYTE_CARCINOMA
-        stroma_col = _df.CELL_DENSITY_LYMPHOCYTE_STROMA
+        if dropdown_metric.value == "Density":
+            carcinoma_col = _df.CELL_DENSITY_LYMPHOCYTE_CARCINOMA
+            stroma_col = _df.CELL_DENSITY_LYMPHOCYTE_STROMA
+        else:
+            carcinoma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_CARCINOMA
+            stroma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_STROMA
+
+        carcinoma_thresh = mo.ui.slider(
+            start=carcinoma_col.min(),
+            stop=carcinoma_col.max(),
+            label="Select a threshold for inflamed tumor (lymphocytes in carcinoma).",
+            include_input=True,
+            full_width=True,
+            step=1e-5,
+            value=carcinoma_col.median(),
+        )
+        stroma_thresh = mo.ui.slider(
+            start=stroma_col.min(),
+            stop=stroma_col.max(),
+            label="Select a threshold for excluded tumor (lymphocytes in stroma).",
+            include_input=True,
+            full_width=True,
+            step=1e-5,
+            value=stroma_col.median(),
+        )
+
+        _md = mo.md("""
+        > ⚠️ Note: These features are computed across the entire stroma compartment of the slide, not exclusively for
+            tumor-associated stroma within the whole tumor region (WTR). Consequently, the tumor immune phenotype
+            classification — particularly the distinction between excluded and desert phenotypes — should be interpreted
+            with caution on slides with substantial amounts of tumor-independent stroma.
+        """)
+        _res = mo.vstack([carcinoma_thresh, stroma_thresh, _md])
     else:
-        carcinoma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_CARCINOMA
-        stroma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_STROMA
-
-    carcinoma_thresh = mo.ui.slider(
-        start=carcinoma_col.min(),
-        stop=carcinoma_col.max(),
-        label="Select a threshold for inflamed tumor (lymphocytes in carcinoma).",
-        include_input=True,
-        full_width=True,
-        step=1e-5,
-        value=carcinoma_col.median(),
-    )
-    stroma_thresh = mo.ui.slider(
-        start=stroma_col.min(),
-        stop=stroma_col.max(),
-        label="Select a threshold for excluded tumor (lymphocytes in stroma).",
-        include_input=True,
-        full_width=True,
-        step=1e-5,
-        value=stroma_col.median(),
-    )
-
-    _md = mo.md("""
-    > ⚠️ Note: These features are computed across the entire stroma compartment of the slide, not exclusively for
-        tumor-associated stroma within the whole tumor region (WTR). Consequently, the tumor immune phenotype
-        classification — particularly the distinction between excluded and desert phenotypes — should be interpreted
-        with caution on slides with substantial amounts of tumor-independent stroma.
-    """)
-    mo.vstack([carcinoma_thresh, stroma_thresh, _md])
+        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+    _res
     return carcinoma_thresh, stroma_thresh
 
 
@@ -364,48 +403,55 @@ def _(
         footer = """*A hazard ratio of 1 implies there is no difference between the two groups.*"""
         return mo.vstack([metrics, mo.md(footer)])
 
-    # Get DF with survival encoding and group by tumor immune phenotype
-    _disease_free = dropdown_event.value == df_survival
-    _df = get_survival_df(df.copy(), _disease_free)
+    if len(df) > 0:
+        # Get DF with survival encoding and group by tumor immune phenotype
+        _disease_free = dropdown_event.value == df_survival
+        _df = get_survival_df(df.copy(), _disease_free)
 
-    # ************** Computing tumor immune phenotypes ********************
+        # ************** Computing tumor immune phenotypes ********************
 
-    ide_cls = tip_classification.TIPClassifier(
-        df=_df, carcinoma_thresh=carcinoma_thresh.value, stroma_thresh=stroma_thresh.value, metric=dropdown_metric.value
-    )
-    _fig_ide = ide_cls.plot_tip_classification()
+        ide_cls = tip_classification.TIPClassifier(
+            df=_df,
+            carcinoma_thresh=carcinoma_thresh.value,
+            stroma_thresh=stroma_thresh.value,
+            metric=dropdown_metric.value,
+        )
+        _fig_ide = ide_cls.plot_tip_classification()
 
-    # ************** Fitting survival model ********************
+        # ************** Fitting survival model ********************
 
-    _df["group"] = ide_cls.phenotype_classification
+        _df["group"] = ide_cls.phenotype_classification
 
-    # drop Nans
-    _df = _df.dropna(subset=["group", "event", "time"])
+        # drop Nans
+        _df = _df.dropna(subset=["group", "event", "time"])
 
-    _fig_kmp = plot_kaplan_meyer_groupwise(_df)
-    cox = fit_cox_model(_df)
+        _fig_kmp = plot_kaplan_meyer_groupwise(_df)
+        cox = fit_cox_model(_df)
 
-    # ************** Formatting the result ********************
+        # ************** Formatting the result ********************
 
-    # Print results as MD string
-    _title = "## Kaplan-Meier Survival Curves by tumor immune phenotype Class"
+        # Print results as MD string
+        _title = "## Kaplan-Meier Survival Curves by tumor immune phenotype Class"
 
-    _fig_ide.update_layout(
-        autosize=False,
-        width=520,
-        height=400,
-    )
+        _fig_ide.update_layout(
+            autosize=False,
+            width=520,
+            height=400,
+        )
 
-    _fig_kmp.update_layout(
-        autosize=False,
-        width=520,
-        height=400,
-    )
+        _fig_kmp.update_layout(
+            autosize=False,
+            width=520,
+            height=400,
+        )
 
-    mo.hstack([
-        mo.vstack([mo.md("## Tumor immune phenotype classification"), _fig_ide]),
-        mo.vstack([mo.md(_title), mo.ui.plotly(_fig_kmp), format_cox_results(cox)]),
-    ])
+        _res = mo.hstack([
+            mo.vstack([mo.md("## Tumor immune phenotype classification"), _fig_ide]),
+            mo.vstack([mo.md(_title), mo.ui.plotly(_fig_kmp), format_cox_results(cox)]),
+        ])
+    else:
+        _res = None
+    _res
 
 
 if __name__ == "__main__":
