@@ -16,6 +16,11 @@ def _():
 
 
 @app.cell(hide_code=True)
+def _(styling_utils):
+    styling_utils.load_css()
+
+
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     # Welcome! 🌈
@@ -118,13 +123,13 @@ def _(mo):
     the dropdown to view some details from this indication below.
     """)  # noqa: S608
 
-    tissue_selector = mo.ui.dropdown(
+    indication_selector = mo.ui.dropdown(
         options=list(config.INDICATIONS),
         label="Select indication",
         value=config.DEFAULT_INDICATION,
     )
-    mo.vstack([_md, tissue_selector])
-    return config, tissue_selector
+    mo.vstack([_md, indication_selector])
+    return config, indication_selector
 
 
 @app.cell(hide_code=True)
@@ -138,19 +143,21 @@ def _(mo):
 
 
 @app.cell
-def _(config, hf_token, tissue_selector):
+def _(config, hf_token, indication_selector):
     import pandas as pd
     from huggingface_hub import hf_hub_download
 
+    from aignostics_tme_studio.utils import utils
+
     path = hf_hub_download(
         repo_id=config.REPO_ID,
-        filename=config.TISSUE_FEATURES_FILES.format(tissue_selector.value),
+        filename=utils.get_features_file_for_indication(indication_selector.value),
         repo_type="dataset",
         token=hf_token.value or None,
     )
     df = pd.read_csv(path)
     df
-    return df, hf_hub_download, pd
+    return df, hf_hub_download, pd, utils
 
 
 @app.cell(hide_code=True)
@@ -174,10 +181,18 @@ def _(df, mo):
 
 
 @app.cell
-def _(config, df, dropdown, hf_hub_download, hf_token, mo, tissue_selector):
+def _(
+    config,
+    df,
+    dropdown,
+    hf_hub_download,
+    hf_token,
+    indication_selector,
+    mo,
+):
     img_path = hf_hub_download(
         repo_id=config.REPO_ID,
-        filename=f"data/{tissue_selector.value}/thumbnails/{df.iloc[0].TCGA_FILE_NAME}/{dropdown.value}.png",
+        filename=f"data/{indication_selector.value}/thumbnails/{df.iloc[0].TCGA_FILE_NAME}/{dropdown.value}.png",
         repo_type="dataset",
         token=hf_token.value or None,
     )
@@ -210,9 +225,7 @@ def _(mo):
 
 
 @app.cell
-def _(config, hf_hub_download, hf_token):
-    from aignostics_tme_studio.utils import utils
-
+def _(config, hf_hub_download, hf_token, utils):
     # Load model output class settings
     class_settings_path = hf_hub_download(
         repo_id=config.REPO_ID,
@@ -222,7 +235,7 @@ def _(config, hf_hub_download, hf_token):
     )
     model_output_classes = utils.load_munch(class_settings_path)
     model_output_classes["tissue_cls"]
-    return model_output_classes, utils
+    return (model_output_classes,)
 
 
 @app.cell(hide_code=True)

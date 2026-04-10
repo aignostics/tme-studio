@@ -1,6 +1,9 @@
 """Plot styling."""
 
 import marimo as mo
+import requests
+
+from aignostics_tme_studio.utils import config
 
 aignx_purple = "#483569"
 aignx_pink = "#FF7EA5"
@@ -18,7 +21,7 @@ aignx_colors = [aignx_lilac, aignx_pink, aignx_green, aignx_orange, aignx_magent
 
 def get_aignx_logo() -> mo.Html:
     """Returns the Aignostics logo as a Marimo image component."""
-    return mo.image("src/aignostics_tme_studio/styling/images/logo_lavender.png", width=150, style={"float": "right"})
+    return mo.image(config.LOGO_FILE_PATH, width=150, style={"float": "right"})
 
 
 def get_color_map(categories: list[str]) -> dict[str, str]:
@@ -28,3 +31,9 @@ def get_color_map(categories: list[str]) -> dict[str, str]:
         color_map[cat] = aignx_colors[i % len(aignx_colors)]
 
     return color_map
+
+
+def load_css() -> mo.Html:
+    """Load stylesheet from github and return in HTML style tag."""
+    css = requests.get(config.CSS_FILE_PATH, timeout=60).text
+    return mo.Html(f"<style>{css}</style>")
