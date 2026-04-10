@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/aignostics/tme-studio/graph/badge.svg)](https://codecov.io/gh/aignostics/tme-studio)
 [![Ruff](https://img.shields.io/badge/style-Ruff-blue?color=D6FF65)](https://github.com/aignostics/tme-studio/blob/main/noxfile.py)
 [![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/aignostics/foundry-python)
-[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_Y2EVwQceEqNwGiQmtdzCJR)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_dR67hjUTMngeXR1UnWr5zU/app)
 
 # 🎨 TME Studio
 
