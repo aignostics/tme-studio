@@ -21,6 +21,11 @@ def _(styling_utils):
     styling_utils.load_css()
 
 
+@app.cell
+def _():
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -30,7 +35,7 @@ def _(mo):
     This notebook is an interactive demo exploring tumor microenvironment (TME) data from TCGA H&E whole slide images,
     made available to academic researchers through Aignostics' OpenTME project.
 
-    Readouts are produced with Atlas H&E-TME, a computational pathology platform that quantifies cell types, tissue
+    Readouts are produced with Atlas H&E-TME, a computational pathology platform that quantifies cell classes, tissue
     composition, and spatial organization via a sequential inference pipeline covering tissue quality control, tissue
     segmentation, cell detection and classification.
 
@@ -140,8 +145,8 @@ def _(mo):
     mo.md(r"""
     # Visualize model output
 
-    OpenTME contains, for each TCGA slide, thumbnails of the slide and all model outputs for that slide. Select a slide
-    and a thumbnail type from the dropdown to view the model outputs for that slide.
+    For each included TCGA slide, OpenTME contains thumbnails of the H&E image and all corresponding model outputs.
+    Select the slide and thumbnail type from the dropdown to view the results.
     """)
 
 
@@ -257,11 +262,11 @@ def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
         _stat = next(
             iter([stat for stat in features["cell_in_tissue_stats"] if stat.formatter == cc_dropdowns["stat"].value])
         )
-        _title = f"{_stat.name} of each cell type type per slide"
+        _title = f"{_stat.name} of each cell class per slide"
 
         _kwargs = {
             "ytitle": str(_stat),
-            "xtitle": "Cell type",
+            "xtitle": "Cell class",
             "title": _title,
             "subtitle": _formatter_str,
         }
@@ -282,9 +287,9 @@ def _(mo):
     a neighborhood statistic is computed by counting the number of cells of each class within a defined radius. Results
     can be grouped by reference cell class and filtered by tissue type (ROI).
 
-    Use the drop-downs to select a statistic type and a reference cell class. The plot will display the selected
-    statistic between the reference class and all other cell classes. If a tissue type is selected, only cells within
-    that tissue type are included in the analysis.
+    Use the drop-downs to select a statistic, reference cell class, and tissue type. The plot displays the selected
+    statistic between the reference class and all its neighbors - cells of any type lying within the selected distance
+    radius of a reference cell - restricted to the selected tissue type.
     """)
 
 
@@ -341,7 +346,8 @@ def _(
 @app.cell(hide_code=True)
 def _(mo):
     text = mo.md("""# Tumor immune phenotype classification
-    The tumor immune phenotype classification of a slide is computed as follows:<br>
+
+    The tumor immune phenotype is classified as inflamed, desert of excluded (IDE), computed as follows:
     ```
     if lymphocyte fraction in carcinoma > carcinoma threshold:
         classification = inflamed
@@ -505,7 +511,7 @@ def _(
         # ************** Formatting the result ********************
 
         # Print results as MD string
-        _title = "## Kaplan-Meier Survival Curves by tumor immune phenotype Class"
+        _title = "## Kaplan-Meier Curves By Tumor Immune Phenotype"
 
         _fig_ide.update_layout(
             autosize=False,
@@ -520,7 +526,7 @@ def _(
         )
 
         _res = mo.hstack([
-            mo.vstack([mo.md("## Tumor immune phenotype classification"), _fig_ide]),
+            mo.vstack([mo.md("## Tumor Immune Phenotype Classification"), _fig_ide]),
             mo.vstack([mo.md(_title), mo.ui.plotly(_fig_kmp), format_cox_results(cox)]),
         ])
     else:
