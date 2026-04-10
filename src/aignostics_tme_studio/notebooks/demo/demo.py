@@ -174,16 +174,20 @@ def _(
     tcga_file_dropdown,
     thumbnail_dropdown,
 ):
+    import base64
+    from pathlib import Path
+
     if len(df) > 0:
-        images = []
         img_path = hf_hub_download(
             repo_id=hf_files.REPO_ID,
             filename=f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}",
             repo_type="dataset",
             token=hf_token.value or None,
         )
-        images.append(mo.image(img_path, style={"width": "auto", "height": "50%"}))
-        _res = mo.image(img_path, style={"width": "auto", "height": "100%"})
+        img_b64 = base64.b64encode(Path(img_path).read_bytes()).decode()
+
+        mime = "image/png"
+        _res = mo.Html(f"<img src='data:{mime};base64,{img_b64}' style='width: auto; height: 100%' />")
     else:
         _res = None
     _res
