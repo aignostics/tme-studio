@@ -84,6 +84,7 @@ def _(hf_token, mo, pd):
             filename=utils.get_features_file_for_indication(hf_files.DEFAULT_INDICATION),
             repo_type="dataset",
             token=token,
+            force_download=True,
         )
         df_tme = pd.read_csv(path)
 
@@ -146,10 +147,10 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(df, hf_files, mo):
-    files = list(df.TCGA_FILE_NAME)
-    tcga_file_dropdown = mo.ui.dropdown(options=files, value=files[0])
-
     if len(df) > 0:
+        files = list(df.TCGA_FILE_NAME)
+        tcga_file_dropdown = mo.ui.dropdown(options=files, value=files[0])
+
         thumbnail_dropdown = mo.ui.dropdown(
             options=hf_files.THUMBNAIL_FILES,
             label="Select image to display",
@@ -165,6 +166,7 @@ def _(df, hf_files, mo):
 
 @app.cell(hide_code=True)
 def _(
+    df,
     hf_files,
     hf_hub_download,
     hf_token,
@@ -172,15 +174,19 @@ def _(
     tcga_file_dropdown,
     thumbnail_dropdown,
 ):
-    images = []
-    img_path = hf_hub_download(
-        repo_id=hf_files.REPO_ID,
-        filename=f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}",
-        repo_type="dataset",
-        token=hf_token.value or None,
-    )
-    images.append(mo.image(img_path, style={"width": "auto", "height": "50%"}))
-    mo.image(img_path, style={"width": "auto", "height": "100%"})
+    if len(df) > 0:
+        images = []
+        img_path = hf_hub_download(
+            repo_id=hf_files.REPO_ID,
+            filename=f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}",
+            repo_type="dataset",
+            token=hf_token.value or None,
+        )
+        images.append(mo.image(img_path, style={"width": "auto", "height": "50%"}))
+        _res = mo.image(img_path, style={"width": "auto", "height": "100%"})
+    else:
+        _res = None
+    _res
 
 
 @app.cell(hide_code=True)
