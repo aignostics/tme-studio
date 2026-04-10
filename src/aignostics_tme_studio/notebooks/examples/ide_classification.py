@@ -58,24 +58,24 @@ def _(hf_token):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
-    # IDE classification 🫚
+    # Tumor immune phenotype classification 🫚
 
-    IDE stands for inflamed/desert/excluded, and is a method for classifying slides based on their
+    Tumor immune phenotype classification is a method for classifying slides based on their
     inflammation status.
 
     We can use the OpenTME features `CELL_DENSITY_LYMPHOCYTE_CARCINOMA` and
     `CELL_DENSITY_LYMPHOCYTE_STROMA` to classify our slides into the three groups.
-    The IDE classification of a slide is computed as follows:
+    The tumor immune phenotype classification of a slide is computed as follows:
 
     ```
     if CELL_DENSITY_LYMPHOCYTE_CARCINOMA > threshold_carcinoma:
-        ide_classification = inflamed
+        classification = inflamed
 
     elif CELL_DENSITY_LYMPHOCYTE_STROMA > threshold_stroma:
-        ide_classification = excluded
+        classification = excluded
 
     else:
-        ide_classification = desert
+        classification = desert
     ```
     """)
 
@@ -118,24 +118,26 @@ def _(df, dropdown, mo):
         value=stroma_col.median(),
     )
     _md_1 = mo.md("""Use the sliders below to select a threshold for the lymphocyte densities in carcinoma and stroma,
-    and see how this classifies your slide into the IDE groups.""")
-    _md_2 = mo.md("""> ⚠️ Note: these features are computed for the entire stroma compartment on the slide (as opposed to
-        only inside the whole tumor region (WTR). The IDE classification is meaningful only for slides in which the
-        stroma is dominated by tumor-specific stroma. The user is advised to only look at the distinction between
-        excluded and desert where the slides are suitable for such a classification.""")
+    and see how this classifies your slide into the tumor immune phenotypes.""")
+    _md_2 = mo.md("""
+    > ⚠️ Note: These features are computed across the entire stroma compartment of the slide, not exclusively for
+        tumor-associated stroma within the whole tumor region (WTR). Consequently, the tumor immune phenotype
+        classification — particularly the distinction between excluded and desert phenotypes — should be interpreted
+        with caution on slides with substantial amounts of tumor-independent stroma.
+    """)
     mo.vstack([_md_1, carcinoma_thresh, stroma_thresh, _md_2])
     return carcinoma_thresh, stroma_thresh
 
 
 @app.cell
 def _(carcinoma_thresh, df, dropdown, mo, stroma_thresh):
-    from aignostics_tme_studio.plotting import ide_classification
+    from aignostics_tme_studio.plotting import tip_classification
 
-    ide_cls = ide_classification.IDEClassifier(
+    ide_cls = tip_classification.TIPClassifier(
         df=df, carcinoma_thresh=carcinoma_thresh.value, stroma_thresh=stroma_thresh.value, metric=dropdown.value
     )
 
-    fig = ide_cls.plot_ide_classification()
+    fig = ide_cls.plot_tip_classification()
     tab = ide_cls.get_distribution_table()
 
     tab = tab.assign(count=tab["count"].map("{:.2%}".format)).to_markdown()

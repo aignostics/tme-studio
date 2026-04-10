@@ -1,4 +1,4 @@
-"""IDE classification."""
+"""Tumor immune phenotype classification."""
 
 from functools import cached_property
 from typing import Literal
@@ -22,7 +22,7 @@ IDE_COLORS = {
 }
 
 
-class IDEClassifier:
+class TIPClassifier:
     """Classifies slides into inflames/desert/excluded classes."""
 
     def __init__(
@@ -32,7 +32,7 @@ class IDEClassifier:
         stroma_thresh: float,
         metric: Literal["Density", "Percentage "] = "Density",
     ) -> None:
-        """Initialize the IDE classifier.
+        """Initialize the Tumor Immune Phenotype (TIP) classifier.
 
         Args:
         ----
@@ -63,7 +63,7 @@ class IDEClassifier:
         self.set_thresholds(carcinoma_thresh=carcinoma_thresh, stroma_thresh=stroma_thresh)
 
     def set_thresholds(self, *, carcinoma_thresh: float, stroma_thresh: float) -> None:
-        """Set thresholds for IDE classification.
+        """Set thresholds for tumor immune phenotypes.
 
         Args:
         ----
@@ -74,11 +74,11 @@ class IDEClassifier:
         self.strom_thres = stroma_thresh
 
         # invalidate cashed classification
-        self.__dict__.pop("ide_classification", None)
+        self.__dict__.pop("phenotype_classification", None)
 
     @cached_property
-    def ide_classification(self) -> np.ndarray:
-        """Compute the IDE status based on given thresholds.
+    def phenotype_classification(self) -> np.ndarray:
+        """Compute the tumor immune phenotype based on given thresholds.
 
         For each slide, computes the following:
         ```
@@ -92,14 +92,14 @@ class IDEClassifier:
 
         Returns:
         ----
-        The IDE classification in ["inflamed", "excluded", "desert"] for each slide.
+        The tumor immune phenotype in ["inflamed", "excluded", "desert"] for each slide.
         """
         status = np.where(self.values_carcinoma > self.carc_thres, "inflamed", "")
         status = np.where((self.values_stroma > self.strom_thres) & (~status.astype(bool)), "excluded", status)
         return np.where(~status.astype(bool), "desert", status)
 
-    def plot_ide_classification(self) -> go.Figure:
-        """Plot IDE classification of each slide.
+    def plot_tip_classification(self) -> go.Figure:
+        """Plot TIP classification of each slide.
 
         Plots each slide's lymphocyte density in carcinoma and stroma regions,
         highlighting inflamed, excluded and desert tumors with different colors.
@@ -171,8 +171,8 @@ class IDEClassifier:
         # would otherwise lie on top
         for ide_cls, color in IDE_COLORS.items():
             fig.add_scatter(
-                x=self.values_carcinoma[self.ide_classification == ide_cls],
-                y=self.values_stroma[self.ide_classification == ide_cls],
+                x=self.values_carcinoma[self.phenotype_classification == ide_cls],
+                y=self.values_stroma[self.phenotype_classification == ide_cls],
                 mode="markers",
                 name=ide_cls,
                 marker={"color": color},
@@ -181,14 +181,14 @@ class IDEClassifier:
         return fig
 
     def get_distribution_table(self) -> pd.DataFrame:
-        """Get the distribution of IDE classes.
+        """Get the distribution of tumor immune phenotypes.
 
         Returns:
         ----
-        A dataframe with the percentage of samples in each IDE class.
+        A dataframe with the percentage of samples in each tumor immune phenotype.
         """
-        counts = pd.DataFrame(self.ide_classification).value_counts().reset_index()
+        counts = pd.DataFrame(self.phenotype_classification).value_counts().reset_index()
 
         count_arr = np.asarray(counts["count"])
         counts["count"] = count_arr / count_arr.sum()
-        return counts.sort_values(by=0).rename(columns={0: "IDE classification"})
+        return counts.sort_values(by=0).rename(columns={0: "Tumor immune phenotype"})

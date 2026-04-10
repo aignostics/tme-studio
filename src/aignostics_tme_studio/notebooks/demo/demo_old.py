@@ -306,11 +306,18 @@ def _(
 
 @app.cell(hide_code=True)
 def _(mo):
-    text = mo.md("""# IDE classification
-    The IDE classification of a slide is computed as follows: <br>
-    1. if lymphocyte fraction in carcinoma > carcinoma threshold --> ide_classification = inflamed
-    2. else: if lymphocyte fraction in stroma > stroma threshold --> ide_classification = excluded
-    3. else: ide_classification = desert
+    text = mo.md("""# Tumor immune phenotype classification
+    The tumor immune phenotype classification of a slide is computed as follows:<br>
+    ```
+    if lymphocyte fraction in carcinoma > carcinoma threshold:
+        classification = inflamed
+
+    elif lymphocyte fraction in stroma > stroma threshold:
+        classification = excluded
+
+    else:
+        classification = desert
+    ```
     """)
 
     df_survival = "Disease free survival"
@@ -362,10 +369,10 @@ def _(df, dropdown_metric, mo):
     )
 
     _md = mo.md("""
-    > ⚠️ Note: these features are computed for the entire stroma compartment on the slide (as opposed to only inside the
-        whole tumor region (WTR). The IDE classification is meaningful only for slides in which the stroma is dominated
-        by tumor-specific stroma. The user is advised to only look at excluded/desert distinction where the slides are
-        suitable for such a classification.
+    > ⚠️ Note: These features are computed across the entire stroma compartment of the slide, not exclusively for
+        tumor-associated stroma within the whole tumor region (WTR). Consequently, the tumor immune phenotype
+        classification — particularly the distinction between excluded and desert phenotypes — should be interpreted
+        with caution on slides with substantial amounts of tumor-independent stroma.
     """)
     mo.vstack([carcinoma_thresh, stroma_thresh, _md])
     return carcinoma_thresh, stroma_thresh
@@ -386,7 +393,7 @@ def _(
     from lifelines import CoxPHFitter, KaplanMeierFitter
     from pandas.api.types import is_numeric_dtype
 
-    from aignostics_tme_studio.plotting import ide_classification, kaplan_meyer
+    from aignostics_tme_studio.plotting import kaplan_meyer, tip_classification
 
     def get_survival_df(df, disease_free: bool = False):
         # Encode survival status as binary column
@@ -419,7 +426,7 @@ def _(
     def plot_kaplan_meyer_groupwise(df):
         kmfs = df.groupby("group").apply(fit_kaplan_meyer)
         kmp = kaplan_meyer.KaplanMeyerPlotter(show_censors=True)
-        return kmp.render(kmfs, color_map=ide_classification.IDE_COLORS)
+        return kmp.render(kmfs, color_map=tip_classification.IDE_COLORS)
 
     def format_cox_results(cox):
         metrics = mo.hstack(
@@ -433,20 +440,20 @@ def _(
         footer = """*A hazard ratio of 1 implies there is no difference between the two groups.*"""
         return mo.vstack([metrics, mo.md(footer)])
 
-    # Get DF with survival encoding and group by IDE classification
+    # Get DF with survival encoding and group by tumor immune phenotype classification
     _disease_free = dropdown_event.value == df_survival
     _df = get_survival_df(df.copy(), _disease_free)
 
-    # ************** Computing IDE classification ********************
+    # ************** Computing tumor immune phenotype classification ********************
 
-    ide_cls = ide_classification.IDEClassifier(
+    ide_cls = tip_classification.TIPClassifier(
         df=_df, carcinoma_thresh=carcinoma_thresh.value, stroma_thresh=stroma_thresh.value, metric=dropdown_metric.value
     )
-    _fig_ide = ide_cls.plot_ide_classification()
+    _fig_ide = ide_cls.plot_tip_classification()
 
     # ************** Fitting survival model ********************
 
-    _df["group"] = ide_cls.ide_classification
+    _df["group"] = ide_cls.phenotype_classification
 
     # drop Nans
     _df = _df.dropna(subset=["group", "event", "time"])
@@ -457,7 +464,7 @@ def _(
     # ************** Formatting the result ********************
 
     # Print results as MD string
-    _title = "## Patients split by IDE classification."
+    _title = "## Patients split by tumor immune phenotype classification."
 
     _fig_ide.update_layout(
         autosize=False,
@@ -472,7 +479,7 @@ def _(
     )
 
     mo.hstack([
-        mo.vstack([mo.md("## IDE classification"), _fig_ide]),
+        mo.vstack([mo.md("## Tumor immune phenotype classification"), _fig_ide]),
         mo.vstack([mo.md(_title), mo.ui.plotly(_fig_kmp), format_cox_results(cox)]),
     ])
     return (
