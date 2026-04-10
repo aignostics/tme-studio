@@ -84,7 +84,6 @@ def _(hf_token, mo, pd):
             filename=utils.get_features_file_for_indication(hf_files.DEFAULT_INDICATION),
             repo_type="dataset",
             token=token,
-            force_download=True,
         )
         df_tme = pd.read_csv(path)
 
@@ -107,7 +106,8 @@ def _(hf_token, mo, pd):
 @app.cell(hide_code=True)
 def _(df, df_meta, mo):
     if len(df) > 0:
-        grouping_column = mo.ui.dropdown(label="Select grouping column", options=sorted(df_meta.columns))
+        _options = sorted([col for col in df_meta.columns if "Months" not in col])
+        grouping_column = mo.ui.dropdown(label="Select grouping column", options=_options)
         _res = grouping_column
     else:
         _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
@@ -323,11 +323,11 @@ def _(
         _stat = next(
             iter([stat for stat in features["neighborhood_stats"] if stat.formatter == nb_dropdowns["stat"].value])
         )
-        _title = f"{_stat.name} of each cell type type per slide"
+        _title = f"{_stat.name} of each cell class per slide"
 
         _kwargs = {
             "ytitle": str(_stat),
-            "xtitle": "Cell type",
+            "xtitle": "Cell class",
             "title": _title,
             "subtitle": _formatter_str,
         }
@@ -475,7 +475,8 @@ def _(
             align="start",
         )
 
-        footer = """*A hazard ratio of 1 implies there is no difference between the two groups.*"""
+        footer = """*A hazard ratio above 1 indicates a higher event rate in one group, while below 1 indicates
+                a lower event rate.*"""
         return mo.vstack([metrics, mo.md(footer)])
 
     if len(df) > 0:
