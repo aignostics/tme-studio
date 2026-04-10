@@ -97,7 +97,7 @@ jobs:
         if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: aignostics/tmestudio
+          slug: aignostics/tme-studio
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
