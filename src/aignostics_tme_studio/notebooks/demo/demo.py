@@ -135,6 +135,55 @@ def _(df, grouping_column, mo):
 
 
 @app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Visualize model output
+
+    OpenTME contains, for each TCGA slide, thumbnails of the slide and all model outputs for that slide. Select a slide
+    and a thumbnail type from the dropdown to view the model outputs for that slide.
+    """)
+
+
+@app.cell(hide_code=True)
+def _(df, hf_files, mo):
+    files = list(df.TCGA_FILE_NAME)
+    tcga_file_dropdown = mo.ui.dropdown(options=files, value=files[0])
+
+    if len(df) > 0:
+        thumbnail_dropdown = mo.ui.dropdown(
+            options=hf_files.THUMBNAIL_FILES,
+            label="Select image to display",
+            value=hf_files.THUMBNAIL_FILES[0],
+        )
+        _res = mo.vstack([tcga_file_dropdown, thumbnail_dropdown])
+
+    else:
+        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+    _res
+    return tcga_file_dropdown, thumbnail_dropdown
+
+
+@app.cell(hide_code=True)
+def _(
+    hf_files,
+    hf_hub_download,
+    hf_token,
+    mo,
+    tcga_file_dropdown,
+    thumbnail_dropdown,
+):
+    images = []
+    img_path = hf_hub_download(
+        repo_id=hf_files.REPO_ID,
+        filename=f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}",
+        repo_type="dataset",
+        token=hf_token.value or None,
+    )
+    images.append(mo.image(img_path, style={"width": "auto", "height": "50%"}))
+    mo.image(img_path, style={"width": "auto", "height": "100%"})
+
+
+@app.cell(hide_code=True)
 def _(hf_files, hf_hub_download, run_with_token, utils):
     # Download the model output class settings and lists of available features.
     from aignostics_tme_studio.utils import column_selector
