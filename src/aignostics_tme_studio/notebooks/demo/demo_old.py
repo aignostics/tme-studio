@@ -13,7 +13,12 @@ def _():
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
-    return mo, pd
+    return mo, pd, styling_utils
+
+
+@app.cell(hide_code=True)
+def _(styling_utils):
+    styling_utils.load_css()
 
 
 @app.cell(hide_code=True)
@@ -73,9 +78,9 @@ def _(hf_token, mo, pd):
         )
         df_tme = pd.read_csv(path)
 
-        # Load metadata from this repository
-        origin = mo.notebook_location() / "public"
-        df_meta = pd.read_csv(origin / "metadata.csv")
+        # Load metadata file from the Github repository
+        df_meta = pd.read_csv(hf_files.METADATA_FILE_PATH, index_col=0)
+
         df = df_tme.merge(df_meta, left_on="TCGA_FILE_NAME", right_on="Slide name", how="inner")
         _res = df
     except errors.RepositoryNotFoundError:

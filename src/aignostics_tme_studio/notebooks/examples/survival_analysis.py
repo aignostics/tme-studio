@@ -13,6 +13,11 @@ def _():
 
 
 @app.cell(hide_code=True)
+def _(styling_utils):
+    styling_utils.load_css()
+
+
+@app.cell(hide_code=True)
 def _():
     # Get Hugging Face token
     import marimo as mo
@@ -48,9 +53,8 @@ def _(hf_token, mo):
     )
     df_tme = pd.read_csv(path)
 
-    # Load survival data
-    origin = mo.notebook_location() / "public"
-    df_meta = pd.read_csv(origin / "metadata.csv")
+    # Load metadata file from the Github repository
+    df_meta = pd.read_csv(config.METADATA_FILE_PATH, index_col=0)
 
     # Store relevant columns (dropping IMAGE_RESOLUTION etc.)
     tme_feat = df_tme.columns[6:]

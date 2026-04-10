@@ -13,6 +13,11 @@ def _():
 
 
 @app.cell(hide_code=True)
+def _(styling_utils):
+    styling_utils.load_css()
+
+
+@app.cell(hide_code=True)
 def _():
     # Get Hugging Face token
     import marimo as mo

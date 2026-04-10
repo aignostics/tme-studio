@@ -14,6 +14,11 @@ def _():
 
 
 @app.cell(hide_code=True)
+def _(styling_utils):
+    styling_utils.load_css()
+
+
+@app.cell(hide_code=True)
 def _():
     import marimo as mo
     # Get Hugging Face token
@@ -118,8 +123,9 @@ def _(mo):
 
 
 @app.cell
-def _(df, origin, pd):
-    df_meta = pd.read_csv(origin / "metadata.csv")
+def _(df, origin, pd, config):
+    # Load metadata file from the Github repository
+    df_meta = pd.read_csv(config.METADATA_FILE_PATH, index_col=0)
 
     df_all = df.merge(df_meta, left_on="TCGA_FILE_NAME", right_on="Slide name")
     df_all.head()

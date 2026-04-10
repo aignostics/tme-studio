@@ -13,7 +13,12 @@ def _():
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
-    return mo, pd
+    return mo, pd, styling_utils
+
+
+@app.cell(hide_code=True)
+def _(styling_utils):
+    styling_utils.load_css()
 
 
 @app.cell(hide_code=True)
@@ -65,6 +70,7 @@ def _(hf_token, mo, pd):
     token = hf_token.value or None
 
     try:
+        # Load data from Hugging Face
         path = hf_hub_download(
             repo_id=hf_files.REPO_ID,
             filename=utils.get_features_file_for_indication(hf_files.DEFAULT_INDICATION),
@@ -74,22 +80,24 @@ def _(hf_token, mo, pd):
         )
         df_tme = pd.read_csv(path)
 
-        # Load metadata from this repository
-        origin = mo.notebook_location() / "public"
-        df_meta = pd.read_csv(origin / "metadata.csv")
+        # Load metadata file from the Github repository
+        df_meta = pd.read_csv(hf_files.METADATA_FILE_PATH, index_col=0)
+
         df = df_tme.merge(df_meta, left_on="TCGA_FILE_NAME", right_on="Slide name", how="inner")
-        _res = df
+        _res = None
     except errors.RepositoryNotFoundError:
         df_meta = pd.DataFrame()
         df = pd.DataFrame()
         _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
     _res
-    return df, errors, hf_files, hf_hub_download, token, utils
+    return df, df_meta, errors, hf_files, hf_hub_download, token, utils
 
 
 @app.cell(hide_code=True)
-def _():
-    return
+def _(df_meta, mo):
+    grouping_column = mo.ui.dropdown(label="Select grouping column", options=sorted(df_meta.columns))
+    grouping_column
+    return (grouping_column,)
 
 
 @app.cell(hide_code=True)
