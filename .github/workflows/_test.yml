@@ -101,9 +101,11 @@ jobs:
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
-        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: aignostics/tme-studio
+          report_type: test_results
 
       - name: SonarQube Scan
         if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
