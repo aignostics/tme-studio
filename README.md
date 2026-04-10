@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/aignostics/tme-studio/graph/badge.svg)](https://codecov.io/gh/aignostics/tme-studio)
 [![Ruff](https://img.shields.io/badge/style-Ruff-blue?color=D6FF65)](https://github.com/aignostics/tme-studio/blob/main/noxfile.py)
 [![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/aignostics/foundry-python)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_Y2EVwQceEqNwGiQmtdzCJR)
 
 # 🎨 TME Studio
 
@@ -27,6 +28,7 @@ All outputs were generated using [Atlas H&E-TME](https://www.aignostics.com/prod
 ## What is TME Studio?
 
 TME Studio contains a set of tutorials and example notebooks to help you explore [OpenTME](https://huggingface.co/datasets/Aignostics/OpenTME). TME Studio is provided as an entry point into OpenTME, and intended to accelerate research output from the OpenTME data.
+
 
 ### Content
 

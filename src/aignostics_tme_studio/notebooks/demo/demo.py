@@ -217,19 +217,27 @@ def _(hf_files, hf_hub_download, run_with_token, utils):
 
 
 @app.cell(hide_code=True)
-def _(column_selector, features, mo, model_output_classes):
-    _text = mo.md("""# Cell Class Distribution Across Tissue Types
+def _(mo):
+    mo.md(r"""
+    # Cell Class Distribution Across Tissue Types
     This section shows cell classes predicted by the cell classification model, distributed across tissue types
     predicted by the tissue segmentation model.
     """)
 
-    cc_col_selector = column_selector.CellInTissueFeatureColumnSelector(
-        model_output_class_config=model_output_classes,
-        statistics=features["cell_in_tissue_stats"],
-        x_variable="cell_cls",
-    )
-    cc_dropdowns = cc_col_selector.render_dropdowns()
-    mo.vstack([_text, cc_dropdowns])
+
+@app.cell(hide_code=True)
+def _(column_selector, df, features, model_output_classes):
+    if len(df) > 0:
+        cc_col_selector = column_selector.CellInTissueFeatureColumnSelector(
+            model_output_class_config=model_output_classes,
+            statistics=features["cell_in_tissue_stats"],
+            x_variable="cell_cls",
+        )
+        cc_dropdowns = cc_col_selector.render_dropdowns()
+        _res = cc_dropdowns
+    else:
+        _res = None
+    _res
     return cc_col_selector, cc_dropdowns
 
 
@@ -262,8 +270,9 @@ def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
 
 
 @app.cell(hide_code=True)
-def _(column_selector, features, mo, model_output_classes):
-    _text = mo.md("""# Neighborhood Analysis
+def _(mo):
+    mo.md(r"""
+    # Neighborhood Analysis
 
     This section explores how different cell types are spatially organized relative to one another. For each cell,
     a neighborhood statistic is computed by counting the number of cells of each class within a defined radius. Results
@@ -272,16 +281,22 @@ def _(column_selector, features, mo, model_output_classes):
     Use the drop-downs to select a statistic type and a reference cell class. The plot will display the selected
     statistic between the reference class and all other cell classes. If a tissue type is selected, only cells within
     that tissue type are included in the analysis.
-
     """)
 
-    nb_col_selector = column_selector.NoAnucleatedAreasFeatureColumnSelector(
-        model_output_class_config=model_output_classes,
-        statistics=features["neighborhood_stats"],
-        x_variable="cell_cls_b",
-    )
-    nb_dropdowns = nb_col_selector.render_dropdowns()
-    mo.vstack([_text, nb_dropdowns])
+
+@app.cell(hide_code=True)
+def _(column_selector, df, features, model_output_classes):
+    if len(df) > 0:
+        nb_col_selector = column_selector.NoAnucleatedAreasFeatureColumnSelector(
+            model_output_class_config=model_output_classes,
+            statistics=features["neighborhood_stats"],
+            x_variable="cell_cls_b",
+        )
+        nb_dropdowns = nb_col_selector.render_dropdowns()
+        _res = nb_dropdowns
+    else:
+        _res = None
+    _res
     return nb_col_selector, nb_dropdowns
 
 
