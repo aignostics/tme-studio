@@ -150,7 +150,6 @@ class FeatureColumnSelector:
         2. The dictionary of model_variables contains the placeholders as keys.
 
         E.g. for placeholder {cell_cls} we find the list of cell classes under the key 'cell_cls' in the dictionary.
-        TODO: Give more concrete example?
         """
         # In case there are multiple placeholders with the same name they are differentiated by post-fixing them.
         # Just compare to the starting substring.
