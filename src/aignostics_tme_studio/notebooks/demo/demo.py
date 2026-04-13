@@ -1,9 +1,5 @@
 import marimo
 
-_HF_ACCESS_WARNING_MD = (
-    "***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***"
-)
-
 __generated_with = "0.23.0"
 app = marimo.App(width="medium", css_file="", html_head_file="")
 
@@ -65,22 +61,22 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(hf_token, mo, pd):
+def _(hf_token, pd):
     # Download the OpenTME Bladder dataset features
     from huggingface_hub import errors, hf_hub_download
 
     from aignostics_tme_studio.utils import config as hf_files
     from aignostics_tme_studio.utils import utils
 
-    _token_warning = mo.md("""
-        ***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***""")
+    hf_access_warning = """***⚠️ Enter your Hugging Face token to be able to download the dataset and use this
+        notebook.***"""
 
     def run_with_token(fn: callable):
         token = hf_token.value or None  # don't pass an empty string, instead pass None
         try:
             return fn(token=token), None
         except (errors.RepositoryNotFoundError, ValueError):
-            return None, _token_warning
+            return None, hf_access_warning
 
     def load_data(token: str | None):
         # Load data from Hugging Face
@@ -89,6 +85,7 @@ def _(hf_token, mo, pd):
             filename=utils.get_features_file_for_indication(hf_files.DEFAULT_INDICATION),
             repo_type="dataset",
             token=token,
+            force_download=True,
         )
         df_tme = pd.read_csv(path)
 
@@ -105,17 +102,25 @@ def _(hf_token, mo, pd):
         _warning
     else:
         df, df_meta = _result
-    return df, df_meta, hf_files, hf_hub_download, run_with_token, utils
+    return (
+        hf_access_warning,
+        df,
+        df_meta,
+        hf_files,
+        hf_hub_download,
+        run_with_token,
+        utils,
+    )
 
 
 @app.cell(hide_code=True)
-def _(df, df_meta, mo):
+def _(hf_access_warning, df, df_meta, mo):
     if len(df) > 0:
         _options = sorted([col for col in df_meta.columns if "Months" not in col])
         grouping_column = mo.ui.dropdown(label="Select grouping column", options=_options)
         _res = grouping_column
     else:
-        _res = mo.md(_HF_ACCESS_WARNING_MD)
+        _res = mo.md(hf_access_warning)
     _res
     return (grouping_column,)
 
@@ -151,7 +156,7 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(df, hf_files, mo):
+def _(hf_access_warning, df, hf_files, mo):
     if len(df) > 0:
         files = list(df.TCGA_FILE_NAME)
         tcga_file_dropdown = mo.ui.dropdown(options=files, value=files[0])
@@ -164,7 +169,7 @@ def _(df, hf_files, mo):
         _res = mo.vstack([tcga_file_dropdown, thumbnail_dropdown])
 
     else:
-        _res = mo.md(_HF_ACCESS_WARNING_MD)
+        _res = mo.md(hf_access_warning)
     _res
     return tcga_file_dropdown, thumbnail_dropdown
 
@@ -253,7 +258,15 @@ def _(column_selector, df, features, model_variables):
 
 
 @app.cell(hide_code=True)
-def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
+def _(
+    hf_access_warning,
+    cc_col_selector,
+    cc_dropdowns,
+    df,
+    features,
+    grouping_column,
+    mo,
+):
     from aignostics_tme_studio.plotting import distributions
 
     if len(df) > 0:
@@ -275,7 +288,7 @@ def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
 
         _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
     else:
-        _res = mo.md(_HF_ACCESS_WARNING_MD)
+        _res = mo.md(hf_access_warning)
     _res
     return (distributions,)
 
@@ -313,6 +326,7 @@ def _(column_selector, df, features, model_variables):
 
 @app.cell(hide_code=True)
 def _(
+    hf_access_warning,
     df,
     distributions,
     features,
@@ -341,7 +355,7 @@ def _(
 
         _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
     else:
-        _res = mo.md(_HF_ACCESS_WARNING_MD)
+        _res = mo.md(hf_access_warning)
     _res
 
 
@@ -381,7 +395,7 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(df, dropdown_metric, mo):
+def _(hf_access_warning, df, dropdown_metric, mo):
     if len(df) > 0:
         _df = df.copy()
 
@@ -420,7 +434,7 @@ def _(df, dropdown_metric, mo):
         """)
         _res = mo.vstack([carcinoma_thresh, stroma_thresh, _md])
     else:
-        _res = mo.md(_HF_ACCESS_WARNING_MD)
+        _res = mo.md(hf_access_warning)
     _res
     return carcinoma_thresh, stroma_thresh
 
