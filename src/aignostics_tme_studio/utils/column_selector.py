@@ -14,13 +14,11 @@ def _replace_column_headers(df: pd.DataFrame, columns_map: dict[str, str]) -> pd
     """Replace column headers, keeping "grouping" column intact if it exists.
 
     Args:
-    ----
-    df: Source DataFrame to extract columns from.
-    columns_map: Dictionary with column header mapping.
+        df: Source DataFrame to extract columns from.
+        columns_map: Dictionary with column header mapping.
 
     Returns:
-    ----
-    The dataframe with replaced column headers, and `grouping` column if it existed in the original dataframe.
+        The dataframe with replaced column headers, and `grouping` column if it existed in the original dataframe.
     """
     columns = list(columns_map.keys())
     return df[columns].rename(columns=columns_map)
@@ -30,13 +28,12 @@ def _stats_to_dropdown(stats: list[Statistic], label: str) -> mo.ui.dropdown:
     """Create a dropdown from a statistics dictionary.
 
     Args:
-    ----
-    stats: The list of statistics (pretty-print) with names and associated dataframe column header formatting strings.
-    label: Label to print next to the dropdown.
+        stats: The list of statistics (pretty-print) with names and associated dataframe column
+            header formatting strings.
+        label: Label to print next to the dropdown.
 
     Returns:
-    ----
-    Dropdown to select the statistic.
+        Dropdown to select the statistic.
     """
     return mo.ui.dropdown(
         options={stat.name: stat.formatter for stat in stats},
@@ -55,8 +52,7 @@ class FeatureColumnSelector:
     feature columns.
 
     Example:
-    ----
-    Our statistics are ["DENSITY_{cell_cls}_IN_{tissue_cls}", "RATIO_{cell_cls}_IN_{tissue_cls}"].
+        Our statistics are ["DENSITY_{cell_cls}_IN_{tissue_cls}", "RATIO_{cell_cls}_IN_{tissue_cls}"].
     We set "cell_cls" to be our `x_variable`.
     1. **creating dropdowns**: The `FeatureColumnSelector` sees the `cell_cls` and `tissue_cls` placeholders and creates
        dropdowns.
@@ -76,15 +72,15 @@ class FeatureColumnSelector:
         """Init feature column selector section.
 
         Args:
-        ----
-        statistics: List of statistics to select from, with formatting strings containing placeholders, e.g.
-          "density_{cell_cls}_in_{tissue_cls}".
-          Note: each statistic in the list should be of the same type, meaning, contain the same set of placeholders.
-        x_variable: The placeholder that should be used as x variable in the plot, and for which the columns should
-          be found by formatting with all possible values. Example: "cell_cls"; in which case columns will be found
-          for all possible cell classes.
-        model_output_class_config: Dictionary mapping placeholders to possible values, used to format the statistic
-          formatter strings and find the columns in the dataframe.
+            statistics: List of statistics to select from, with formatting strings containing placeholders, e.g.
+                "density_{cell_cls}_in_{tissue_cls}".
+                Note: each statistic in the list should be of the same type, meaning,
+                contain the same set of placeholders.
+            x_variable: The placeholder that should be used as x variable in the plot, and for
+                which the columns should be found by formatting with all possible values.
+                Example: "cell_cls"; in which case columns will be found for all possible cell classes.
+            model_output_class_config: Dictionary mapping placeholders to possible values, used to format the statistic
+                formatter strings and find the columns in the dataframe.
         """
         self.statistics = statistics
         self.x_variable = x_variable
@@ -98,8 +94,7 @@ class FeatureColumnSelector:
         """Render dropdowns.
 
         Returns:
-        ----
-        Marimo form containing the section header and all dropdowns in the section.
+            Marimo form containing the section header and all dropdowns in the section.
         """
         text = "<br>".join([f"{{{key}}}" for key in self.dropdowns])
         md = mo.md(text)
@@ -111,12 +106,14 @@ class FeatureColumnSelector:
         """Extract feature columns with nicely formatted column headers.
 
         Args:
-        ----
-        df: the dataframe from which to extract columns.
-        grouping_column: name of column by which data will be grouped in plots.]
-            This should be returned as-is.
-        dropdown_args: values selected by user using the dropdowns created by
-            `render_dropdowns()`.
+            df: the dataframe from which to extract columns.
+            grouping_column: name of column by which data will be grouped in plots.
+                This should be returned as-is.
+            **dropdown_args: values selected by user using the dropdowns created by
+                `render_dropdowns()`.
+
+        Returns:
+            The dataframe with only the selected feature columns and nicely formatted headers.
         """
         columns_map = self._create_column_mapping(**dropdown_args)
         # Keep grouping column in the df by adding an identity mapping
@@ -125,10 +122,15 @@ class FeatureColumnSelector:
 
         return _replace_column_headers(df, columns_map=columns_map)
 
-    def _create_column_mapping(self, **dropdown_args):
+    def _create_column_mapping(self, **dropdown_args) -> dict[str, str]:
         """Create dictionary of feature columns to pretty-print column headers.
 
-        Example {"DENSITY_CELL_CARCINOMA_CELL": "Carcinoma cell", ...}
+        Args:
+            **dropdown_args: values selected by user using the dropdowns.
+
+        Returns:
+            Mapping from raw column name to pretty-print label,
+            e.g. {"DENSITY_CELL_CARCINOMA_CELL": "Carcinoma cell", ...}.
         """
         # Format the statistic with the variables selected with the dropdowns
         column_format = self.get_column_format(dropdown_args)
@@ -177,7 +179,16 @@ class FeatureColumnSelector:
         return dropdowns
 
     def get_column_format(self, dropdown_args: dict[str, str]) -> str:
-        """Get statistic with filled placeholders except for `x_variable`."""
+        """Get statistic formatter string with all placeholders filled except for `x_variable`.
+
+        Args:
+            dropdown_args: values selected by the user, keyed by dropdown name.
+                The "stat" key is consumed to retrieve the formatter string.
+
+        Returns:
+            Formatter string with all placeholders resolved except for `x_variable`,
+            which remains as a format placeholder for later iteration.
+        """
         # Extract the formatter string for the statistic to plot, e.g. "density_{cell_cls}"
         statistic = dropdown_args.pop("stat")
 

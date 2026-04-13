@@ -24,13 +24,12 @@ def _():
 
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({
-        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _hf_instructions = """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
                          """
-    })
+    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": _hf_instructions})
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -393,7 +392,8 @@ def _(df, features, mo, model_output_classes, tissues_with_cells, utils):
     each cell of type B within a certain distance from cell type A, within a certain tissue
     type (again, `Blood` and `Necrosis` don't contain any cells).
 
-    All neighborhood features are computed for a {model_output_classes["radius"]} μm radius. The available features are:
+    All neighborhood features are computed for a {model_output_classes["radius"]} μm radius.
+    The available features are:
     <br> `{[s.name for s in _stats]}`
     """)
 

@@ -12,6 +12,16 @@ from aignostics_tme_studio.utils import utils
 
 
 def _plot_curves(fig: go.Figure, kmf: KaplanMeierFitter, rgb: tuple[int, ...]) -> go.Figure:
+    """Plot the survival probability curve and its 95% confidence interval band.
+
+    Args:
+        fig: Plotly figure to add traces to.
+        kmf: Fitted KaplanMeierFitter instance.
+        rgb: RGB color tuple for the curve and CI band.
+
+    Returns:
+        The figure with the survival curve and CI band traces added.
+    """
     r, g, b = rgb
 
     label = kmf.label
@@ -50,6 +60,17 @@ def _plot_curves(fig: go.Figure, kmf: KaplanMeierFitter, rgb: tuple[int, ...]) -
 
 
 def _plot_censures(fig: go.Figure, kmf: KaplanMeierFitter, censures: np.ndarray, rgb: tuple[int, ...]) -> go.Figure:
+    """Plot censored observations as tick marks on the survival curve.
+
+    Args:
+        fig: Plotly figure to add traces to.
+        kmf: Fitted KaplanMeierFitter instance.
+        censures: Array of time points where censoring occurred.
+        rgb: RGB color tuple for the censure markers.
+
+    Returns:
+        The figure with censure marker traces added.
+    """
     r, g, b = rgb
 
     fig.add_trace(
@@ -71,9 +92,7 @@ class KaplanMeierPlotter:
         """Initialize `KaplanMeierPlotter`.
 
         Args:
-        ----
-        show_censors: if true, plot censure events as vertical lines on the curve.
-
+            show_censors: if true, plot censure events as vertical lines on the curve.
         """
         self.show_censors = show_censors
 
@@ -81,13 +100,11 @@ class KaplanMeierPlotter:
         """Render the Kaplan Meier plots.
 
         Args:
-        ----
-        kmfs: list of KaplanMeierFitters to plot curves for.
-        color_map: if given, use colors given under kmf label in this dictionary.
+            kmfs: list of KaplanMeierFitters to plot curves for.
+            color_map: if given, use colors given under kmf label in this dictionary.
 
         Returns:
-        ----
-        The figure with plotted Kaplan Meier curves as a marimo UI object.
+            The figure with plotted Kaplan Meier curves as a marimo UI object.
         """
         fig = go.Figure()
 

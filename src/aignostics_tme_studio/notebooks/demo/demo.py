@@ -2,6 +2,10 @@ import marimo
 
 from aignostics_tme_studio.plotting import kaplan_meier
 
+_HF_ACCESS_WARNING_MD = (
+    "***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***"
+)
+
 __generated_with = "0.23.0"
 app = marimo.App(width="medium", css_file="", html_head_file="")
 
@@ -47,7 +51,8 @@ def _(mo):
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([
         mo.md("""## Get access to the data
-    OpenTME is hosted on [Hugging Face](https://huggingface.co/datasets/Aignostics/OpenTME) 🤗.  To access the dataset:
+    OpenTME is hosted on [Hugging Face](https://huggingface.co/datasets/Aignostics/OpenTME) 🤗.
+    To access the dataset:
 
     1. Create a Hugging Face account if you don't have one — sign up for free at hf.co/join.
     2. Request access to OpenTME at huggingface.co/datasets/Aignostics/OpenTME and click "Request Access".
@@ -112,7 +117,7 @@ def _(df, df_meta, mo):
         grouping_column = mo.ui.dropdown(label="Select grouping column", options=_options)
         _res = grouping_column
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return (grouping_column,)
 
@@ -161,7 +166,7 @@ def _(df, hf_files, mo):
         _res = mo.vstack([tcga_file_dropdown, thumbnail_dropdown])
 
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return tcga_file_dropdown, thumbnail_dropdown
 
@@ -182,7 +187,9 @@ def _(
     if len(df) > 0:
         img_path = hf_hub_download(
             repo_id=hf_files.REPO_ID,
-            filename=f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}",
+            filename=(
+                f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}"
+            ),
             repo_type="dataset",
             token=hf_token.value or None,
         )
@@ -270,7 +277,7 @@ def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
 
         _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return (distributions,)
 
@@ -336,7 +343,7 @@ def _(
 
         _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
 
 
@@ -407,14 +414,15 @@ def _(df, dropdown_metric, mo):
         )
 
         _md = mo.md("""
-        > ⚠️ Note: These features are computed across the entire stroma compartment of the slide, not exclusively for
-            tumor-associated stroma within the whole tumor region (WTR). Consequently, the tumor immune phenotype
-            classification — particularly the distinction between excluded and desert phenotypes — should be interpreted
-            with caution on slides with substantial amounts of tumor-independent stroma.
+        > ⚠️ Note: These features are computed across the entire stroma compartment of the slide,
+            not exclusively for tumor-associated stroma within the whole tumor region (WTR).
+            Consequently, the tumor immune phenotype classification — particularly the distinction
+            between excluded and desert phenotypes — should be interpreted with caution on slides
+            with substantial amounts of tumor-independent stroma.
         """)
         _res = mo.vstack([carcinoma_thresh, stroma_thresh, _md])
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return carcinoma_thresh, stroma_thresh
 

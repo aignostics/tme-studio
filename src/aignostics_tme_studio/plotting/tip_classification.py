@@ -35,19 +35,17 @@ class TIPClassifier:
         """Initialize the Tumor Immune Phenotype (TIP) classifier.
 
         Args:
-        ----
-        df: the dataframe containing the expected columns with lymphcyte densities
-            inside carcinoma and stroma regions.
-        carcinoma_thresh: slide is classified as inflamed if lymphocyte density
-            inside carcinoma is above this value.
-        stroma_thresh: slide is classified as excluded if not inflamed, and
-            lymphocyte density in stroma is above this value.
-        metric: metrics to use to determine presence of lymphocytes inside
-          carcinoma and stroma regions. Supported values are "Density" and "Percentage".
+            df: the dataframe containing the expected columns with lymphcyte densities
+                inside carcinoma and stroma regions.
+            carcinoma_thresh: slide is classified as inflamed if lymphocyte density
+                inside carcinoma is above this value.
+            stroma_thresh: slide is classified as excluded if not inflamed, and
+                lymphocyte density in stroma is above this value.
+            metric: metrics to use to determine presence of lymphocytes inside
+                carcinoma and stroma regions. Supported values are "Density" and "Percentage".
 
         Raises:
-        ----
-        ValueError: if an unsupported metric is provided.
+            ValueError: if an unsupported metric is provided.
         """
         self.metric = metric
         if metric == "Density":
@@ -66,9 +64,8 @@ class TIPClassifier:
         """Set thresholds for tumor immune phenotypes.
 
         Args:
-        ----
-        carcinoma_thresh: the threshold for lymphocytes in carcinoma/
-        stroma_thresh: the threshold for lymphcytes in stroma.
+            carcinoma_thresh: the threshold for lymphocytes in carcinoma.
+            stroma_thresh: the threshold for lymphcytes in stroma.
         """
         self.carc_thres = carcinoma_thresh
         self.strom_thres = stroma_thresh
@@ -91,8 +88,7 @@ class TIPClassifier:
         ```
 
         Returns:
-        ----
-        The tumor immune phenotype in ["inflamed", "excluded", "desert"] for each slide.
+            The tumor immune phenotype in ["inflamed", "excluded", "desert"] for each slide.
         """
         status = np.where(self.values_carcinoma > self.carc_thres, "inflamed", "")
         status = np.where((self.values_stroma > self.strom_thres) & (~status.astype(bool)), "excluded", status)
@@ -106,8 +102,7 @@ class TIPClassifier:
 
 
         Returns:
-        ----
-        The rendered plot.
+            The rendered plot.
         """
         fig = go.Figure()
         fig.update_layout(
@@ -184,8 +179,7 @@ class TIPClassifier:
         """Get the distribution of tumor immune phenotypes.
 
         Returns:
-        ----
-        A dataframe with the percentage of samples in each tumor immune phenotype.
+            A dataframe with the percentage of samples in each tumor immune phenotype.
         """
         counts = pd.DataFrame(self.phenotype_classification).value_counts().reset_index()
 

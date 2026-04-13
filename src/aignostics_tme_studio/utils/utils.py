@@ -28,8 +28,7 @@ def hex_to_rgb(h: str) -> tuple[int, ...]:
     """Convert hexadecimal string to RBG tuple.
 
     Returns:
-    ----
-    R, G, B integer values.
+        R, G, B integer values.
     """
     if h[0] == "#":
         h = h[1:]
