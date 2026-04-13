@@ -10,7 +10,7 @@ THUMBNAIL_FILES = ["wsi.png", "tissue_qc.png", "tissue_segmentation.png", "cell_
 
 DEFAULT_INDICATION = INDICATIONS[0]
 
-CLASS_SETTINGS_FILENAME = "settings/model_output_classes.yaml"
+MODEL_SETTINGS_FILENAME = "settings/model_variables.yaml"
 FEAT_SETTINGS_FILENAME = "settings/tme_features.yaml"
 
 # Files need to be loaded over HTTP to allow loading in molab

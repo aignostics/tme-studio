@@ -30,25 +30,27 @@ def test_hex_to_rgb(hex_color: str, expected_rgb: tuple[int, int, int]) -> None:
 
 
 @pytest.mark.unit
-def test_load_statistics(tmpdir) -> None:
-    """Test that the statistics config is loaded correctly."""
+def test_load_features(tmpdir) -> None:
+    """Test that the features config is loaded correctly."""
     config = {
-        "my_stats": [
-            {
-                "name": "Relative Area",
-                "formatter": "RELATIVE_AREA_{tissue_cls}",
-                "unit": "%",
-            },
-            {
-                "name": "Density",
-                "formatter": "DENSITY_OF_{cell_cls}_{tissue_cls}",
-                "unit": "",
-            },
-        ]
+        "features": {
+            "my_features": [
+                {
+                    "name": "Relative Area",
+                    "formatter": "RELATIVE_AREA_{tissue_cls}",
+                    "unit": "%",
+                },
+                {
+                    "name": "Density",
+                    "formatter": "DENSITY_OF_{cell_cls}_{tissue_cls}",
+                    "unit": "",
+                },
+            ]
+        }
     }
-    config_path = tmpdir / "statistics_config.yaml"
+    config_path = tmpdir / "features_config.yaml"
     yaml.dump(config, config_path.open("w"))
-    stats = utils.load_statistics(config_path)
-    assert isinstance(stats, dict)
-    assert "my_stats" in stats
-    assert isinstance(stats["my_stats"][0], data_classes.Statistic)
+    features = utils.load_features(config_path)
+    assert isinstance(features, dict)
+    assert "my_features" in features
+    assert isinstance(features["my_features"][0], data_classes.Feature)

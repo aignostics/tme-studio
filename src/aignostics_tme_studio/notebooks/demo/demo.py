@@ -1,7 +1,5 @@
 import marimo
 
-from aignostics_tme_studio.plotting import kaplan_meier
-
 _HF_ACCESS_WARNING_MD = (
     "***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***"
 )
@@ -208,25 +206,25 @@ def _(hf_files, hf_hub_download, run_with_token, utils):
     from aignostics_tme_studio.utils import column_selector
 
     def get_settings(token: str | None):
-        class_settings_path = hf_hub_download(
-            repo_id=hf_files.REPO_ID, filename=hf_files.CLASS_SETTINGS_FILENAME, repo_type="dataset", token=token
+        model_settings_path = hf_hub_download(
+            repo_id=hf_files.REPO_ID, filename=hf_files.MODEL_SETTINGS_FILENAME, repo_type="dataset", token=token
         )
-        model_output_classes = utils.load_munch(class_settings_path)
+        model_variables = utils.load_munch(model_settings_path)
 
         features_path = hf_hub_download(
             repo_id=hf_files.REPO_ID, filename=hf_files.FEAT_SETTINGS_FILENAME, repo_type="dataset", token=token
         )
-        features = utils.load_statistics(features_path)
-        return model_output_classes, features
+        features = utils.load_features(features_path)
+        return model_variables, features
 
     _result, _warning = run_with_token(get_settings)
     if _warning:
-        model_output_classes = None
+        model_variables = None
         features = None
         _warning
     else:
-        model_output_classes, features = _result
-    return column_selector, features, model_output_classes
+        model_variables, features = _result
+    return column_selector, features, model_variables
 
 
 @app.cell(hide_code=True)
@@ -239,11 +237,11 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(column_selector, df, features, model_output_classes):
+def _(column_selector, df, features, model_variables):
     if len(df) > 0:
         cc_col_selector = column_selector.CellInTissueFeatureColumnSelector(
-            model_output_class_config=model_output_classes,
-            statistics=features["cell_in_tissue_stats"],
+            model_config=model_variables,
+            features=features["cell_in_tissue_features"],
             x_variable="cell_cls",
         )
         cc_dropdowns = cc_col_selector.render_dropdowns()
@@ -263,13 +261,13 @@ def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
             df=df, **cc_dropdowns.value, grouping_column=grouping_column.value
         )
         _formatter_str = cc_col_selector.get_column_format(cc_dropdowns.value.copy())
-        _stat = next(
-            iter([stat for stat in features["cell_in_tissue_stats"] if stat.formatter == cc_dropdowns["stat"].value])
+        _feat = next(
+            iter([feat for feat in features["cell_in_tissue_features"] if feat.formatter == cc_dropdowns["feat"].value])
         )
-        _title = f"{_stat.name} of each cell class per slide"
+        _title = f"{_feat.name} of each cell class per slide"
 
         _kwargs = {
-            "ytitle": str(_stat),
+            "ytitle": str(_feat),
             "xtitle": "Cell class",
             "title": _title,
             "subtitle": _formatter_str,
@@ -288,21 +286,21 @@ def _(mo):
     # Neighborhood Analysis
 
     This section explores how different cell types are spatially organized relative to one another. For each cell,
-    a neighborhood statistic is computed by counting the number of cells of each class within a defined radius. Results
+    a neighborhood feature is computed by counting the number of cells of each class within a defined radius. Results
     can be grouped by reference cell class and filtered by tissue type (ROI).
 
-    Use the drop-downs to select a statistic, reference cell class, and tissue type. The plot displays the selected
-    statistic between the reference class and all its neighbors - cells of any type lying within the selected distance
+    Use the drop-downs to select a feature, reference cell class, and tissue type. The plot displays the selected
+    feature between the reference class and all its neighbors - cells of any type lying within the selected distance
     radius of a reference cell - restricted to the selected tissue type.
     """)
 
 
 @app.cell(hide_code=True)
-def _(column_selector, df, features, model_output_classes):
+def _(column_selector, df, features, model_variables):
     if len(df) > 0:
         nb_col_selector = column_selector.NoAnucleatedAreasFeatureColumnSelector(
-            model_output_class_config=model_output_classes,
-            statistics=features["neighborhood_stats"],
+            model_config=model_variables,
+            features=features["neighborhood_features"],
             x_variable="cell_cls_b",
         )
         nb_dropdowns = nb_col_selector.render_dropdowns()
@@ -329,13 +327,13 @@ def _(
         )
         _formatter_str = nb_col_selector.get_column_format(nb_dropdowns.value.copy()).upper()
 
-        _stat = next(
-            iter([stat for stat in features["neighborhood_stats"] if stat.formatter == nb_dropdowns["stat"].value])
+        _feat = next(
+            iter([feat for feat in features["neighborhood_features"] if feat.formatter == nb_dropdowns["feat"].value])
         )
-        _title = f"{_stat.name} of each cell class per slide"
+        _title = f"{_feat.name} of each cell class per slide"
 
         _kwargs = {
-            "ytitle": str(_stat),
+            "ytitle": str(_feat),
             "xtitle": "Cell class",
             "title": _title,
             "subtitle": _formatter_str,
@@ -441,7 +439,7 @@ def _(
     import numpy as np
     from lifelines import CoxPHFitter, KaplanMeierFitter
 
-    from aignostics_tme_studio.plotting import tip_classification
+    from aignostics_tme_studio.plotting import kaplan_meier, tip_classification
 
     def get_survival_df(df, disease_free: bool = False):
         # Encode survival status as binary column

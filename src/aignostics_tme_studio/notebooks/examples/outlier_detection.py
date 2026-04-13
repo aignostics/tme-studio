@@ -63,20 +63,20 @@ def _(config, mo):
 
 
     ## Loading the data
-    We load the `RELATIVE_AREA_<qc_cls>` for each QC class in the `{config.CLASS_SETTINGS_FILENAME}` file.
+    We load the `RELATIVE_AREA_<qc_cls>` for each QC class in the `{config.MODEL_SETTINGS_FILENAME}` file.
     """)
 
 
 @app.cell
 def _(config, df, hf_hub_download, utils):
     # Load model output class settings
-    class_settings_path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.CLASS_SETTINGS_FILENAME, repo_type="dataset"
+    model_settings_path = hf_hub_download(
+        repo_id=config.REPO_ID, filename=config.MODEL_SETTINGS_FILENAME, repo_type="dataset"
     )
-    model_output_classes = utils.load_munch(class_settings_path)
+    model_variables = utils.load_munch(model_settings_path)
 
-    # Find all QC columns by looking over the QC classes and QC stats
-    qc_columns = [utils.to_allcaps(f"RELATIVE_AREA_{_cls}") for _cls in model_output_classes["qc_cls"]]
+    # Find all QC columns by looking over the QC classes and QC features
+    qc_columns = [utils.to_allcaps(f"RELATIVE_AREA_{_cls}") for _cls in model_variables["qc_cls"]]
 
     df_qc = df[qc_columns]
     df_qc
