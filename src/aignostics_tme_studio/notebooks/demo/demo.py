@@ -24,19 +24,28 @@ def _(styling_utils):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    *This demo runs interactively in molab. Forking the notebook is not necesary to run this demo. After some time of
+    inactivity, molab may shut down the demo automatically. Refresh the page to restart the notebook.*
+    """)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     # OpenTME Demo Notebook
 
 
     This notebook is an interactive demo exploring tumor microenvironment (TME) data from TCGA H&E whole slide images,
     made available to academic researchers through Aignostics' OpenTME project.
 
-    Readouts are produced with Atlas H&E-TME, a computational pathology platform that quantifies cell classes, tissue
+    Readouts are produced with Atlas H&E-TME, a computational pathology application that quantifies cell classes, tissue
     composition, and spatial organization via a sequential inference pipeline covering tissue quality control, tissue
     segmentation, cell detection and classification.
 
-    The cohort presented in this notebook comprises 385 diagnostic bladder cancer slides from the TCGA BLCA project,
-    with one slide selected per case. Clinical metadata were obtained from cBioPortal and molecular subtype annotations
-    from Robertson et al. (Cell, 2017).
+    The cohort presented in this notebook comprises 385 diagnostic bladder cancer slides from the TCGA-BLCA project,
+    selected from a total of 457 available slides. One slide was chosen per case to avoid duplication across the cohort;
+    where multiple diagnostic samples existed for the same patient, a single representative slide was selected. Clinical
+    metadata were obtained from cBioPortal and molecular subtype annotations from Robertson et al. (Cell, 2017).
     """)
 
 
@@ -51,10 +60,18 @@ def _(mo):
     1. Create a Hugging Face account if you don't have one — sign up for free at hf.co/join.
     2. Request access to OpenTME at huggingface.co/datasets/Aignostics/OpenTME and click "Request Access".
     3. Generate an access token at hf.co/settings/tokens and enter it in the field below to load the dataset.
-        1. Go to "Repositories permissions".
-        2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
-        3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME
     """),
+        mo.accordion({
+            "Click here for detailed instructions on how to create an access token": """
+    To create a token on hf.co/settings/tokens:
+    1. Click "Create new token"
+    2. Do one of the following:
+        * Choose token type "Read" and simply create a token that grants read access to all your repositories.
+        * Choose token type "Fine-grained". Under "Repositories permissions" search for OpenTME, and check the box "Read
+          access to contents of selected repos". This creates a token that allows reading the OpenTME repository only.
+    3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME
+    """
+        }),
         hf_token,
     ])
     return (hf_token,)
@@ -85,7 +102,6 @@ def _(hf_token, pd):
             filename=utils.get_features_file_for_indication(hf_files.DEFAULT_INDICATION),
             repo_type="dataset",
             token=token,
-            force_download=True,
         )
         df_tme = pd.read_csv(path)
 
@@ -103,9 +119,9 @@ def _(hf_token, pd):
     else:
         df, df_meta = _result
     return (
-        hf_access_warning,
         df,
         df_meta,
+        hf_access_warning,
         hf_files,
         hf_hub_download,
         run_with_token,
@@ -114,41 +130,9 @@ def _(hf_token, pd):
 
 
 @app.cell(hide_code=True)
-def _(hf_access_warning, df, df_meta, mo):
-    if len(df) > 0:
-        _options = sorted([col for col in df_meta.columns if "Months" not in col])
-        grouping_column = mo.ui.dropdown(label="Select grouping column", options=_options)
-        _res = grouping_column
-    else:
-        _res = mo.md(hf_access_warning)
-    _res
-    return (grouping_column,)
-
-
-@app.cell(hide_code=True)
-def _(df, grouping_column, mo):
-    if len(df) > 0:
-        _col = grouping_column.value
-        summary = "### Cohort overview \n"
-        if _col:
-            if _col not in df:
-                summary += f"{_col} does not exist in dataframe. No grouping was applied."
-            else:
-                if df[_col].isna().any():
-                    summary += f"Column `{_col}` does not have a value for {df[_col].isna().sum()} samples.\n"
-                summary += f"Results are shown grouped by `{_col}`.\n"
-                summary += f"\n{df.groupby(_col)[_col].count().to_markdown()}"
-                summary += f"The cohort consists of {len(df)} samples. No grouping was applied."
-        _res = mo.vstack([mo.md(summary), df])
-    else:
-        _res = None
-    _res
-
-
-@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Visualize model output
+    # Visualize Model Output
 
     For each included TCGA slide, OpenTME contains thumbnails of the H&E image and all corresponding model outputs.
     Select the slide and thumbnail type from the dropdown to view the results.
@@ -156,7 +140,7 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(hf_access_warning, df, hf_files, mo):
+def _(df, hf_access_warning, hf_files, mo):
     if len(df) > 0:
         files = list(df.TCGA_FILE_NAME)
         tcga_file_dropdown = mo.ui.dropdown(options=files, value=files[0])
@@ -200,6 +184,45 @@ def _(
 
         mime = "image/png"
         _res = mo.Html(f"<img src='data:{mime};base64,{img_b64}' style='width: auto; height: 100%' />")
+    else:
+        _res = None
+    _res
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Cohort Overview
+    """)
+
+
+@app.cell(hide_code=True)
+def _(df, df_meta, hf_access_warning, mo):
+    if len(df) > 0:
+        _options = sorted([col for col in df_meta.columns if "Months" not in col])
+        grouping_column = mo.ui.dropdown(label="Select grouping column", options=_options)
+        _res = grouping_column
+    else:
+        _res = mo.md(hf_access_warning)
+    _res
+    return (grouping_column,)
+
+
+@app.cell(hide_code=True)
+def _(df, grouping_column, mo):
+    if len(df) > 0:
+        _col = grouping_column.value
+        summary = ""
+        if _col:
+            if _col not in df:
+                summary += f"{_col} does not exist in dataframe. No grouping was applied."
+            else:
+                if df[_col].isna().any():
+                    summary += f"Column `{_col}` does not have a value for {df[_col].isna().sum()} samples.\n"
+                summary += f"Results are shown grouped by `{_col}`.\n"
+                summary += f"\n{df.groupby(_col)[_col].count().to_markdown()}"
+                summary += f"The cohort consists of {len(df)} samples. No grouping was applied."
+        _res = mo.vstack([mo.md(summary), df])
     else:
         _res = None
     _res
@@ -259,12 +282,12 @@ def _(column_selector, df, features, model_variables):
 
 @app.cell(hide_code=True)
 def _(
-    hf_access_warning,
     cc_col_selector,
     cc_dropdowns,
     df,
     features,
     grouping_column,
+    hf_access_warning,
     mo,
 ):
     from aignostics_tme_studio.plotting import distributions
@@ -326,11 +349,11 @@ def _(column_selector, df, features, model_variables):
 
 @app.cell(hide_code=True)
 def _(
-    hf_access_warning,
     df,
     distributions,
     features,
     grouping_column,
+    hf_access_warning,
     mo,
     nb_col_selector,
     nb_dropdowns,
@@ -361,7 +384,7 @@ def _(
 
 @app.cell(hide_code=True)
 def _(mo):
-    text = mo.md("""# Tumor immune phenotype classification
+    text = mo.md("""# Tumor Immune Phenotype Classification
 
     The tumor immune phenotype is classified as inflamed, desert of excluded (IDE), computed as follows:
     ```
@@ -395,7 +418,7 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(hf_access_warning, df, dropdown_metric, mo):
+def _(df, dropdown_metric, hf_access_warning, mo):
     if len(df) > 0:
         _df = df.copy()
 
@@ -480,7 +503,13 @@ def _(
         df = pd.concat([df, dummies], axis=1)
 
         cph = CoxPHFitter()
-        cph.fit(df[["time", "event", *list(dummies.columns)]], duration_col="time", event_col="event")
+
+        if len(dummies.columns) == 1:
+            # only one group, get rid of the grouping column as it throws an error
+            cph.fit(df[["time", "event"]], duration_col="time", event_col="event")
+        else:
+            cph.fit(df[["time", "event", *list(dummies.columns)]], duration_col="time", event_col="event")
+
         return cph
 
     def plot_kaplan_meier_groupwise(df):
@@ -494,7 +523,7 @@ def _(
                 mo.vstack([mo.md("""**Cox hazard ratios:**"""), mo.md(cox.hazard_ratios_.to_markdown())]),
                 mo.vstack([mo.md("""**95% CI:**"""), mo.md(np.exp(cox.confidence_intervals_).to_markdown())]),
             ],
-            align="start",
+            align="end",
         )
 
         footer = """*A hazard ratio above 1 indicates a higher event rate in one group, while below 1 indicates
@@ -544,12 +573,17 @@ def _(
         )
 
         _res = mo.hstack([
-            mo.vstack([mo.md("## Tumor Immune Phenotype Classification"), _fig_ide]),
-            mo.vstack([mo.md(_title), mo.ui.plotly(_fig_kmp), format_cox_results(cox)]),
+            mo.vstack([mo.md("## Tumor Immune Phenotype Classification"), _fig_ide], align="center"),
+            mo.vstack([mo.md(_title), mo.ui.plotly(_fig_kmp), format_cox_results(cox)], align="center"),
         ])
     else:
         _res = None
     _res
+
+
+@app.cell
+def _():
+    return
 
 
 if __name__ == "__main__":
