@@ -502,7 +502,7 @@ def _(
         dummies = pd.get_dummies(df["group"], drop_first=True)
         df = pd.concat([df, dummies], axis=1)
 
-        cph = CoxPHFitter()
+        cph = CoxPHFitter(penalizer=0.0001)
 
         if len(dummies.columns) == 1:
             # only one group, get rid of the grouping column as it throws an error
@@ -579,11 +579,6 @@ def _(
     else:
         _res = None
     _res
-
-
-@app.cell
-def _():
-    return
 
 
 if __name__ == "__main__":
