@@ -106,8 +106,8 @@ class TIPClassifier:
         """
         fig = go.Figure()
         fig.update_layout(
-            xaxis={"title": {"text": f"lymphocyte {self.metric} in carcinoma"}},
-            yaxis={"title": {"text": f"lymphocyte {self.metric} in stroma"}},
+            xaxis={"title": {"text": f"Lymphocyte {self.metric.lower()} in carcinoma"}},
+            yaxis={"title": {"text": f"Lymphocyte {self.metric.lower()} in stroma"}},
         )
 
         # plot thresholds as horizontal and vertical dashed lines

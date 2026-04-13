@@ -40,6 +40,7 @@ def _plot_curves(fig: go.Figure, kmf: KaplanMeierFitter, rgb: tuple[int, ...]) -
         go.Scatter(
             x=list(kmf.confidence_interval_.index),
             y=kmf.confidence_interval_[f"{label}_upper_0.95"],
+            mode="lines",
             line={"shape": "hv", "width": 0},
             showlegend=False,
         )
@@ -50,6 +51,7 @@ def _plot_curves(fig: go.Figure, kmf: KaplanMeierFitter, rgb: tuple[int, ...]) -
         go.Scatter(
             x=list(kmf.confidence_interval_.index),
             y=kmf.confidence_interval_[f"{label}_lower_0.95"],
+            mode="lines",
             line={"shape": "hv", "width": 0},
             fill="tonexty",
             showlegend=False,

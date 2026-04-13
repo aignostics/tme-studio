@@ -55,7 +55,7 @@ def _(mo):
     Additionally, **neighbourhood analysis** 🪄 is performed, which combine outputs of multiple
     models into neighborhood features.
 
-    For a full description of the features and how they were computed, see the [Atlas H&E-TME user manual](TODO: LINK!)
+    For a full description of the features and how they were computed, see the [OpenTME user manual](https://huggingface.co/datasets/Aignostics/OpenTME/blob/main/user_guide.pdf)
     """)
 
 
@@ -108,7 +108,8 @@ def _(config, mo):
     # How to find features with `TME Studio` 🎨
 
     The dataframe contains > 4500 features! You can check out the
-    [user manual](TODO add link!) for a full description of all the features.
+    [user manual](https://huggingface.co/datasets/Aignostics/OpenTME/blob/main/user_guide.pdf) for a full description of
+    all availabe features.
 
     We now show you an example how to find some cell-level features here.
     Below, you can find a description for every available feature type in OpenTME.
