@@ -10,6 +10,7 @@ def _():
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
+    return (styling_utils,)
 
 
 @app.cell(hide_code=True)
@@ -36,7 +37,7 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(hf_token, mo):
+def _(hf_token):
     # Load dataframe with metadata
     import pandas as pd
     from huggingface_hub import hf_hub_download
@@ -197,7 +198,7 @@ def _(df_survival, event_col, feat, mo, np, slider, time_col):
 
     def fit_kaplan_meier(df):
         kmf = KaplanMeierFitter()
-        kmf.fit(durations=df[time_col].astype(float), event_observed=df[event_col].astype(bool), label=df.name)
+        kmf.fit(durations=df[time_col].astype(float), event_observed=df[event_col].astype(int), label=df.name)
         return kmf
 
     def plot_kaplan_meier_groupwise(df):
