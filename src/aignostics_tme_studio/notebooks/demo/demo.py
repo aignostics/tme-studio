@@ -69,7 +69,7 @@ def _(mo):
         * Choose token type "Read" and simply create a token that grants read access to all your repositories.
         * Choose token type "Fine-grained". Under "Repositories permissions" search for OpenTME, and check the box "Read
           access to contents of selected repos". This creates a token that allows reading the OpenTME repository only.
-    3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME
+    3. Click "create token".
     """
         }),
         hf_token,
