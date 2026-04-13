@@ -12,10 +12,12 @@
 Welcome to TME Studio! This readme explains the content of TME Studio, and the dataset it is built on:  [OpenTME](https://huggingface.co/datasets/Aignostics/OpenTME).
 
 New to TME Studio? Want to try out the notebooks right away without any set up required? [Try out our interactive demo via molab](https://molab.marimo.io/notebooks/nb_zKsoeRqM31YZ9srzLAcZ1x/app). 
-Open the link and start exploring, no fork of the repository is required.
+Make sure you have [access to OpenTME on Hugging Face](#hugging-face-access), then open the link and start exploring. 
 
-Already familiar with TME Studio? You want to edit the notebooks and adapt them to your needs? Fork the repository in your molab workspace OR move on to the [Setup instructions](#setup-instructions) below to work locally.
-
+Already familiar with TME Studio? You want to edit the notebooks and adapt them to your needs? 
+You can choose to either 
+* follow the setup instructions to [fork the notebooks into your molab workspace](#edit-notebooks-in-molab) OR
+* follow the setup instructions to [run the notebooks locally](#edit-notebooks-locally) .
 
 ## Content
 - [What is OpenTME?](#what-is-opentme)
@@ -58,9 +60,44 @@ tme_studio/
 If you are unfamiliar with the OpenTME dataset, we suggest beginning at `src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py`. To get a feeling for all the different features you can find in OpenTME, have a look at the demo notebook `src/aignostics_tme_studio/notebooks/demo/demo.py`.
 
 
-## Setup instructions
+# Setup instructions 
+## Hugging Face access
+However you decide to run the notebooks, you will need to get access to OpenTME on Hugging Face 🤗. 
+### Creating an access token
+1. Make sure you have a Hugging Face account. If you don't have one, you can create one for free at [hf.co/join](https://hf.co/join).
+2. Get access to the dataset by going to https://huggingface.co/datasets/Aignostics/OpenTME and clicking "Access"
 
-To run the TME Studio notebooks, follow these installation instructions:
+> Note: You will eceive an email from Hugging Face as soon as your access request has been reviewed. This may take a few working days.
+
+> Note: No need to download the dataset! The tutorials will show you how to access the dataset via the Hugging Face API. 
+
+3. Create an access token by going to https://huggingface.co/settings/tokens
+
+### Authenticating with your token
+You can now use your token in two ways:
+1. Enter it in the designated box for it inside each notebook. This is how you authenticate when you are running a notebook in molab. You will have to repeat this action each time you open a notebook. 
+2. Log in via the Hugging Face CLI (only when running notebooks locally). In this case your token will be stored and you won't have to enter your token each time you open a notebook.
+
+    1. Download the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli)
+    2. Log into hugging face by calling
+```
+hf auth login
+```
+and log in with your access token.
+
+> Note: If you invalidated your token, you can force logging in with a new token by calling `hf auth login \--force`
+
+
+## Edit notebooks in molab 
+To edit your own copy of these TME Studio notebooks in molab, do the following:
+1. Open the notebook in github.
+2. Replace github.com by molab.marimo.io/github.com in the notebook URL to open it in molab.
+3. Click the "fork" button.
+> Note: to run your own copy of the notebooks in molab you will need to create a molab account. 
+
+
+## Edit notebooks locally
+To run the TME Studio notebooks on your local machine, follow these installation instructions:
 
 ### Prerequisites
 
@@ -131,31 +168,6 @@ mise tasks
 ```
 
 This runs `uv sync --all-extras` to install all dependencies, then sets up pre-commit hooks.
-
-### 🤗 Hugging Face access
-#### Creating an access token
-1. Make sure you have a Hugging Face account. If you don't have one, you can create one for free at [hf.co/join](https://hf.co/join).
-2. Get access to the dataset by going to https://huggingface.co/datasets/Aignostics/OpenTME and clicking "Access"
-
-> Note: You will eceive an email from Hugging Face as soon as your access request has been reviewed. This may take a few working days.
-
-> Note: No need to download the dataset! The tutorials will show you how to access the dataset via the Hugging Face API. 
-
-3. Create an access token by going to https://huggingface.co/settings/tokens
-
-#### Authenticating with your token
-You can now use your token in two ways:
-1. Enter it in the designated box for it inside each notebook. You will have to repeat this action each time you open a notebook. 
-2. Log in via the Hugging Face CLI (recommended). In this case your token will be stored and you won't have to enter your token each time you open a notebook.
-
-    1. Download the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli)
-    2. Log into hugging face by calling
-```
-hf auth login
-```
-and log in with your access token.
-
-> Note: If you invalidated your token, you can force logging in with a new token by calling `hf auth login \--force`
 
 ### Starting Marimo
 You are now ready to explore the notebooks! 🎨
