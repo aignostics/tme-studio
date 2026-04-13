@@ -196,13 +196,13 @@ def _(df_survival, event_col, feat, mo, np, slider, time_col):
 
     from aignostics_tme_studio.plotting import kaplan_meier
 
-    def fit_kaplan_meyer(df):
+    def fit_kaplan_meier(df):
         kmf = KaplanMeierFitter()
         kmf.fit(durations=df[time_col].astype(float), event_observed=df[event_col].astype(bool), label=df.name)
         return kmf
 
     def plot_kaplan_meier_groupwise(df):
-        kmfs = df.groupby("group").apply(fit_kaplan_meyer)
+        kmfs = df.groupby("group").apply(fit_kaplan_meier)
         kmp = kaplan_meier.KaplanMeierPlotter(show_censors=True)
         return kmp.render(kmfs)
 

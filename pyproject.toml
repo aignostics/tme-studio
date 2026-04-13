@@ -15,8 +15,6 @@ keywords = [
     "detect-secrets",
     "jupyter",
     "nox",
-    "foundry",
-    "foundry-python",
     "pip-audit",
     "pip-licenses",
     "pre-commit",
@@ -255,8 +253,6 @@ version_provider = "pep621"
 update_changelog_on_bump = true
 tag_format = "v$version"
 version_files = ["VERSION"]
-
-[tool.marimo.display]
 custom_css = ["src/aignostics_tme_studio/styling/style.css"]
 
 [tool.marimo.snippets]

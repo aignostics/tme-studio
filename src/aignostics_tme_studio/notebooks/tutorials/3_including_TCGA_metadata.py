@@ -71,7 +71,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(df, mo):
-    tcga_id_columns = ["TCGA_FILE_NAME", "TCGA_SLIDE_ID", "TCGA_CASE_ID", "TCGA_PROJECT_ID"]
+    tcga_id_columns = ["TCGA_FILE_NAME", "TCGA_SLIDE_UUID", "TCGA_CASE_ID", "TCGA_PROJECT_ID"]
 
     _text = mo.md(f""" # TCGA case and file identifiers 🔬
 
@@ -103,7 +103,7 @@ def _(df, mo, tcga_id_columns):
     The `TCGA_CASE_ID` equals the first 12 characters in the `TCGA_FILE_NAME`:<br>
     {row.TCGA_CASE_ID} --> **{row.TCGA_FILE_NAME[:12]}**{row.TCGA_FILE_NAME[12:]}
 
-    The `TCGA_SLIDE_ID` equals the ID in the `TCGA_FILE_NAME`: <br>
+    The `TCGA_SLIDE_UUID` equals the UUID in the `TCGA_FILE_NAME`: <br>
     {row.TCGA_FILE_NAME} --> {row.TCGA_FILE_NAME.split(".")[0]}**{row.TCGA_FILE_NAME.split(".")[1]}**
     """)
 

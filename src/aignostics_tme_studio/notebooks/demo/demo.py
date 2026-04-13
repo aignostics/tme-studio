@@ -463,7 +463,7 @@ def _(
         cph.fit(df[["time", "event", *list(dummies.columns)]], duration_col="time", event_col="event")
         return cph
 
-    def plot_kaplan_meyer_groupwise(df):
+    def plot_kaplan_meier_groupwise(df):
         kmfs = df.groupby("group").apply(fit_kaplan_meier)
         kmp = kaplan_meier.KaplanMeierPlotter(show_censors=True)
         return kmp.render(kmfs, color_map=tip_classification.IDE_COLORS)
@@ -503,7 +503,7 @@ def _(
         # drop Nans
         _df = _df.dropna(subset=["group", "event", "time"])
 
-        _fig_kmp = plot_kaplan_meyer_groupwise(_df)
+        _fig_kmp = plot_kaplan_meier_groupwise(_df)
         cox = fit_cox_model(_df)
 
         # ************** Formatting the result ********************
