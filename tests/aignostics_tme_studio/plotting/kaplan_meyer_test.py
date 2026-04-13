@@ -1,11 +1,11 @@
-"""Test module for Kaplan Meyer plots."""
+"""Test module for Kaplan Meier plots."""
 
 import numpy as np
 import pytest
 from lifelines import KaplanMeierFitter
 from plotly import graph_objects as go
 
-from aignostics_tme_studio.plotting.kaplan_meyer import KaplanMeyerPlotter
+from aignostics_tme_studio.plotting.kaplan_meier import KaplanMeierPlotter
 
 
 def create_dummy_fitter(seed: int = 42) -> KaplanMeierFitter:
@@ -19,31 +19,31 @@ def create_dummy_fitter(seed: int = 42) -> KaplanMeierFitter:
 
 @pytest.fixture(name="dummy_kmf")
 def fixture_dummy_kmf() -> KaplanMeierFitter:
-    """Create a dummy KaplanMeyerFitter."""
+    """Create a dummy KaplanMeierFitter."""
     return create_dummy_fitter()
 
 
 @pytest.mark.unit
-def test_kaplan_meyer_plotter(dummy_kmf) -> None:
+def test_kaplan_meier_plotter(dummy_kmf) -> None:
     """Test that the plotter renders HTML."""
-    plotter = KaplanMeyerPlotter(show_censors=True)
+    plotter = KaplanMeierPlotter(show_censors=True)
 
     fig = plotter.render(kmfs=[dummy_kmf])
     assert isinstance(fig, go.Figure)
     assert len(fig.data) == 4  # graph, upper and lower CI limit, and censors
 
-    plotter = KaplanMeyerPlotter(show_censors=False)
+    plotter = KaplanMeierPlotter(show_censors=False)
     fig = plotter.render(kmfs=[dummy_kmf])
     assert isinstance(fig, go.Figure)
     assert len(fig.data) == 3  # graph, upper and lower CI limit.
 
 
 @pytest.mark.unit
-def test_kaplan_meyer_plotter_multiple_estimators() -> None:
+def test_kaplan_meier_plotter_multiple_estimators() -> None:
     """Test that the plotter renders curves for multiple estimators."""
     kmfs = [create_dummy_fitter(seed) for seed in [42, 13, 82]]
 
-    plotter = KaplanMeyerPlotter(show_censors=False)
+    plotter = KaplanMeierPlotter(show_censors=False)
 
     fig = plotter.render(kmfs=kmfs)
     assert isinstance(fig, go.Figure)

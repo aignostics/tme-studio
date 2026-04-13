@@ -76,7 +76,7 @@ def _(df, mo):
         mo.md(f"""# Survival analysis 📈
 
     This notebook shows how one can find features in OpenTME that correlate with survival,
-    and how to plot Kaplan-Meyer curves stratified by such a feature.
+    and how to plot Kaplan-Meier curves stratified by such a feature.
 
 
     For the purpose of this example we need survival data. This is not included in OpenTME, but may be extracted from
@@ -170,12 +170,12 @@ def _(df, event_col, feat, mo):
 
 @app.cell(hide_code=True)
 def _(df, feat, mo):
-    _text = mo.md(f"""## Kaplan-Meyer
+    _text = mo.md(f"""## Kaplan-Meier
     Now that we've found the feature that correlates most strongly with survival,
-    let's try to see how it affects the Kaplan-Meyer analysis.
+    let's try to see how it affects the Kaplan-Meier analysis.
 
     We split the patients into two groups, having a value for `{feat}` either above of below
-    the value of the slider. We then plot the Kaplan-Meyer curves for both groups.
+    the value of the slider. We then plot the Kaplan-Meier curves for both groups.
     """)
     slider = mo.ui.slider(
         start=df[feat].min(),
@@ -194,16 +194,16 @@ def _(df, feat, mo):
 def _(df_survival, event_col, feat, mo, np, slider, time_col):
     from lifelines import KaplanMeierFitter
 
-    from aignostics_tme_studio.plotting import kaplan_meyer
+    from aignostics_tme_studio.plotting import kaplan_meier
 
     def fit_kaplan_meyer(df):
         kmf = KaplanMeierFitter()
         kmf.fit(durations=df[time_col].astype(float), event_observed=df[event_col].astype(bool), label=df.name)
         return kmf
 
-    def plot_kaplan_meyer_groupwise(df):
+    def plot_kaplan_meier_groupwise(df):
         kmfs = df.groupby("group").apply(fit_kaplan_meyer)
-        kmp = kaplan_meyer.KaplanMeyerPlotter(show_censors=True)
+        kmp = kaplan_meier.KaplanMeierPlotter(show_censors=True)
         return kmp.render(kmfs)
 
     def split_by_value(df, col: str, value: float):
@@ -212,8 +212,8 @@ def _(df_survival, event_col, feat, mo, np, slider, time_col):
     # Split patients into two groups, having feature above or below the value given by the slider
     df_survival["group"] = split_by_value(df_survival, feat, slider.value)
 
-    # Fit Kaplan-Meyer estimator and plot for each group
-    _fig = plot_kaplan_meyer_groupwise(df_survival.dropna(subset=["group", event_col, time_col]))
+    # Fit Kaplan-Meier estimator and plot for each group
+    _fig = plot_kaplan_meier_groupwise(df_survival.dropna(subset=["group", event_col, time_col]))
 
     # Display results
     _title = f"Overall survival for patients split by `{feat}` larger or smaller than {slider.value:.2e}. \n"

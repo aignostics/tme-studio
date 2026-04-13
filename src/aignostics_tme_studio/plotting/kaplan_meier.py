@@ -64,11 +64,11 @@ def _plot_censures(fig: go.Figure, kmf: KaplanMeierFitter, censures: np.ndarray,
     return fig
 
 
-class KaplanMeyerPlotter:
-    """Plot a Kaplan Meyer curves using interactive marimo UI elements."""
+class KaplanMeierPlotter:
+    """Plot a Kaplan Meier curves using interactive marimo UI elements."""
 
     def __init__(self, show_censors: bool = False) -> None:
-        """Initialize `KaplanMeyerPlotter`.
+        """Initialize `KaplanMeierPlotter`.
 
         Args:
         ----
@@ -78,16 +78,16 @@ class KaplanMeyerPlotter:
         self.show_censors = show_censors
 
     def render(self, kmfs: Iterable[KaplanMeierFitter], color_map: dict[str, str] | None = None) -> go.Figure:
-        """Render the Kaplan Meyer plots.
+        """Render the Kaplan Meier plots.
 
         Args:
         ----
-        kmfs: list of KaplanMeyerFitters to plot curves for.
+        kmfs: list of KaplanMeierFitters to plot curves for.
         color_map: if given, use colors given under kmf label in this dictionary.
 
         Returns:
         ----
-        The figure with plotted Kaplan Meyer curves as a marimo UI object.
+        The figure with plotted Kaplan Meier curves as a marimo UI object.
         """
         fig = go.Figure()
 

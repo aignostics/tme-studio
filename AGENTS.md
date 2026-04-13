@@ -38,7 +38,6 @@ It is your goal to enable the contributor while insisting on highest standards a
 * uv, python and development dependencies are already installed
 * Use `uv sync --all-extras` to install any missing dependencies
 * Use `pytest ...` to run tests
-* Use `aignostics_tme_studio ...` to run the CLI
 * Use `mise run lint` to check code style and types
 * Use `mise run test_unit`, `mise run test_integration`, `mise run test_e2e` for testing
 * Use `mise run audit` for security audits
@@ -55,11 +54,9 @@ If you write code yourself, it is a strict requirement to validate before comple
 
 **TME Studio** - A toolkit to explore the Aignostics OpenTME dataset.
 
-See the Toolchain Overview section in [FOUNDRY_README.md](FOUNDRY_README.md) for the complete toolchain.
-
 ## Python Version
 
-**CRITICAL**: Requires Python 3.11+ (`>=3.11, <3.13`). Specified in `.python-version`, CI tests against 3.11-3.12.
+**CRITICAL**: Requires Python 3.11+ (`>=3.11`). Specified in `.python-version`, CI tests against 3.11-3.12.
 
 ## Testing Strategy
 
@@ -80,8 +77,11 @@ See [tests/CLAUDE.md](tests/CLAUDE.md) for detailed testing guidance including m
 ### Initial Setup
 
 ```bash
-git clone git@github.com:aignostics/tme-studio.git
+gh auth login
+gh repo clone aignostics/tme-studio
 cd tme-studio
+mise trust
+gh auth setup-git
 mise run install          # uv sync + pre-commit hooks
 mise run lint && mise run test_unit
 ```
@@ -114,7 +114,7 @@ uv build                      # Build wheel and sdist
 ```
 
 **Configuration**: See `pyproject.toml` for:
-* `requires-python = ">=3.11, <3.15"`
+* `requires-python = ">=3.11"`
 * `dependencies` - Runtime
 * `dependency-groups.dev` - Development tools
 
@@ -163,11 +163,8 @@ See [.github/CLAUDE.md](.github/CLAUDE.md) for complete CI/CD documentation.
 
 ### Primary docs
 * [README.md](README.md) - Quick start
-* [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
 * [CODE_STYLE.md](CODE_STYLE.md) - Code style guide
 * [SECURITY.md](SECURITY.md) - Security policy
-* [FOUNDRY_README.md](FOUNDRY_README.md) - Comprehensive project guide and toolchain overview
-* [RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md) - Release process
 
 ### Auto-generated
 * [ATTRIBUTIONS.md](ATTRIBUTIONS.md) - Third-party licenses
@@ -186,9 +183,6 @@ mise run all  # runs lint + test + docs + audit
 
 # Version bump and release
 cz bump [patch|minor|major]
-
-# Run CLI
-aignostics_tme_studio --help
 ```
 
 ---

@@ -1,5 +1,7 @@
 import marimo
 
+from aignostics_tme_studio.plotting import kaplan_meier
+
 __generated_with = "0.23.0"
 app = marimo.App(width="medium", css_file="", html_head_file="")
 
@@ -431,7 +433,7 @@ def _(
     import numpy as np
     from lifelines import CoxPHFitter, KaplanMeierFitter
 
-    from aignostics_tme_studio.plotting import kaplan_meyer, tip_classification
+    from aignostics_tme_studio.plotting import tip_classification
 
     def get_survival_df(df, disease_free: bool = False):
         # Encode survival status as binary column
@@ -448,7 +450,7 @@ def _(
 
         return df
 
-    def fit_kaplan_meyer(df):
+    def fit_kaplan_meier(df):
         kmf = KaplanMeierFitter()
         kmf.fit(durations=df.time, event_observed=df.event, label=df.name)
         return kmf
@@ -462,8 +464,8 @@ def _(
         return cph
 
     def plot_kaplan_meyer_groupwise(df):
-        kmfs = df.groupby("group").apply(fit_kaplan_meyer)
-        kmp = kaplan_meyer.KaplanMeyerPlotter(show_censors=True)
+        kmfs = df.groupby("group").apply(fit_kaplan_meier)
+        kmp = kaplan_meier.KaplanMeierPlotter(show_censors=True)
         return kmp.render(kmfs, color_map=tip_classification.IDE_COLORS)
 
     def format_cox_results(cox):

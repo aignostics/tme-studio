@@ -1,10 +1,9 @@
-"""Predefined sections."""
+"""Helper module to select columns from the dataframe using marimo UI functions."""
 
 import string
 
 import marimo as mo
 import pandas as pd
-from plotly import graph_objects as go
 
 from aignostics_tme_studio.utils import utils
 from aignostics_tme_studio.utils.data_classes import Statistic
@@ -115,8 +114,17 @@ class FeatureColumnSelector:
 
     def extract_feature_columns(
         self, df: pd.DataFrame, grouping_column: str | None = None, **dropdown_args
-    ) -> go.Figure:
-        """Extract feature columns with nicely formatted column headers."""
+    ) -> pd.DataFrame:
+        """Extract feature columns with nicely formatted column headers.
+
+        Args:
+        ----
+        df: the dataframe from which to extract columns.
+        grouping_column: name of column by which data will be grouped in plots.]
+            This should be returned as-is.
+        dropdown_args: values selected by user using the dropdowns created by
+            `render_dropdowns()`.
+        """
         columns_map = self._create_column_mapping(**dropdown_args)
         # keep grouping column in the df by adding an identity mapping
         if grouping_column:

@@ -43,4 +43,4 @@ We promote security awareness among contributors and users:
 
 ## Security Compliance
 
-For questions about security compliance or for more details about our security practices, please contact maaike@aignostics.com.
+For questions about security compliance or for more details about our security practices, please contact info@aignostics.com.
