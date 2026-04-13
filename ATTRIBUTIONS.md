@@ -181,7 +181,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ```
 
-## aignostics-tme-studio (0.2.1) - MIT License
+## aignostics-tme-studio (0.2.2) - MIT License
 
 🎨 A toolkit to explore the Aignostics OpenTME dataset.
 
