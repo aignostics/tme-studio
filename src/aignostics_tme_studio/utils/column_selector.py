@@ -106,10 +106,10 @@ class FeatureColumnSelector:
         """Extract feature columns with nicely formatted column headers.
 
         Args:
-            df: the dataframe from which to extract columns.
-            grouping_column: name of column by which data will be grouped in plots.
+            df: The dataframe from which to extract columns.
+            grouping_column: Name of column by which data will be grouped in plots.
                 This should be returned as-is.
-            **dropdown_args: values selected by user using the dropdowns created by
+            **dropdown_args: Values selected by user using the dropdowns created by
                 `render_dropdowns()`.
 
         Returns:
@@ -126,7 +126,7 @@ class FeatureColumnSelector:
         """Create dictionary of feature columns to pretty-print column headers.
 
         Args:
-            **dropdown_args: values selected by user using the dropdowns.
+            **dropdown_args: Values selected by user using the dropdowns.
 
         Returns:
             Mapping from raw column name to pretty-print label,
@@ -149,8 +149,8 @@ class FeatureColumnSelector:
         """Get model output classes for the given placeholder.
 
         We assume that:
-        1. the placeholder is always in the format "{placeholder_name_<postfix>}"
-        2. the dictionary of model_output_classes contains the placeholders as keys.
+        1. The placeholder is always in the format "{placeholder_name_<postfix>}".
+        2. The dictionary of model_output_classes contains the placeholders as keys.
 
         E.g. for placeholder {cell_cls} we find the list of cell classes under the key 'cell_cls' in the dictionary.
         TODO: Give more concrete example?
@@ -182,7 +182,7 @@ class FeatureColumnSelector:
         """Get statistic formatter string with all placeholders filled except for `x_variable`.
 
         Args:
-            dropdown_args: values selected by the user, keyed by dropdown name.
+            dropdown_args: Values selected by the user, keyed by dropdown name.
                 The "stat" key is consumed to retrieve the formatter string.
 
         Returns:
@@ -221,8 +221,8 @@ class CellInTissueFeatureColumnSelector(NoAnucleatedAreasFeatureColumnSelector):
 
     This extractor extracts Cells-inside-tissue stats.
 
-    - Cells-in-tissue stats are not available for anucleated areas and thus these must be filtered out
-    - Allow "All tissue" option that removes the "_{tissue_cls}" column postfix
+    - Cells-in-tissue stats are not available for anucleated areas and thus these must be filtered out.
+    - Allow "All tissue" option that removes the "_{tissue_cls}" column postfix.
     """
 
     def _create_dropdowns(self):

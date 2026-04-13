@@ -23,7 +23,7 @@ IDE_COLORS = {
 
 
 class TIPClassifier:
-    """Classifies slides into inflames/desert/excluded classes."""
+    """Classifies slides into inflamed/desert/excluded classes."""
 
     def __init__(
         self,
@@ -35,13 +35,13 @@ class TIPClassifier:
         """Initialize the Tumor Immune Phenotype (TIP) classifier.
 
         Args:
-            df: the dataframe containing the expected columns with lymphcyte densities
+            df: The dataframe containing the expected columns with lymphocyte densities
                 inside carcinoma and stroma regions.
-            carcinoma_thresh: slide is classified as inflamed if lymphocyte density
+            carcinoma_thresh: Slide is classified as inflamed if lymphocyte density
                 inside carcinoma is above this value.
-            stroma_thresh: slide is classified as excluded if not inflamed, and
+            stroma_thresh: Slide is classified as excluded if not inflamed, and
                 lymphocyte density in stroma is above this value.
-            metric: metrics to use to determine presence of lymphocytes inside
+            metric: Metrics to use to determine presence of lymphocytes inside
                 carcinoma and stroma regions. Supported values are "Density" and "Percentage".
 
         Raises:
@@ -64,13 +64,13 @@ class TIPClassifier:
         """Set thresholds for tumor immune phenotypes.
 
         Args:
-            carcinoma_thresh: the threshold for lymphocytes in carcinoma.
-            stroma_thresh: the threshold for lymphcytes in stroma.
+            carcinoma_thresh: The threshold for lymphocytes in carcinoma.
+            stroma_thresh: The threshold for lymphocytes in stroma.
         """
         self.carc_thres = carcinoma_thresh
         self.strom_thres = stroma_thresh
 
-        # invalidate cashed classification
+        # invalidate cached classification
         self.__dict__.pop("phenotype_classification", None)
 
     @cached_property
@@ -81,7 +81,7 @@ class TIPClassifier:
         ```
         if lymphocyte fraction in carcinoma > carcinoma threshold:
             return inflamed
-        elif lymphpcyte fraction in stroma > stroma threshold:
+        elif lymphocyte fraction in stroma > stroma threshold:
             return excluded
         else:
             return desert

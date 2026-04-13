@@ -92,7 +92,7 @@ class KaplanMeierPlotter:
         """Initialize `KaplanMeierPlotter`.
 
         Args:
-            show_censors: if true, plot censure events as vertical lines on the curve.
+            show_censors: If true, plot censure events as vertical lines on the curve.
         """
         self.show_censors = show_censors
 
@@ -100,8 +100,8 @@ class KaplanMeierPlotter:
         """Render the Kaplan Meier plots.
 
         Args:
-            kmfs: list of KaplanMeierFitters to plot curves for.
-            color_map: if given, use colors given under kmf label in this dictionary.
+            kmfs: List of KaplanMeierFitters to plot curves for.
+            color_map: If given, use colors given under kmf label in this dictionary.
 
         Returns:
             The figure with plotted Kaplan Meier curves as a marimo UI object.
