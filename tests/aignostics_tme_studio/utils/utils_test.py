@@ -33,20 +33,18 @@ def test_hex_to_rgb(hex_color: str, expected_rgb: tuple[int, int, int]) -> None:
 def test_load_features(tmpdir) -> None:
     """Test that the features config is loaded correctly."""
     config = {
-        "features": {
-            "my_features": [
-                {
-                    "name": "Relative Area",
-                    "formatter": "RELATIVE_AREA_{tissue_cls}",
-                    "unit": "%",
-                },
-                {
-                    "name": "Density",
-                    "formatter": "DENSITY_OF_{cell_cls}_{tissue_cls}",
-                    "unit": "",
-                },
-            ]
-        }
+        "my_features": [
+            {
+                "name": "Relative Area",
+                "formatter": "RELATIVE_AREA_{tissue_cls}",
+                "unit": "%",
+            },
+            {
+                "name": "Density",
+                "formatter": "DENSITY_OF_{cell_cls}_{tissue_cls}",
+                "unit": "",
+            },
+        ]
     }
     config_path = tmpdir / "features_config.yaml"
     yaml.dump(config, config_path.open("w"))
