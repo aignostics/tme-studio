@@ -1,6 +1,6 @@
 [project]
 name = "aignostics-tme-studio"
-version = "0.2.1"
+version = "0.2.2"
 description = "🎨 A toolkit to explore the Aignostics OpenTME dataset."
 readme = "README.md"
 authors = [{ name = "Maaike Galama", email = "maaike@aignostics.com" }]
