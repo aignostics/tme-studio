@@ -5,13 +5,13 @@
 [![codecov](https://codecov.io/gh/aignostics/tme-studio/graph/badge.svg)](https://codecov.io/gh/aignostics/tme-studio)
 [![Ruff](https://img.shields.io/badge/style-Ruff-blue?color=D6FF65)](https://github.com/aignostics/tme-studio/blob/main/noxfile.py)
 [![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/aignostics/foundry-python)
-[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_zKsoeRqM31YZ9srzLAcZ1x/app)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_xdh9jVAHevMspKQ11WX4LJ/app)
 
 # 🎨 TME Studio
 
 Welcome to TME Studio! This readme explains the content of TME Studio, and the dataset it is built on:  [OpenTME](https://huggingface.co/datasets/Aignostics/OpenTME).
 
-New to TME Studio? Want to try out the notebooks right away without any set up required? [Try out our interactive demo via molab](https://molab.marimo.io/notebooks/nb_zKsoeRqM31YZ9srzLAcZ1x/app). 
+New to TME Studio? Want to try out the notebooks right away without any set up required? [Try out our interactive demo via molab](https://molab.marimo.io/notebooks/nb_xdh9jVAHevMspKQ11WX4LJ/app). 
 Open the link and start exploring, no fork of the repository is required.
 
 Already familiar with TME Studio? You want to edit the notebooks and adapt them to your needs? Fork the repository in your molab workspace OR move on to the [Setup instructions](#setup-instructions) below to work locally.
