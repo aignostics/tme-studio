@@ -24,13 +24,12 @@ def _():
 
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({
-        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _hf_instructions = """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
                          """
-    })
+    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": _hf_instructions})
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -64,20 +63,20 @@ def _(config, mo):
 
 
     ## Loading the data
-    We load the `RELATIVE_AREA_<qc_cls>` for each QC class in the `{config.CLASS_SETTINGS_FILENAME}` file.
+    We load the `RELATIVE_AREA_<qc_cls>` for each QC class in the `{config.MODEL_SETTINGS_FILENAME}` file.
     """)
 
 
 @app.cell
 def _(config, df, hf_hub_download, utils):
     # Load model output class settings
-    class_settings_path = hf_hub_download(
-        repo_id=config.REPO_ID, filename=config.CLASS_SETTINGS_FILENAME, repo_type="dataset"
+    model_settings_path = hf_hub_download(
+        repo_id=config.REPO_ID, filename=config.MODEL_SETTINGS_FILENAME, repo_type="dataset"
     )
-    model_output_classes = utils.load_munch(class_settings_path)
+    model_variables = utils.load_munch(model_settings_path)
 
-    # Find all QC columns by looking over the QC classes and QC stats
-    qc_columns = [utils.to_allcaps(f"RELATIVE_AREA_{_cls}") for _cls in model_output_classes["qc_cls"]]
+    # Find all QC columns by looking over the QC classes and QC features
+    qc_columns = [utils.to_allcaps(f"RELATIVE_AREA_{_cls}") for _cls in model_variables["qc_cls"]]
 
     df_qc = df[qc_columns]
     df_qc

@@ -25,13 +25,12 @@ def _():
 
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({
-        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _hf_instructions = """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
                          """
-    })
+    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": _hf_instructions})
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -71,7 +70,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(df, mo):
-    tcga_id_columns = ["TCGA_FILE_NAME", "TCGA_SLIDE_ID", "TCGA_CASE_ID", "TCGA_PROJECT_ID"]
+    tcga_id_columns = ["TCGA_FILE_NAME", "TCGA_SLIDE_UUID", "TCGA_CASE_ID", "TCGA_PROJECT_ID"]
 
     _text = mo.md(f""" # TCGA case and file identifiers 🔬
 
@@ -103,7 +102,7 @@ def _(df, mo, tcga_id_columns):
     The `TCGA_CASE_ID` equals the first 12 characters in the `TCGA_FILE_NAME`:<br>
     {row.TCGA_CASE_ID} --> **{row.TCGA_FILE_NAME[:12]}**{row.TCGA_FILE_NAME[12:]}
 
-    The `TCGA_SLIDE_ID` equals the ID in the `TCGA_FILE_NAME`: <br>
+    The `TCGA_SLIDE_UUID` equals the UUID in the `TCGA_FILE_NAME`: <br>
     {row.TCGA_FILE_NAME} --> {row.TCGA_FILE_NAME.split(".")[0]}**{row.TCGA_FILE_NAME.split(".")[1]}**
     """)
 

@@ -15,8 +15,6 @@ keywords = [
     "detect-secrets",
     "jupyter",
     "nox",
-    "foundry",
-    "foundry-python",
     "pip-audit",
     "pip-licenses",
     "pre-commit",
@@ -256,9 +254,9 @@ update_changelog_on_bump = true
 tag_format = "v$version"
 version_files = ["VERSION"]
 
-[tool.marimo.display]
-custom_css = ["src/aignostics_tme_studio/styling/style.css"]
-
 [tool.marimo.snippets]
 custom_paths = ["src/aignostics_tme_studio/utils/snippets"]  # List of paths to directories containing custom snippets
 include_default_snippets = false  # Whether to include marimo's default snippets (defaults to true)
+
+[tool.marimo.display]
+custom_css = ["src/aignostics_tme_studio/styling/style.css"]

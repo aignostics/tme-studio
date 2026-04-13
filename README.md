@@ -23,7 +23,7 @@ Want to view an interactive demo first?
 
 
 ## What is OpenTME?
-OpenTME is an open-source project by [Aignostics](http://aignostics.com) that provides academic researchers with pre-computed quantitative TME (Tumor Micro-Environment) features across H&E-stained WSIs from The Cancer Genome Atlas (TCGA). It provides comprehensive spatial outputs characterizing key cellular and tissue components of the TME, including cancer cells, immune cells, and stromal features, as well as their relationships within the tissue architecture.
+OpenTME is an open-source project by [Aignostics](https://aignostics.com) that provides academic researchers with pre-computed quantitative TME (Tumor Micro-Environment) features across H&E-stained Whole-Slide Images (WSIs) from The Cancer Genome Atlas (TCGA). It provides comprehensive spatial outputs characterizing key cellular and tissue components of the TME, including cancer cells, immune cells, and stromal features, as well as their relationships within the tissue architecture.
 
 All outputs were generated using [Atlas H&E-TME](https://www.aignostics.com/products/he-tme-profiling-product), Aignostics' AI-powered computational pathology application for the automated identification and quantification of TME features in FFPE H&E-stained tissue samples. 
 
@@ -39,8 +39,8 @@ The structure of the notebooks in this repo looks as follows:
 
 ```
 tme_studio/
-|-- aignostics_tme_studio/
-    |-- src/
+|-- src/
+    |-- aignostics_tme_studio/
         |-- notebooks/
             |-- demo/
             |-- examples/
@@ -48,9 +48,9 @@ tme_studio/
 ```
 
 
-* **Tutorials:** Tutorials: Step-by-step notebooks to help users get started, covering foundational tasks such as loading and exploring the dataset, and providing a guide through the OpenTME features.
+* **Tutorials:** Step-by-step notebooks to help users get started, covering foundational tasks such as loading and exploring the dataset, and providing a guide through the OpenTME features.
 
-* **Examples:** Concise notebooks demonstrating specific analysis types, such as immune desert classification and Kaplan–Meier survival plots. The examples showcase what types of analyses might be possible with OpenTME. Note that these are examples, and are not statistically rigorous, but may be used as a starting point for your own analysis.
+* **Examples:** Concise notebooks demonstrating specific analysis types, such as tumor immune phenotype classification and Kaplan–Meier survival plots. The examples showcase what types of analyses might be possible with OpenTME. Note that these are examples that may be used as a starting point for your own analysis.
 
 * **Demo:** contains a demo notebook showcasing all features in OpenTME and some example analyses.
 
@@ -129,7 +129,7 @@ mise run lint
 mise tasks
 ```
 
-This runs `uv sync --all-extras` to install all dependencies (including private registry packages), then sets up pre-commit hooks.
+This runs `uv sync --all-extras` to install all dependencies, then sets up pre-commit hooks.
 
 ### 🤗 Hugging Face access
 #### Creating an access token

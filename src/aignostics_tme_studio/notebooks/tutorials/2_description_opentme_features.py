@@ -10,6 +10,7 @@ def _():
     from aignostics_tme_studio.styling import styling_utils
 
     styling_utils.get_aignx_logo()
+    return (styling_utils,)
 
 
 @app.cell(hide_code=True)
@@ -24,13 +25,12 @@ def _():
 
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _acc = mo.accordion({
-        "Click here for instructions to create a Hugging Face token": """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
+    _hf_instructions = """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
         1. Go to "Repositories permissions".
         2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
         3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
                          """
-    })
+    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": _hf_instructions})
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([_md, _acc, hf_token])
     return hf_token, mo
@@ -103,8 +103,8 @@ def _(hf_token):
 
 
 @app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
+def _(config, mo):
+    mo.md(f"""
     # How to find features with `TME Studio` 🎨
 
     The dataframe contains > 4500 features! You can check out the
@@ -114,22 +114,22 @@ def _(mo):
     Below, you can find a description for every available feature type in OpenTME.
 
     ## **Example**: Cell Densities for each cell type
-    First we need to load the settings files to find out what cell classes and statistics are available.
-    - `settings/model_output_classes.yaml` lists all models' output classes.
-    - `settings/tme_features.yaml` lists all available stats.
+    First we need to load the settings files to find out what cell classes and features are available.
+    - `{config.MODEL_SETTINGS_FILENAME}` lists all model settings such as output classes.
+    - `{config.FEAT_SETTINGS_FILENAME}` lists all available features.
     """)
 
 
 @app.cell
 def _(config, hf_hub_download, hf_token, utils):
     # load model output class settings
-    class_settings_path = hf_hub_download(
+    model_settings_path = hf_hub_download(
         repo_id=config.REPO_ID,
-        filename=config.CLASS_SETTINGS_FILENAME,
+        filename=config.MODEL_SETTINGS_FILENAME,
         repo_type="dataset",
         token=hf_token.value or None,
     )
-    model_output_classes = utils.load_munch(class_settings_path)
+    model_variables = utils.load_munch(model_settings_path)
 
     # load available features
     features_path = hf_hub_download(
@@ -138,20 +138,20 @@ def _(config, hf_hub_download, hf_token, utils):
         repo_type="dataset",
         token=hf_token.value or None,
     )
-    features = utils.load_statistics(features_path)
-    return features, model_output_classes
+    features = utils.load_features(features_path)
+    return features, model_variables
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Looking at `model_output_classes['cell_cls']`, we see all available cell classes:
+    Looking at `model_variables['cell_cls']`, we see all available cell classes:
     """)
 
 
 @app.cell
-def _(model_output_classes):
-    model_output_classes["cell_cls"]
+def _(model_variables):
+    model_variables["cell_cls"]
 
 
 @app.cell(hide_code=True)
@@ -163,29 +163,29 @@ def _(mo):
 
 @app.cell
 def _(features):
-    features["cell_stats"]
+    features["cell_features"]
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Each statistic has a `formatter` property that we can use to find the feature columns
-    in the dataset. The `formatter`s for the `CELL_STATS` contain a placeholder `{cell_cls}`. We will use this below.
+    Each feature has a `formatter` property that we can use to find the feature columns
+    in the dataset. The `formatter`s for the `CELL_FEATURES` contain a placeholder `{cell_cls}`. We will use this below.
     """)
 
 
 @app.cell
 def _(features):
-    stat = features["cell_stats"][3]
-    stat
-    return (stat,)
+    feat = features["cell_features"][3]
+    feat
+    return (feat,)
 
 
 @app.cell(hide_code=True)
 def _(features, mo):
     mo.md(f"""
     ### Finding our features
-    Let's find all the {features["cell_stats"][3].name.lower()}'s for our cell classes'!
+    Let's find all the {features["cell_features"][3].name.lower()}'s for our cell classes'!
 
     We replace `{{cell_cls}}` by our `CELL_CLASSES` to find the feature column in the dataframe
     for each available cell type.
@@ -193,12 +193,12 @@ def _(features, mo):
 
 
 @app.cell
-def _(df, model_output_classes, stat, utils):
-    # Find all CC columns by looking over the cell classes and CC stats
+def _(df, feat, model_variables, utils):
+    # Find all CC columns by looking over the cell classes and CC features
     columns = []
-    for _cls in model_output_classes["cell_cls"]:
+    for _cls in model_variables["cell_cls"]:
         # Replace the placeholder by the cell classes
-        _column = stat.formatter.format(cell_cls=_cls)
+        _column = feat.formatter.format(cell_cls=_cls)
 
         # Columns are always uppercase.
         columns.append(utils.to_allcaps(_column))
@@ -261,11 +261,11 @@ def _(df, mo):
 
 
 @app.cell(hide_code=True)
-def _(df, features, mo, model_output_classes, utils):
-    _qc_cls = model_output_classes["qc_cls"]
-    _stats = features["qc_stats"]
+def _(df, features, mo, model_variables, utils):
+    _qc_cls = model_variables["qc_cls"]
+    _feats = features["qc_features"]
     _text = mo.md(f"""The output classes of the QC model are: `{_qc_cls}`. <br>
-    The features computed for these output classes are: `{[stat.name for stat in _stats]}`.
+    The features computed for these output classes are: `{[feat.name for feat in _feats]}`.
     Additionally, there is the `ABSOLUTE_AREA` column which contains the total tissue area on the
     slide. This is the sum of the areas of each QC class, excluding the `No Tissue` class.
 
@@ -274,32 +274,32 @@ def _(df, features, mo, model_output_classes, utils):
     Expand the code of this cell to see how it's done!
     """)
 
-    # Find all QC columns by looking over the QC classes and QC stats
+    # Find all QC columns by looking over the QC classes and QC features
     qc_columns = ["ABSOLUTE_AREA"]
     for _cls in _qc_cls:
-        qc_columns.extend(utils.to_allcaps(_stat.formatter.format(qc_cls=_cls)) for _stat in _stats)
+        qc_columns.extend(utils.to_allcaps(_feat.formatter.format(qc_cls=_cls)) for _feat in _feats)
 
     # Display results
     mo.accordion({"### Tissue Quality Control (QC) 🛁": mo.vstack([_text, df[qc_columns].head()])})
 
 
 @app.cell(hide_code=True)
-def _(df, features, mo, model_output_classes, utils):
-    _tissue_cls = model_output_classes["tissue_cls"]
-    _stats = features["tissue_stats"]
+def _(df, features, mo, model_variables, utils):
+    _tissue_cls = model_variables["tissue_cls"]
+    _feats = features["tissue_features"]
 
     _text = mo.md(f"""The Tissue Segmentation model segments all `Valid Tissue` into one of 7 output classes:<br>
     `{_tissue_cls}`
 
     For each tissue class, the following features are available:<br>
-    `{[s.name for s in _stats]}`
+    `{[f.name for f in _feats]}`
     """)
 
-    # Find all TS columns by looking over the tissue classes and TS stats
+    # Find all TS columns by looking over the tissue classes and TS features
     ts_columns = []
     for _cls in _tissue_cls:
-        for _stat in _stats:
-            _column = _stat.formatter.format(tissue_cls=_cls)
+        for _feat in _feats:
+            _column = _feat.formatter.format(tissue_cls=_cls)
             ts_columns.append(utils.to_allcaps(_column))
 
     mo.accordion({"### Tissue Segmentation 🖼️": mo.vstack([_text, df[ts_columns].head()])})
@@ -307,11 +307,11 @@ def _(df, features, mo, model_output_classes, utils):
 
 @app.cell(hide_code=True)
 def _(df, features, mo):
-    _stats = features["nucleus_stats"]
+    _feats = features["nucleus_features"]
 
-    _text = mo.md(f"""The nucleus features are available in OpenTME as statistics on nucleus shapes,
+    _text = mo.md(f"""The nucleus features are available in OpenTME as features on nucleus shapes,
     aggregated over all nuclei on the slide. The nucleus features are:
-    <br>`{[s.name for s in _stats]}`.
+    <br>`{[f.name for f in _feats]}`.
 
 
     **Note:** Nuclei are only detected in *nucleated areas* segmented by Tissue Segmentation!
@@ -320,46 +320,46 @@ def _(df, features, mo):
     lie inside `Valid Tissue` areas.
     """)
 
-    # find all CD columns by looking over the CD stats
-    cd_columns = [_stat.formatter for _stat in _stats]
+    # find all CD columns by looking over the CD features
+    cd_columns = [_feat.formatter for _feat in _feats]
 
     mo.accordion({"### Nucleus features 🎈": mo.vstack([_text, df[cd_columns].head()])})
 
 
 @app.cell(hide_code=True)
-def _(df, features, mo, model_output_classes, utils):
-    _stats = features["cell_stats"]
-    _cell_cls = model_output_classes["cell_cls"]
+def _(df, features, mo, model_variables, utils):
+    _feats = features["cell_features"]
+    _cell_cls = model_variables["cell_cls"]
 
     _text = mo.md(f"""The Cell Classification model classifies each detected nucleus in one of 9 output classes:<br>
     `{_cell_cls}`
 
     For each cell class, the following features are available:<br>
-    `{[s.name for s in _stats]}`
+    `{[f.name for f in _feats]}`
     """)
 
-    # Find all CC columns by looking over the cell classes and CC stats
+    # Find all CC columns by looking over the cell classes and CC features
     cc_columns = []
     for _cls in _cell_cls:
-        for _stat in _stats:
-            _column = _stat.formatter.format(cell_cls=_cls)
+        for _feat in _feats:
+            _column = _feat.formatter.format(cell_cls=_cls)
             cc_columns.append(utils.to_allcaps(_column))
 
     mo.accordion({"### Cell Classification 🎨": mo.vstack([_text, df[cc_columns].head()])})
 
 
 @app.cell(hide_code=True)
-def _(df, features, mo, model_output_classes, utils):
-    _cls = model_output_classes["tissue_cls"]
-    _stats = features["cell_in_tissue_stats"]
+def _(df, features, mo, model_variables, utils):
+    _cls = model_variables["tissue_cls"]
+    _feats = features["cell_in_tissue_features"]
 
-    _text = mo.md(f"""All previous stats were computed using outputs of individual models, and aggregated over
+    _text = mo.md(f"""All previous features were computed using outputs of individual models, and aggregated over
     the entire slide. What we are really interested in, is combining model outputs.
     *What is the number lymphocytes inside carcinoma regions*? We can find an answer to this
     question by combining tissue and cell features.
 
     The following features are available for each cell class, inside each tissue class:
-    `{[s.name for s in _stats]}`
+    `{[f.name for f in _feats]}`
 
     ***Note:** recall that Cell Detection does not find any cells in `Blood` or `Necrosis`
     regions. These features are thus also not available in `Blood` and `Necrosis`!*
@@ -371,9 +371,9 @@ def _(df, features, mo, model_output_classes, utils):
     tissues_with_cells = [cls for cls in _cls if cls not in ["Blood", "Necrosis"]]
 
     for _tissue_cls in tissues_with_cells:
-        for _cell_cls in model_output_classes["cell_cls"]:
-            for _stat in _stats:
-                _column = _stat.formatter.format(cell_cls=_cell_cls, tissue_cls=_tissue_cls)
+        for _cell_cls in model_variables["cell_cls"]:
+            for _feat in _feats:
+                _column = _feat.formatter.format(cell_cls=_cell_cls, tissue_cls=_tissue_cls)
                 _columns.append(utils.to_allcaps(_column))
 
     mo.accordion({"### Tissue Segmentation + Cell Classification 🌈": mo.vstack([_text, df[_columns].head()])})
@@ -381,9 +381,9 @@ def _(df, features, mo, model_output_classes, utils):
 
 
 @app.cell(hide_code=True)
-def _(df, features, mo, model_output_classes, tissues_with_cells, utils):
-    _stats = features["neighborhood_stats"]
-    _cls = model_output_classes["cell_cls"]
+def _(df, features, mo, model_variables, tissues_with_cells, utils):
+    _feats = features["neighborhood_features"]
+    _cls = model_variables["cell_cls"]
 
     _text = mo.md(f"""Now it gets interesting! What if we want to know what the number of lymphocytes is
     inside carcinoma regions, but specifically *in the neighborhood of stroma cells*?
@@ -393,8 +393,9 @@ def _(df, features, mo, model_output_classes, tissues_with_cells, utils):
     each cell of type B within a certain distance from cell type A, within a certain tissue
     type (again, `Blood` and `Necrosis` don't contain any cells).
 
-    All neighborhood features are computed for a {model_output_classes["radius"]} μm radius. The available features are:
-    <br> `{[s.name for s in _stats]}`
+    All neighborhood features are computed for a {model_variables["radius"]} μm radius.
+    The available features are:
+    <br> `{[f.name for f in _feats]}`
     """)
 
     _columns = []
@@ -402,8 +403,8 @@ def _(df, features, mo, model_output_classes, tissues_with_cells, utils):
     for _tissue_cls in tissues_with_cells:
         for _cell_cls in _cls:
             for _cell_cls_b in _cls:
-                for _stat in _stats:
-                    _column = _stat.formatter.format(
+                for _feat in _feats:
+                    _column = _feat.formatter.format(
                         cell_cls=_cell_cls, cell_cls_b=_cell_cls_b, tissue_cls=_tissue_cls, radius=20
                     )
                     _columns.append(utils.to_allcaps(_column))

@@ -13,12 +13,10 @@ def _format_title(title: str | None = None, subtitle: str | None = None) -> str:
     """Format a plot title, optionally appending a subtitle with column info.
 
     Args:
-    ----
         title: Main title text. If given, prefixed with "Distribution of".
         subtitle: Column name(s) shown as a sub-line below the title.
 
     Returns:
-    ----
         Formatted title string for use in a Plotly layout.
     """
     title = f"Distribution of {title}".capitalize() if title else ""
@@ -34,8 +32,7 @@ def _apply_layout(fig: go.Figure, xtitle: str = "", ytitle: str = "", title: str
     Format axes, font size, add title and subtitle.
 
     Returns:
-    ----
-    The same figure with an updated layout.
+        The same figure with an updated layout.
     """
     title = _format_title(title, subtitle)
 
@@ -57,8 +54,7 @@ def _silverman_bandwidth(data: pd.Series) -> float:
     Ensures all violin plots have similar amounts of width and detail.
 
     Returns:
-    ----
-    The Silverman bandwidth
+        The Silverman bandwidth.
     """
     n = len(data)
     std = data.std()
@@ -74,25 +70,22 @@ def plot_distribution(
     """Render the plot as a marimo UI element.
 
     Args:
-    ----
-    df: The dataframe containing the data to plot. All dataframe columns will
-      be plotted on the x-axis, one distribution for each column. If the
-      `grouping_column` if given, one series is plotted for each group.
-    plot_type: one of "box", "violin" or "strip".
-    grouping_column: if given, group data by this column and plot one series
-      for each unique value in the column.
-    **layout_kwargs: keyword args to label plot and set titles.
+        df: The dataframe containing the data to plot. All dataframe columns will
+            be plotted on the x-axis, one distribution for each column. If the
+            `grouping_column` if given, one series is plotted for each group.
+        plot_type: One of "box", "violin" or "strip".
+        grouping_column: If given, group data by this column and plot one series
+            for each unique value in the column.
+        **layout_kwargs: Keyword args to label plot and set titles.
 
     layout_kwargs:
-    ----
-    title: Title to print above the plot.
-    subtitle: Subtitle to print above the plot, below the title.
-    xtitle: label to use on the x-axis.
-    ytitle: label to use on the y-axis.
+        title: Title to print above the plot.
+        subtitle: Subtitle to print above the plot, below the title.
+        xtitle: Label to use on the x-axis.
+        ytitle: Label to use on the y-axis.
 
     Raises:
-    ----
-    ValueError: if plot_type is not available.
+        ValueError: If plot_type is not available.
     """
     # plotly expects dataframe in long form
     df = df.melt(var_name="var", value_name="value", id_vars=grouping_column)

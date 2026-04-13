@@ -2,7 +2,7 @@ import munch
 import yaml
 
 from .config import TISSUE_FEATURES_FILES
-from .data_classes import Statistic
+from .data_classes import Feature
 
 
 def load_munch(path: str) -> munch.Munch:
@@ -15,12 +15,12 @@ def load_munch(path: str) -> munch.Munch:
     return munch.Munch(y)
 
 
-def load_statistics(path) -> list[Statistic]:
-    """Load statistics from a yaml file and convert them to a list of Statistic objects."""
-    stats_dict = load_munch(path)
+def load_features(path) -> dict:
+    """Load features from a yaml file and convert them to a list of Feature objects."""
+    features_dict = load_munch(path)
     features = {}
-    for _key, _features in stats_dict.items():
-        features[_key] = [Statistic(**f) for f in _features]
+    for _key, _features in features_dict.items():
+        features[_key] = [Feature(**f) for f in _features]
     return features
 
 
@@ -28,8 +28,7 @@ def hex_to_rgb(h: str) -> tuple[int, ...]:
     """Convert hexadecimal string to RBG tuple.
 
     Returns:
-    ----
-    R, G, B integer values.
+        R, G, B integer values.
     """
     if h[0] == "#":
         h = h[1:]

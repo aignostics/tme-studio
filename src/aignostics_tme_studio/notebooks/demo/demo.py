@@ -1,5 +1,9 @@
 import marimo
 
+_HF_ACCESS_WARNING_MD = (
+    "***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***"
+)
+
 __generated_with = "0.23.0"
 app = marimo.App(width="medium", css_file="", html_head_file="")
 
@@ -45,7 +49,8 @@ def _(mo):
     hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
     mo.vstack([
         mo.md("""## Get access to the data
-    OpenTME is hosted on [Hugging Face](https://huggingface.co/datasets/Aignostics/OpenTME) 🤗.  To access the dataset:
+    OpenTME is hosted on [Hugging Face](https://huggingface.co/datasets/Aignostics/OpenTME) 🤗.
+    To access the dataset:
 
     1. Create a Hugging Face account if you don't have one — sign up for free at hf.co/join.
     2. Request access to OpenTME at huggingface.co/datasets/Aignostics/OpenTME and click "Request Access".
@@ -110,7 +115,7 @@ def _(df, df_meta, mo):
         grouping_column = mo.ui.dropdown(label="Select grouping column", options=_options)
         _res = grouping_column
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return (grouping_column,)
 
@@ -159,7 +164,7 @@ def _(df, hf_files, mo):
         _res = mo.vstack([tcga_file_dropdown, thumbnail_dropdown])
 
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return tcga_file_dropdown, thumbnail_dropdown
 
@@ -180,7 +185,9 @@ def _(
     if len(df) > 0:
         img_path = hf_hub_download(
             repo_id=hf_files.REPO_ID,
-            filename=f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}",
+            filename=(
+                f"data/{hf_files.DEFAULT_INDICATION}/thumbnails/{tcga_file_dropdown.value}/{thumbnail_dropdown.value}"
+            ),
             repo_type="dataset",
             token=hf_token.value or None,
         )
@@ -199,25 +206,25 @@ def _(hf_files, hf_hub_download, run_with_token, utils):
     from aignostics_tme_studio.utils import column_selector
 
     def get_settings(token: str | None):
-        class_settings_path = hf_hub_download(
-            repo_id=hf_files.REPO_ID, filename=hf_files.CLASS_SETTINGS_FILENAME, repo_type="dataset", token=token
+        model_settings_path = hf_hub_download(
+            repo_id=hf_files.REPO_ID, filename=hf_files.MODEL_SETTINGS_FILENAME, repo_type="dataset", token=token
         )
-        model_output_classes = utils.load_munch(class_settings_path)
+        model_variables = utils.load_munch(model_settings_path)
 
         features_path = hf_hub_download(
             repo_id=hf_files.REPO_ID, filename=hf_files.FEAT_SETTINGS_FILENAME, repo_type="dataset", token=token
         )
-        features = utils.load_statistics(features_path)
-        return model_output_classes, features
+        features = utils.load_features(features_path)
+        return model_variables, features
 
     _result, _warning = run_with_token(get_settings)
     if _warning:
-        model_output_classes = None
+        model_variables = None
         features = None
         _warning
     else:
-        model_output_classes, features = _result
-    return column_selector, features, model_output_classes
+        model_variables, features = _result
+    return column_selector, features, model_variables
 
 
 @app.cell(hide_code=True)
@@ -230,11 +237,11 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(column_selector, df, features, model_output_classes):
+def _(column_selector, df, features, model_variables):
     if len(df) > 0:
         cc_col_selector = column_selector.CellInTissueFeatureColumnSelector(
-            model_output_class_config=model_output_classes,
-            statistics=features["cell_in_tissue_stats"],
+            model_config=model_variables,
+            features=features["cell_in_tissue_features"],
             x_variable="cell_cls",
         )
         cc_dropdowns = cc_col_selector.render_dropdowns()
@@ -254,13 +261,13 @@ def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
             df=df, **cc_dropdowns.value, grouping_column=grouping_column.value
         )
         _formatter_str = cc_col_selector.get_column_format(cc_dropdowns.value.copy())
-        _stat = next(
-            iter([stat for stat in features["cell_in_tissue_stats"] if stat.formatter == cc_dropdowns["stat"].value])
+        _feat = next(
+            iter([feat for feat in features["cell_in_tissue_features"] if feat.formatter == cc_dropdowns["feat"].value])
         )
-        _title = f"{_stat.name} of each cell class per slide"
+        _title = f"{_feat.name} of each cell class per slide"
 
         _kwargs = {
-            "ytitle": str(_stat),
+            "ytitle": str(_feat),
             "xtitle": "Cell class",
             "title": _title,
             "subtitle": _formatter_str,
@@ -268,7 +275,7 @@ def _(cc_col_selector, cc_dropdowns, df, features, grouping_column, mo):
 
         _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return (distributions,)
 
@@ -279,21 +286,21 @@ def _(mo):
     # Neighborhood Analysis
 
     This section explores how different cell types are spatially organized relative to one another. For each cell,
-    a neighborhood statistic is computed by counting the number of cells of each class within a defined radius. Results
+    a neighborhood feature is computed by counting the number of cells of each class within a defined radius. Results
     can be grouped by reference cell class and filtered by tissue type (ROI).
 
-    Use the drop-downs to select a statistic, reference cell class, and tissue type. The plot displays the selected
-    statistic between the reference class and all its neighbors - cells of any type lying within the selected distance
+    Use the drop-downs to select a feature, reference cell class, and tissue type. The plot displays the selected
+    feature between the reference class and all its neighbors - cells of any type lying within the selected distance
     radius of a reference cell - restricted to the selected tissue type.
     """)
 
 
 @app.cell(hide_code=True)
-def _(column_selector, df, features, model_output_classes):
+def _(column_selector, df, features, model_variables):
     if len(df) > 0:
         nb_col_selector = column_selector.NoAnucleatedAreasFeatureColumnSelector(
-            model_output_class_config=model_output_classes,
-            statistics=features["neighborhood_stats"],
+            model_config=model_variables,
+            features=features["neighborhood_features"],
             x_variable="cell_cls_b",
         )
         nb_dropdowns = nb_col_selector.render_dropdowns()
@@ -320,13 +327,13 @@ def _(
         )
         _formatter_str = nb_col_selector.get_column_format(nb_dropdowns.value.copy()).upper()
 
-        _stat = next(
-            iter([stat for stat in features["neighborhood_stats"] if stat.formatter == nb_dropdowns["stat"].value])
+        _feat = next(
+            iter([feat for feat in features["neighborhood_features"] if feat.formatter == nb_dropdowns["feat"].value])
         )
-        _title = f"{_stat.name} of each cell class per slide"
+        _title = f"{_feat.name} of each cell class per slide"
 
         _kwargs = {
-            "ytitle": str(_stat),
+            "ytitle": str(_feat),
             "xtitle": "Cell class",
             "title": _title,
             "subtitle": _formatter_str,
@@ -334,7 +341,7 @@ def _(
 
         _res = distributions.plot_distribution(_df, grouping_column=grouping_column.value, plot_type="box", **_kwargs)
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
 
 
@@ -405,14 +412,15 @@ def _(df, dropdown_metric, mo):
         )
 
         _md = mo.md("""
-        > ⚠️ Note: These features are computed across the entire stroma compartment of the slide, not exclusively for
-            tumor-associated stroma within the whole tumor region (WTR). Consequently, the tumor immune phenotype
-            classification — particularly the distinction between excluded and desert phenotypes — should be interpreted
-            with caution on slides with substantial amounts of tumor-independent stroma.
+        > ⚠️ Note: These features are computed across the entire stroma compartment of the slide,
+            not exclusively for tumor-associated stroma within the whole tumor region (WTR).
+            Consequently, the tumor immune phenotype classification — particularly the distinction
+            between excluded and desert phenotypes — should be interpreted with caution on slides
+            with substantial amounts of tumor-independent stroma.
         """)
         _res = mo.vstack([carcinoma_thresh, stroma_thresh, _md])
     else:
-        _res = mo.md("***⚠️ Enter your Hugging Face token to be able to download the dataset and use this notebook.***")
+        _res = mo.md(_HF_ACCESS_WARNING_MD)
     _res
     return carcinoma_thresh, stroma_thresh
 
@@ -431,7 +439,7 @@ def _(
     import numpy as np
     from lifelines import CoxPHFitter, KaplanMeierFitter
 
-    from aignostics_tme_studio.plotting import kaplan_meyer, tip_classification
+    from aignostics_tme_studio.plotting import kaplan_meier, tip_classification
 
     def get_survival_df(df, disease_free: bool = False):
         # Encode survival status as binary column
@@ -448,7 +456,7 @@ def _(
 
         return df
 
-    def fit_kaplan_meyer(df):
+    def fit_kaplan_meier(df):
         kmf = KaplanMeierFitter()
         kmf.fit(durations=df.time, event_observed=df.event, label=df.name)
         return kmf
@@ -461,9 +469,9 @@ def _(
         cph.fit(df[["time", "event", *list(dummies.columns)]], duration_col="time", event_col="event")
         return cph
 
-    def plot_kaplan_meyer_groupwise(df):
-        kmfs = df.groupby("group").apply(fit_kaplan_meyer)
-        kmp = kaplan_meyer.KaplanMeyerPlotter(show_censors=True)
+    def plot_kaplan_meier_groupwise(df):
+        kmfs = df.groupby("group").apply(fit_kaplan_meier)
+        kmp = kaplan_meier.KaplanMeierPlotter(show_censors=True)
         return kmp.render(kmfs, color_map=tip_classification.IDE_COLORS)
 
     def format_cox_results(cox):
@@ -501,7 +509,7 @@ def _(
         # drop Nans
         _df = _df.dropna(subset=["group", "event", "time"])
 
-        _fig_kmp = plot_kaplan_meyer_groupwise(_df)
+        _fig_kmp = plot_kaplan_meier_groupwise(_df)
         cox = fit_cox_model(_df)
 
         # ************** Formatting the result ********************

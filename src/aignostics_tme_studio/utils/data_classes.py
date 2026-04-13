@@ -2,8 +2,8 @@ from attr import dataclass
 
 
 @dataclass
-class Statistic:
-    """Statistic, with name and unit."""
+class Feature:
+    """Feature, with name and unit."""
 
     name: str
     formatter: str

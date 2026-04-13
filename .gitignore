@@ -50,7 +50,6 @@ develop-eggs/
 # Build Report
 reports/*
 !reports/.keep
-!reports/README.md
 
 # IDE
 .idea/
