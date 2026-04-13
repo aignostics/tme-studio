@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/aignostics/tme-studio/graph/badge.svg)](https://codecov.io/gh/aignostics/tme-studio)
 [![Ruff](https://img.shields.io/badge/style-Ruff-blue?color=D6FF65)](https://github.com/aignostics/tme-studio/blob/main/noxfile.py)
 [![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/aignostics/foundry-python)
-[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_zKsoeRqM31YZ9srzLAcZ1x/app)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_xdh9jVAHevMspKQ11WX4LJ/app)
 
 # 🎨 TME Studio
 
@@ -13,6 +13,7 @@ Welcome to TME Studio! This readme explains the content of TME Studio, and the d
 
 New to TME Studio? Want to try out the notebooks right away without any set up required? [Try out our interactive demo via molab](https://molab.marimo.io/notebooks/nb_zKsoeRqM31YZ9srzLAcZ1x/app). 
 Make sure you have [access to OpenTME on Hugging Face](#hugging-face-access), then open the link and start exploring. 
+
 
 Already familiar with TME Studio? You want to edit the notebooks and adapt them to your needs? 
 You can choose to either 
