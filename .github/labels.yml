@@ -1,0 +1,130 @@
+# GitHub Labels Configuration
+#
+# This file defines all labels used in the repository.
+# Labels are automatically synced by .github/workflows/labels-sync.yml
+# when this file is modified and pushed to main branch.
+#
+# Manual sync: gh label sync -f .github/labels.yml
+
+# Standard GitHub Labels
+- name: bug
+  description: Something isn't working
+  color: "d73a4a"
+
+- name: documentation
+  description: Improvements or additions to documentation
+  color: "0075ca"
+
+- name: duplicate
+  description: This issue or pull request already exists
+  color: "cfd3d7"
+
+- name: enhancement
+  description: New feature or request
+  color: "a2eeef"
+
+- name: good first issue
+  description: Good for newcomers
+  color: "7057ff"
+
+- name: help wanted
+  description: Extra attention is needed
+  color: "008672"
+
+- name: invalid
+  description: This doesn't seem right
+  color: "e4e669"
+
+- name: question
+  description: Further information is requested
+  color: "d876e3"
+
+- name: wontfix
+  description: This will not be worked on
+  color: "ffffff"
+
+# Dependency Management Labels
+- name: dependencies
+  description: Pull requests that update a dependency file
+  color: "0366d6"
+
+- name: github_actions
+  description: Pull requests that update GitHub Actions
+  color: "000000"
+
+- name: python
+  description: Pull requests that update python code
+  color: "2b67c6"
+
+# Bot Labels
+- name: bot
+  description: Automated pull requests or issues
+  color: "b1aa07"
+
+- name: dependabot
+  description: Pull requests from Dependabot
+  color: "97827a"
+
+- name: renovate
+  description: Pull requests from Renovate
+  color: "d1df30"
+
+# CI/CD Skip Labels
+- name: skip:ci
+  description: Skip entire CI/CD pipeline
+  color: "b167f6"
+
+- name: skip:test:all
+  description: Skip all test executions
+  color: "5e0647"
+
+- name: skip:test:e2e
+  description: Skip end-to-end tests
+  color: "0dc59c"
+
+- name: skip:test:integration
+  description: Skip integration tests
+  color: "64ac56"
+
+- name: skip:test:unit
+  description: Skip unit tests
+  color: "614318"
+
+- name: skip:codecov
+  description: Skip Codecov reporting and check
+  color: "8b4513"
+
+# AI Assistant Labels
+- name: claude
+  description: Trigger Claude Code automation
+  color: "b41d8f"
+
+- name: copilot
+  description: GitHub Copilot related
+  color: "e6dac6"
+
+# Quality Assurance Labels
+- name: code-quality
+  description: Code quality and maintainability issues
+  color: "fbca04"
+
+- name: automated-check
+  description: Issue created by automated quality checks
+  color: "ededed"
+
+- name: documentation-drift
+  description: Documentation out of sync with code
+  color: "ff6b6b"
+
+# Cherry-pick Labels (for backport workflow)
+- name: cherry-pick
+  description: Pull request created by cherry-pick automation
+  color: "c2e0c6"
+
+- name: hotfix
+  description: Hotfix changes
+  color: "ff4444"
+
+- name: automated
+  description: Automated pull request
+  color: "cccccc"

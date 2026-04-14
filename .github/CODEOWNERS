@@ -1,0 +1,21 @@
+# TME Studio code owners
+
+# Default owners for everything in the repo
+*                   @MaaikeG
+
+# CI/CD and infrastructure
+.github/            @MaaikeG
+noxfile.py          @MaaikeG
+mise.toml           @MaaikeG
+
+# Documentation
+*.md                @MaaikeG
+docs/               @MaaikeG
+
+# Core source code
+src/                @MaaikeG
+
+# Tests
+tests/              @MaaikeG
+
+# Reference: <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners>

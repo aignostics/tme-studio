@@ -1,0 +1,115 @@
+name: "> Test"
+
+on:
+  workflow_call:
+    secrets:
+      GCP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Dev Environment
+        uses: ./.github/actions/setup-dev-env
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Release version check
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          TOML_VERSION=$(uv run python -c "import tomli; print(tomli.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          if [ "$TAG_VERSION" != "$TOML_VERSION" ]; then
+            echo "Release version mismatch: Tag $TAG_VERSION != pyproject.toml $TOML_VERSION"
+            exit 1
+          fi
+
+      - name: Print development version info
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          TOML_VERSION=$(uv run python -c "import tomli; print(tomli.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          echo "Development build - Current version in pyproject.toml: $TOML_VERSION"
+
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@ace6d4f5d7802b600276c23ca417e669f1a06f6f # v2.0.3
+        with:
+          envkey_AIGNOSTICS_TMESTUDIO_LOGFIRE_TOKEN: "${{ secrets.AIGNOSTICS_TMESTUDIO_LOGFIRE_TOKEN }}"
+          envkey_AIGNOSTICS_TMESTUDIO_SENTRY_DSN: "${{ secrets.AIGNOSTICS_TMESTUDIO_SENTRY_DSN }}"
+          fail_on_empty: false
+
+      - name: Test / Unit
+        uses: ./.github/actions/run-tests
+        with:
+          test-type: unit
+          mise-task: test_unit
+          skip-marker: skip:test:unit
+          summary-title: All unit tests passed
+          commit-message: ${{ github.event.head_commit.message }}
+
+      - name: Test / Integration
+        uses: ./.github/actions/run-tests
+        with:
+          test-type: integration
+          mise-task: test_integration
+          skip-marker: skip:test:integration
+          summary-title: All integration tests passed
+          commit-message: ${{ github.event.head_commit.message }}
+
+      - name: Test / E2E
+        uses: ./.github/actions/run-tests
+        with:
+          test-type: e2e
+          mise-task: test_e2e
+          skip-marker: skip:test:e2e
+          summary-title: All e2e tests passed
+          commit-message: ${{ github.event.head_commit.message }}
+
+      - name: Upload test results
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        if: ${{ always() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
+        with:
+          name: test-results
+          path: |
+            reports/junit.xml
+            reports/coverage.xml
+            reports/coverage.md
+            reports/coverage_html
+            aignostics_tmestudio.log
+          retention-days: 30
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: aignostics/tme-studio
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: aignostics/tme-studio
+          report_type: test_results
+
+      - name: SonarQube Scan
+        if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
+        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 # v7.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

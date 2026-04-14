@@ -1,0 +1,262 @@
+[project]
+name = "aignostics-tme-studio"
+version = "0.2.3"
+description = "🎨 A toolkit to explore the Aignostics OpenTME dataset."
+readme = "README.md"
+authors = [{ name = "Maaike Galama", email = "maaike@aignostics.com" }]
+license = { file = "LICENSE" }
+
+keywords = [
+    "aignostics-tme-studio",
+    "act",
+    "codecov",
+    "copier",
+    "cyclonedx",
+    "detect-secrets",
+    "jupyter",
+    "nox",
+    "pip-audit",
+    "pip-licenses",
+    "pre-commit",
+    "pytest",
+    "python",
+    "pypi",
+    "ruff",
+    "sonarqube",
+    "sonarcloud",
+    "uv",
+]
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Framework :: Pytest",
+    "Typing :: Typed",
+    "Natural Language :: English",
+]
+
+requires-python = ">=3.11"
+
+dependencies = [
+    "huggingface-hub>=1.7.2",
+    "ipywidgets>=8.1.8",
+    "lifelines>=0.30.0",
+    "marimo>=0.20.4",
+    "munch>=4.0.0",
+    "pandas>=3.0.1",
+    "plotly>=6.6.0",
+    "scikit-learn>=1.8.0",
+    "statsmodels>=0.14.6",
+    "tabulate>=0.10.0",
+]
+
+[dependency-groups]
+dev = [
+    "cyclonedx-py>=1.0.1",
+    "detect-secrets>=1.5.0",
+    "enum-tools>=0.13.0",
+    "nox>=2025.11.12",
+    "pip-audit>=2.10.0,<3",
+    "pip-licenses @ git+https://github.com/neXenio/pip-licenses.git@master", # https://github.com/raimon49/pip-licenses/pull/224
+    "pre-commit>=4.5.0,<5",
+    "pytest>=9.0.2,<10",
+    "pytest-asyncio>=1.3.0,<2",
+    "pytest-cov>=7.0.0,<8",
+    "pytest-env>=1.1.5,<2",
+    "pytest-md-report>=0.7.0,<1",
+    "pytest-regressions>=2.7.0,<3",
+    "pytest-retry>=1.7.0,<2",
+    "pytest-subprocess>=1.5.3,<2",
+    "pytest-timeout>=2.3.1,<3",
+    "pytest-watcher>=0.4.3,<1",
+    "pytest-xdist[psutil]>=3.6.1,<4",
+    "ruff>=0.14.8,<1",
+    "tomli>=2.1.0",
+    "types-pyyaml>=6.0.12.20250402",
+    "types-requests>=2.33.0",
+    "requests>=2.33.0",
+    "watchdog>=6.0.0",
+]
+
+[tool.uv]
+required-version = ">=0.10.2"
+override-dependencies = [ # https://github.com/astral-sh/uv/issues/4422
+    "pytest>=9.0.2",                    # pytest-md-report depends on pytest<9 unnecessarily
+    "pymdown-extensions>=10.21.2",      # 10.21 breaks fenced code blocks with markdown>=3.10 (AttributeError in superfences)
+]
+
+
+[project.urls]
+Homepage = "https://github.com/aignostics/tme-studio"
+Documentation = "https://github.com/aignostics/tme-studio#readme"
+Source = "https://github.com/aignostics/tme-studio"
+Changelog = "https://github.com/aignostics/tme-studio/releases"
+Issues = "https://github.com/aignostics/tme-studio/issues"
+
+
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["src/*"]
+
+[tool.hatch.build.targets.wheel]
+
+packages = ["src/aignostics_tme_studio"]
+
+
+
+[tool.ruff]
+target-version = "py312"
+preview = true
+fix = true
+line-length = 120
+
+[tool.ruff.lint]
+select = ["ALL"]
+
+ignore = [
+    "ANN003",   # missing type annotation for `**kwargs`` -> provides no value
+    "ASYNC109", # async function definition with a `timeout` parameter  -> as mentioned by ruff, "This rule is highly opinionated and may not be suitable for all use cases."
+    "B018",
+    "CPY001",   # missing copyright notice -> not for OSS
+    "DOC502",   # docstrings with exceptions not raised in the code of the function -> not always necessary
+    "D100",
+    "D203",     # incomptatible with D211 -> prefer D211
+    "D212",     # incompatible with D213 -> prefer D213
+    "FBT001",   # boolean positional arguments -> disagree
+    "FBT002",   # boolean defautl value positionl arguments -> disagree
+    "FBT003",   # boolean positional value in function call -> disagree
+    "PLC0415",  # local import -> sometimes necessary to avoid circular imports, and ruff's alternative PLC0416 is not feasible in our project structure
+    "PGH003",   # use specific rule codes when ignoring type issues -> quite a hassle, no value
+    "TRY300",   # else instead of return before except. -> strongly disagree, hinders readabilty.
+    "COM812",   # conflicts with ruff formatter -> not feasible nor recommended
+    "ISC001",   # conflicts with ruff formatter -> not feasible nor recommended
+    "S101",     # asserts are allowed in tests
+    "S404",     # subprocess` module is possibly insecure -> as mentioned by ruff, unstable and preview
+    "FIX002",   # line contains todo -> yes, that's what todo's are for?!
+    "TD003",    # missing issue link for todo -> not in OSS
+    "PTH123",   # use of open to be replaced with Path.open
+    "RUF052",
+    "TD002",
+    "TD004",    
+    "T201",     # Remove `print`
+    "INP001",   # Checks for packages that are missing an __init__.py file.
+    "RUF067",   # __init__ module contains conditional imports -> needed for optional dependencies (preview rule)
+    "PLR6201",
+    "S101",     # asserts allowed in tests...
+    "ARG",      # unused function args -> fixtures nevertheless are functionally relevant...
+    "FBT",      # don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    "PLR2004",  # magic value used in comparison, ...
+    "PLR6301",  # method could be a function, class method, or static method -> test organization pattern
+    "PT011",    # exception to broad
+    "PLC2701",  # private import, but required for unit testing
+    "PLC0415",  # local import
+    "PT012",    # exception to broad
+    "S311",     # standard pseudo-random generators are not suitable for cryptographic purposes
+    "SLF001",   # private member access required for unit testing
+    "S603",     # check for execution of untrusted input
+    "ANN001",   # missing type annotation for function argument
+    "ANN002",   # missing type annotation
+    "ANN003",   # missing type annotation
+    "ANN202",   # missing return type annotation
+    "DOC201",   # `return` is not documented in docstring
+    "ASYNC230", # async functions should not open files with blocking methods like `open`
+    "S104",     # bind to all ports
+    "S607",     # subprocess with partial path
+
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**/*.py" = [
+    # we are more relaxed in tests, while sill applying hundreds of rules
+    "S101",     # asserts allowed in tests...
+    "ARG",      # unused function args -> fixtures nevertheless are functionally relevant...
+    "FBT",      # don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    "PLR2004",  # magic value used in comparison, ...
+    "PLR6301",  # method could be a function, class method, or static method -> test organization pattern
+    "PT011",    # exception to broad
+    "PLC2701",  # private import, but required for unit testing
+    "PLC0415",  # local import
+    "PT012",    # exception to broad
+    "S311",     # standard pseudo-random generators are not suitable for cryptographic purposes
+    "SLF001",   # private member access required for unit testing
+    "S603",     # check for execution of untrusted input
+    "ANN001",   # missing type annotation for function argument
+    "ANN002",   # missing type annotation
+    "ANN003",   # missing type annotation
+    "ANN202",   # missing return type annotation
+    "DOC201",   # `return` is not documented in docstring
+    "ASYNC230", # async functions should not open files with blocking methods like `open`
+    "S104",     # bind to all ports
+    "S607",     # subprocess with partial path
+]
+"**/notebooks/**.py" = [
+    "PLR0917", # marimo cells take all dependencies as fn args
+    "PLR0913", # ''
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+
+[tool.pytest.ini_options]
+addopts = "-v --strict-markers --cov=aignostics_tme_studio --cov-report=term-missing --cov-report=xml:reports/coverage.xml --cov-report=html:reports/coverage_html"
+testpaths = ["tests"]
+python_files = ["*_test.py", "test_*.py"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+timeout = 10 # We use a rather short default timeout. Override with @pytest.mark.timeout(timeout=N)
+env = ["COVERAGE_FILE=.coverage", "COVERAGE_PROCESS_START=pyproject.toml"]
+markers = [
+    # Test Categories (following Martin Fowler's Solitary vs Sociable unit test distinction)
+    "scheduled: Tests to run on a schedule. They will still be part on non-scheduled test executions.",
+    "sequential: Exclude from parallel test execution.",
+    "unit: Solitary unit tests - test a layer of a module in isolation with all dependencies mocked. Unit tests must be able to pass offline, i.e. not calls to external services. The timeout should not be bigger than the default 10s, and must be <5 min.",
+    "integration: Sociable integration tests - test interactions across architectural layers, using real file I/O and real subprocesses. Integration test must be able to pass offline, i.e. mock external services. The timeout should not be bigger than the default 10s, and must be <5 min.",
+    "e2e: End-to-end tests - test complete workflows with real external network services.",
+]
+md_report = true
+md_report_output = "reports/pytest.md"
+md_report_verbose = 1
+md_report_flavor = "github"
+md_report_color = "never"
+md_report_exclude_outcomes = ["passed", "skipped"]
+
+[tool.coverage.run]
+sigterm = true
+relative_files = true
+source = ["src"]
+omit = []
+branch = true
+parallel = true
+concurrency = ["thread", "multiprocessing"]
+
+[tool.coverage.paths]
+source = ["src/"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "pep621"
+update_changelog_on_bump = true
+tag_format = "v$version"
+version_files = ["VERSION"]
+
+[tool.marimo.snippets]
+custom_paths = ["src/aignostics_tme_studio/utils/snippets"]  # List of paths to directories containing custom snippets
+include_default_snippets = false  # Whether to include marimo's default snippets (defaults to true)
+
+[tool.marimo.display]
+custom_css = ["src/aignostics_tme_studio/styling/style.css"]

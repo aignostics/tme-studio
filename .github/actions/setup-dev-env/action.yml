@@ -1,0 +1,27 @@
+name: 'Setup Dev Environment'
+description: 'Checkout, GCP auth, mise, uv, and dev tools'
+
+inputs:
+  workload_identity_provider:
+    description: 'GCP Workload Identity Provider'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Authenticate to GCP
+      id: gcp-auth
+      uses: google-github-actions/auth@v3
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        create_credentials_file: true
+
+    - name: Setup gcloud CLI
+      uses: google-github-actions/setup-gcloud@v3
+
+    - name: Install mise
+      uses: jdx/mise-action@e79ddf65a11cec7b0e882bedced08d6e976efb2d # v3.6.2
+
+    - name: Initialize mise and install Python dependencies
+      shell: bash
+      run: mise run install

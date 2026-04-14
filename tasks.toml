@@ -1,0 +1,102 @@
+[all]
+description = "Run all checks: lint, test, docs, audit"
+depends = ["lint"]
+run = """
+mise run test
+mise run docs
+mise run audit
+"""
+
+[lint]
+description = "Run linting and formatting checks"
+run = """
+uv run ruff check --fix .
+uv run ruff format .
+"""
+
+[install]
+description = "Install dev dependencies and pre-commit hooks"
+run = """
+uv tool install keyring --with keyrings.google-artifactregistry-auth
+if [ -f uv.lock ]; then
+  uv sync --all-extras --frozen
+else
+  uv sync --all-extras
+fi
+uv run pre-commit install
+"""
+
+[clean]
+description = "Clean build artifacts and caches"
+run = """
+rm -rf .nox .pytest_cache .ruff_cache .venv .coverage
+rm -rf dist && mkdir -p dist && touch dist/.keep
+rm -rf reports && mkdir -p reports && touch reports/.keep
+"""
+
+[act]
+description = "Run GitHub Actions locally via act"
+run = """
+act -j test --env-file .act-env-public --secret-file .act-env-secret \
+  --container-architecture linux/amd64 \
+  -P ubuntu-latest=catthehacker/ubuntu:act-latest \
+  --action-offline-mode --container-daemon-socket -
+"""
+
+[setup]
+description = "Setup dev environment post project creation"
+run = """
+mise run install
+uv run ruff format .
+if [ -d .git ]; then
+  touch .act-env-secret
+  uv run pre-commit install
+  uv run detect-secrets scan > .secrets.baseline
+  git add .
+  uv run pre-commit || true
+  git add .
+fi
+"""
+
+[update_from_template]
+description = "Update from copier template"
+run = """
+copier update --trust --skip-answered --skip-tasks
+mise run lint
+mise run docs
+mise run audit
+"""
+
+[test]
+description = "Run tests (default: unit+integration+e2e)"
+run = """
+mise run test_unit
+mise run test_integration
+mise run test_e2e
+"""
+
+[test_unit]
+description = "Run unit tests"
+run = "XDIST_WORKER_FACTOR=0.0 uv run nox -s test -p $(cat .python-version) -- -m unit --cov-append"
+
+[test_integration]
+description = "Run integration tests"
+run = "XDIST_WORKER_FACTOR=0.2 uv run nox -s test -p $(cat .python-version) -- -m integration --cov-append"
+
+[test_e2e]
+description = "Run e2e tests"
+run = "XDIST_WORKER_FACTOR=1 uv run nox -s test -p $(cat .python-version) -- -m e2e --cov-append"
+
+
+[audit]
+description = "Run security and license compliance audit"
+run = "uv run nox -s audit"
+
+[docs]
+description = "Generate ATTRIBUTIONS.md from license data"
+run = "uv run nox -s docs"
+
+
+[pre_commit_run_all]
+description = "Run pre-commit hooks on all files"
+run = "uv run pre-commit run --all-files"

@@ -1,0 +1,90 @@
+# .pre-commit-config.yaml
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+  - commit-msg
+fail_fast: true
+repos:
+  - repo: meta
+    hooks:
+      - id: check-useless-excludes
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: python-check-mock-methods
+      - id: python-no-eval
+      - id: python-no-log-warn
+      - id: python-use-type-annotations
+      - id: rst-backticks
+      - id: rst-directive-colons
+      - id: rst-inline-touching-normal
+      - id: text-unicode-replacement-char
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-illegal-windows-names
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-xml
+      - id: debug-statements
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude: "^tests/fixtures/|.json$|"
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+      - id: name-tests-test
+        exclude: "constants.py|conftest.py|__init__.py"
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+        exclude: "docs/source/_static|ATTRIBUTIONS.md||API_REFEREENCE"
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline", ".secrets.baseline"]
+        additional_dependencies: ["gibberish-detector"]
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.11.0
+    hooks:
+      - id: uv-lock
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.13.9
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+  - repo: local
+    hooks:
+      - id: mise-lock
+        name: Update mise.lock
+        entry: bash -c 'mise lock && git add mise.lock'
+        language: system
+        pass_filenames: false
+        files: ^mise\.toml$
+        stages: [pre-commit]
+      - id: lint
+        name: Lint
+        entry: bash -c 'mise run lint'
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+        stages: [pre-commit]
+      - id: docs
+        name: Docs
+        entry: bash -c 'mise run docs'
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+        stages: [pre-push]
+      - id: test-unit
+        name: Test (unit)
+        entry: bash -c 'mise run test_unit'
+        language: system
+        pass_filenames: false
+        files: \.(py|toml)$|^conftest\.py$|^noxfile\.py$
+        verbose: true
+        stages: [pre-push]
