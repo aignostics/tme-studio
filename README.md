@@ -50,25 +50,33 @@ tme_studio/
             |-- examples/
             |-- tutorials/
 ```
-
+*Each folder is described below. Follow the links and click the "Fork" button to run the notebooks in molab (make sure 
+you have [access to OpenTME on Hugging Face](#hugging-face-access), and a [molab](https://molab.marimo.io/) account).*
 
 * **Tutorials:** Step-by-step notebooks to help users get started, covering foundational tasks such as loading and exploring the dataset, and providing a guide through the OpenTME features.
-
-* **Examples:** Concise notebooks demonstrating specific analysis types, such as tumor immune phenotype classification and Kaplan–Meier survival plots. The examples showcase what types of analyses might be possible with OpenTME. Note that these are examples that may be used as a starting point for your own analysis.
+    1. [Getting started](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py)
+    2. [Description of the OpenTME features](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/2_description_opentme_features.py)
+    3. [Including TCGA metadata](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/3_including_TCGA_metadata.py)
+* **Examples:** Concise notebooks demonstrating specific types of analysis, such as tumor immune phenotype classification and Kaplan–Meier survival plots. Note that these are examples that may be used as a starting point for your own analysis.
+    1. [Clustering](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/clustering.py)
+    2. [Outlier detection](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/outlier_detection.py)
+    3. [Survival analysis](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/survival_analysis.py)
+    4. [Tumor immune phenotyping](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/tumor_immune_phenotyping.py)
 
 * **Demo:** contains a demo notebook showcasing all features in OpenTME and some example analyses.
-
-If you are unfamiliar with the OpenTME dataset, we suggest beginning at `src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py`. To get a feeling for all the different features you can find in OpenTME, have a look at the demo notebook `src/aignostics_tme_studio/notebooks/demo/demo.py`.
+    1. [Demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app)
+  
+If you are unfamiliar with the OpenTME dataset, we suggest beginning at the [getting started](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py) notebook. To get a feeling for all the different features you can find in OpenTME, have a look at the [demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app).
 
 
 # Setup instructions 
 ## Hugging Face access
-However you decide to run the notebooks, you will need to get access to OpenTME on Hugging Face 🤗. 
+Regardless of how you decide to run the notebooks, you will need to get access to OpenTME on Hugging Face 🤗. 
 ### Creating an access token
 1. Make sure you have a Hugging Face account. If you don't have one, you can create one for free at [hf.co/join](https://hf.co/join).
 2. Get access to the dataset by going to https://huggingface.co/datasets/Aignostics/OpenTME and clicking "Access"
 
-> Note: You will eceive an email from Hugging Face as soon as your access request has been reviewed. This may take a few working days.
+> Note: You will receive an email from Hugging Face as soon as your access request has been reviewed. This may take a few working days.
 
 > Note: No need to download the dataset! The tutorials will show you how to access the dataset via the Hugging Face API. 
 
@@ -90,12 +98,15 @@ and log in with your access token.
 
 
 ## Edit notebooks in molab 
-To edit your own copy of these TME Studio notebooks in molab, do the following:
-1. Open the notebook in github.
-2. Replace github.com by molab.marimo.io/github.com in the notebook URL to open it in molab.
-3. Click the "fork" button.
-> Note: to run your own copy of the notebooks in molab you will need to create a molab account. 
+To edit your own copy of the TME Studio notebooks in molab, do the following:
+1. Open the notebook of choice via the link in the [content overview](#content) above. E.g. our 
+[Demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app) notebook.
+2. Create a molab account, via the "Sign In" button in the upper right corner.
+3. Click the "Fork" button.
+4. Run the notebook via the play button.
+5. Install "missing packages" via the pop-up menu on the left tab bar.
 
+You can start exploring now.
 
 ## Edit notebooks locally
 To run the TME Studio notebooks on your local machine, follow these installation instructions:
@@ -185,10 +196,28 @@ uv run marimo edit path/to/notebook.py
 ```
 to open a specific notebook directly.  
 
+## Citation
+If you use OpenTME or TME Studio in your research, please cite:
+```
+@article{galama2026opentme,
+  title={{OpenTME}: An Open Dataset of {AI}-Powered {H\&E} Tumor 
+         Microenvironment Profiles from {TCGA}},
+  author={Galama, Maaike and Kozar-Gillan, Nina and Embacher, Christina 
+          and Dembo, Todd and B{\"o}hm, Cornelius and Ramberger, Evelyn 
+          and Ribbat-Idel, Julika and Krupar, Rosemarie and Aumiller, Verena 
+          and H{\"a}gele, Miriam and Standvoss, Kai and Erdmann, Gerrit 
+          and Pablos, Blanca and Angelo, Ari and Schallenberg, Simon 
+          and Norgan, Andrew and Matyas, Viktor and M{\"u}ller, Klaus-Robert 
+          and Alber, Maximilian and Ruff, Lukas and Klauschen, Frederick},
+  journal={arXiv preprint arXiv:2604.12075},
+  year={2026},
+  url={https://arxiv.org/abs/2604.12075},
+}
+```
 
 
-## Further Reading
-
+## Further reading
+- [OpenTME](https://arxiv.org/abs/2604.12075) - Paper on arxiv describing OpenTME and TME Studio
 - [Security policy](SECURITY.md) - Documentation of security checks, tools, and principles
 - [Release notes](https://github.com/aignostics/tme-studio/releases) - Complete log of improvements and changes
 - [Attributions](ATTRIBUTIONS.md) - Open source projects this project builds upon
