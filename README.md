@@ -50,15 +50,22 @@ tme_studio/
             |-- examples/
             |-- tutorials/
 ```
-
+*Each folder is described below. Follow the links and click the "Fork" button to run the notebooks in molab (make sure you have [access to OpenTME on Hugging Face](#hugging-face-access), and a [molab](https://molab.marimo.io/) account).*
 
 * **Tutorials:** Step-by-step notebooks to help users get started, covering foundational tasks such as loading and exploring the dataset, and providing a guide through the OpenTME features.
-
+    1. [Getting started](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py)
+    2. [Description of the OpenTME features](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/2_description_opentme_features.py)
+    3. [Including TCGA metadata](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/3_including_TCGA_metadata.py)
 * **Examples:** Concise notebooks demonstrating specific analysis types, such as tumor immune phenotype classification and Kaplan–Meier survival plots. The examples showcase what types of analyses might be possible with OpenTME. Note that these are examples that may be used as a starting point for your own analysis.
+    1. [Clustering](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/clustering.py)
+    2. [Outlier detection](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/outlier_detection.py)
+    3. [Survival analysis](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/survival_analysis.py)
+    4. [Tumor immune phenotyping](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/tumor_immune_phenotyping.py)
 
 * **Demo:** contains a demo notebook showcasing all features in OpenTME and some example analyses.
-
-If you are unfamiliar with the OpenTME dataset, we suggest beginning at `src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py`. To get a feeling for all the different features you can find in OpenTME, have a look at the demo notebook `src/aignostics_tme_studio/notebooks/demo/demo.py`.
+    1. [Demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app)
+  
+If you are unfamiliar with the OpenTME dataset, we suggest beginning at the [getting started](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py) notebook. To get a feeling for all the different features you can find in OpenTME, have a look at the [demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app).
 
 
 # Setup instructions 
