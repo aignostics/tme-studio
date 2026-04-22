@@ -5688,7 +5688,7 @@ SOFTWARE.
 
 ```
 
-## lxml (6.0.2) - BSD-3-Clause
+## lxml (6.1.0) - BSD-3-Clause
 
 Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API.
 
