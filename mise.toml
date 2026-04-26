@@ -3,7 +3,7 @@ act = "0.2.84"
 gh = "2.87.3"
 jq = "1.8.1"
 "pipx:keyring" = { version = "25.7.0", uvx_args = "--with keyrings.google-artifactregistry-auth" }
-trivy = "0.69.2"
+trivy = "0.70.0"
 uv = "0.10.2"
 
 [settings]
