@@ -4,7 +4,7 @@ gh = "2.87.3"
 jq = "1.8.1"
 "pipx:keyring" = { version = "25.7.0", uvx_args = "--with keyrings.google-artifactregistry-auth" }
 trivy = "0.69.2"
-uv = "0.10.2"
+uv = "0.11.8"
 
 [settings]
 lockfile = true # Pins exact versions and checksums of tools
