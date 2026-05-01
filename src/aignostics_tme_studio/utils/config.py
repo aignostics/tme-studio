@@ -15,6 +15,7 @@ FEAT_SETTINGS_FILENAME = "settings/tme_features.yaml"
 
 # Files need to be loaded over HTTP to allow loading in molab
 METADATA_FILE_PATH = "https://github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/public/metadata.csv?raw=true"
+EXAMPLE_CUSTOM_DATA_FILE_PATH = "https://github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/public/concatenated_slide_readouts.csv?raw=true"
 LOGO_FILE_PATH = "https://github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/styling/images/logo_lavender.png?raw=true"
 CSS_FILE_PATH = (
     "https://github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/styling/style.css?raw=true"
