@@ -87,6 +87,7 @@ def audit(session: nox.Session) -> None:
     ignore_vulns = [
         "CVE-2025-53000",  # No fix for nbconvert yet
         "CVE-2026-4539",  # pygments, no fix available yet
+        "CVE-2026-3219",  # pip tar/ZIP handling, no fix available yet
     ]
     try:
         session.run(
