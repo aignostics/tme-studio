@@ -20,7 +20,7 @@ runs:
       uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
 
     - name: Install mise
-      uses: jdx/mise-action@e79ddf65a11cec7b0e882bedced08d6e976efb2d # v3.6.2
+      uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
 
     - name: Initialize mise and install Python dependencies
       shell: bash
