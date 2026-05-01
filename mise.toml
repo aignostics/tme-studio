@@ -1,5 +1,5 @@
 [tools]
-act = "0.2.84"
+act = "0.2.88"
 gh = "2.87.3"
 jq = "1.8.1"
 "pipx:keyring" = { version = "25.7.0", uvx_args = "--with keyrings.google-artifactregistry-auth" }
