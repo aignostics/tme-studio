@@ -10943,7 +10943,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ```
 
-## pip (26.1) - UNKNOWN
+## pip (26.1.2) - UNKNOWN
 
 The PyPA recommended tool for installing Python packages.
 
@@ -11933,7 +11933,7 @@ Library for serializing and deserializing Python Objects to and from JSON and XM
 
 ```
 
-## pymdown-extensions (10.21.2) - MIT License
+## pymdown-extensions (10.21.3) - MIT License
 
 Extension pack for Python Markdown.
 
@@ -15214,7 +15214,7 @@ SOFTWARE.
 
 ```
 
-## starlette (1.0.0) - UNKNOWN
+## starlette (1.3.1) - UNKNOWN
 
 The little ASGI library that shines.
 
