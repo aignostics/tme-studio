@@ -99,7 +99,7 @@ and log in with your access token.
 
 ## Edit notebooks in molab 
 To edit your own copy of the TME Studio notebooks in molab, do the following:
-1. Open the notebook of choice via the link in the [content overview](#content) above. E.g. our 
+1. Open the notebook of choice via the link in the [content overview](#content-1) above. E.g. our 
 [Demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app) notebook.
 2. Create a molab account, via the "Sign In" button in the upper right corner.
 3. Click the "Fork" button.

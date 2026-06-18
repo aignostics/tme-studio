@@ -62,15 +62,15 @@ def _(mo):
     Tumor immune phenotype classification is a method for classifying slides based on their
     inflammation status.
 
-    We can use the OpenTME features `CELL_DENSITY_LYMPHOCYTE_CARCINOMA` and
-    `CELL_DENSITY_LYMPHOCYTE_STROMA` to classify our slides into the three groups.
+    We can use the OpenTME features `CELL_DENSITY_LYMPHOCYTE_IN_CARCINOMA` and
+    `CELL_DENSITY_LYMPHOCYTE_IN_STROMA` to classify our slides into the three groups.
     The tumor immune phenotype classification of a slide is computed as follows:
 
     ```
-    if CELL_DENSITY_LYMPHOCYTE_CARCINOMA > threshold_carcinoma:
+    if CELL_DENSITY_LYMPHOCYTE_IN_CARCINOMA > threshold_carcinoma:
         classification = inflamed
 
-    elif CELL_DENSITY_LYMPHOCYTE_STROMA > threshold_stroma:
+    elif CELL_DENSITY_LYMPHOCYTE_IN_STROMA > threshold_stroma:
         classification = excluded
 
     else:
@@ -92,11 +92,11 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(df, dropdown, mo):
     if dropdown.value == "Density":
-        carcinoma_col = df.CELL_DENSITY_LYMPHOCYTE_CARCINOMA
-        stroma_col = df.CELL_DENSITY_LYMPHOCYTE_STROMA
+        carcinoma_col = df.CELL_DENSITY_LYMPHOCYTE_IN_CARCINOMA
+        stroma_col = df.CELL_DENSITY_LYMPHOCYTE_IN_STROMA
     else:
-        carcinoma_col = df.CELL_PERCENTAGE_LYMPHOCYTE_CARCINOMA
-        stroma_col = df.CELL_PERCENTAGE_LYMPHOCYTE_STROMA
+        carcinoma_col = df.CELL_PERCENTAGE_LYMPHOCYTE_IN_CARCINOMA
+        stroma_col = df.CELL_PERCENTAGE_LYMPHOCYTE_IN_STROMA
 
     carcinoma_thresh = mo.ui.slider(
         start=carcinoma_col.min(),
