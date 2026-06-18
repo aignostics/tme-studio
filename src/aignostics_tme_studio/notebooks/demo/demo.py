@@ -24,7 +24,7 @@ def _(styling_utils):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    *This demo runs interactively in molab. Forking the notebook is not necesary to run this demo. After some time of
+    *This demo runs interactively in molab. Forking the notebook is not necessary to run this demo. After some time of
     inactivity, molab may shut down the demo automatically. Refresh the page to restart the notebook.*
     """)
 
@@ -423,11 +423,11 @@ def _(df, dropdown_metric, hf_access_warning, mo):
         _df = df.copy()
 
         if dropdown_metric.value == "Density":
-            carcinoma_col = _df.CELL_DENSITY_LYMPHOCYTE_CARCINOMA
-            stroma_col = _df.CELL_DENSITY_LYMPHOCYTE_STROMA
+            carcinoma_col = _df.CELL_DENSITY_LYMPHOCYTE_IN_CARCINOMA
+            stroma_col = _df.CELL_DENSITY_LYMPHOCYTE_IN_STROMA
         else:
-            carcinoma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_CARCINOMA
-            stroma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_STROMA
+            carcinoma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_IN_CARCINOMA
+            stroma_col = _df.CELL_PERCENTAGE_LYMPHOCYTE_IN_STROMA
 
         carcinoma_thresh = mo.ui.slider(
             start=carcinoma_col.min(),

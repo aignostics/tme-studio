@@ -233,8 +233,9 @@ class CellInTissueFeatureColumnSelector(NoAnucleatedAreasFeatureColumnSelector):
         return dropdowns
 
     def get_column_format(self, *args, **kwargs) -> str:
-        """Get feature with filled placeholders and remove _None postfix if "All tissue types" is selected."""
+        """Get feature with filled placeholders and remove _IN_None postfix if "All tissue types" is selected."""
         column = super().get_column_format(*args, **kwargs)
-        # If no tissue was selected, we can still show the feature. We just need to remove "_NONE" at the end of the
-        # columns.
-        return column.removesuffix("_None")
+        # When no tissue is selected, the formatter ends with "_IN_None". Remove it entirely so the
+        # resulting column name matches the slide-level aggregate columns in the CSV (e.g.
+        # CELL_PERCENTAGE_CARCINOMA_CELL rather than CELL_PERCENTAGE_CARCINOMA_CELL_IN).
+        return column.removesuffix("_IN_None")
