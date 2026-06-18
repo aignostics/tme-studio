@@ -4650,7 +4650,7 @@ THE SOFTWARE.
 
 ```
 
-## idna (3.11) - UNKNOWN
+## idna (3.15) - UNKNOWN
 
 Internationalized Domain Names in Applications (IDNA)
 
@@ -4662,7 +4662,7 @@ Internationalized Domain Names in Applications (IDNA)
 ```
 BSD 3-Clause License
 
-Copyright (c) 2013-2025, Kim Davies and contributors.
+Copyright (c) 2013-2026, Kim Davies and contributors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -10943,7 +10943,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ```
 
-## pip (26.0.1) - UNKNOWN
+## pip (26.1.2) - UNKNOWN
 
 The PyPA recommended tool for installing Python packages.
 
@@ -11933,7 +11933,7 @@ Library for serializing and deserializing Python Objects to and from JSON and XM
 
 ```
 
-## pymdown-extensions (10.21.2) - MIT License
+## pymdown-extensions (10.21.3) - MIT License
 
 Extension pack for Python Markdown.
 
@@ -15214,7 +15214,7 @@ SOFTWARE.
 
 ```
 
-## starlette (1.0.0) - UNKNOWN
+## starlette (1.3.1) - UNKNOWN
 
 The little ASGI library that shines.
 
@@ -16565,7 +16565,7 @@ SOFTWARE.
 
 ```
 
-## urllib3 (2.6.3) - UNKNOWN
+## urllib3 (2.7.0) - UNKNOWN
 
 HTTP library with thread-safe connection pooling, file post, and more.
 
