@@ -64,7 +64,7 @@ you have [access to OpenTME on Hugging Face](#hugging-face-access), and a [molab
     4. [Tumor immune phenotyping](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/tumor_immune_phenotyping.py)
 
 * **Demo:** contains a demo notebook showcasing all features in OpenTME and some example analyses.
-    1. [Demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app)
+    1. [Demo](https://molab.marimo.io/notebooks/nb_YuAUAMwQRsxSpZEv3jHDZH/app)
   
 If you are unfamiliar with the OpenTME dataset, we suggest beginning at the [getting started](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py) notebook. To get a feeling for all the different features you can find in OpenTME, have a look at the [demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app).
 
