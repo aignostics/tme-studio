@@ -1,21 +1,20 @@
 # TME Studio code owners
 
 # Default owners for everything in the repo
-*                   @MaaikeG
+*                   @aignostics/tme-studio-admins
 
 # CI/CD and infrastructure
-.github/            @MaaikeG
-noxfile.py          @MaaikeG
-mise.toml           @MaaikeG
+.github/            @aignostics/tme-studio-admins
+noxfile.py          @aignostics/tme-studio-admins
+mise.toml           @aignostics/tme-studio-admins
 
 # Documentation
-*.md                @MaaikeG
-docs/               @MaaikeG
+*.md                @aignostics/tme-studio-admins
 
 # Core source code
-src/                @MaaikeG
+src/                @aignostics/tme-studio-admins
 
 # Tests
-tests/              @MaaikeG
+tests/              @aignostics/tme-studio-admins
 
 # Reference: <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners>
