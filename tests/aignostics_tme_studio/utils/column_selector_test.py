@@ -22,7 +22,7 @@ def create_dummy_df() -> pd.DataFrame:
     columns = []
     for tissue_cls in MODEL_CONFIG["tissue_cls"]:
         columns.extend([
-            f"DENSITY_OF_{utils.to_allcaps(cell_cls)}_{utils.to_allcaps(tissue_cls)}"
+            f"DENSITY_OF_{utils.to_allcaps(cell_cls)}_IN_{utils.to_allcaps(tissue_cls)}"
             for cell_cls in MODEL_CONFIG["cell_cls"]
         ])
         columns.append(f"RELATIVE_AREA_{utils.to_allcaps(tissue_cls)}")
