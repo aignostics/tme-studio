@@ -12,10 +12,7 @@ MODEL_CONFIG = {
 }
 
 TISSUE_STAT = data_classes.Feature(name="Relative Area", formatter="RELATIVE_AREA_{tissue_cls}", unit="%")
-CELL_IN_TISSUE_STAT = data_classes.Feature(name="Density", formatter="DENSITY_OF_{cell_cls}_{tissue_cls}", unit="")
-CELL_IN_TISSUE_STAT_WITH_IN = data_classes.Feature(
-    name="Density", formatter="DENSITY_OF_{cell_cls}_IN_{tissue_cls}", unit=""
-)
+CELL_IN_TISSUE_STAT = data_classes.Feature(name="Density", formatter="DENSITY_OF_{cell_cls}_IN_{tissue_cls}", unit="")
 
 
 @pytest.fixture(name="dummy_df")
@@ -90,7 +87,7 @@ def test_column_selector_anuclear_regions() -> None:
 def test_column_selector_with_all_tissue(dummy_df) -> None:
     """Test that selecting 'All tissue' drops the _IN_{tissue_cls} suffix and maps to slide-level columns."""
     selector = column_selector.CellInTissueFeatureColumnSelector(
-        features=[CELL_IN_TISSUE_STAT_WITH_IN],
+        features=[CELL_IN_TISSUE_STAT],
         x_variable="cell_cls",
         model_config=MODEL_CONFIG,
     )
