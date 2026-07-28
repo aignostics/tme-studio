@@ -87,6 +87,8 @@ dev = [
     "pytest-watcher>=0.4.3,<1",
     "pytest-xdist[psutil]>=3.6.1,<4",
     "ruff>=0.15.15,<1",
+    "tox>=4.58.0",
+    "tox-uv>=1.36.0",
     "types-pyyaml>=6.0.12.20250402",
     "types-requests>=2.32.0.20250328",
     "watchdog>=6.0.0",
@@ -228,6 +230,19 @@ project_excludes = [
     "migrations",
 ]
 search_path = [".", ".mise/scripts"]  # "." makes tests/ importable as absolute package in src-layout projects
+
+[tool.tox]
+# Boundary check only: oldest and newest interpreter allowed by requires-python.
+# The versions in between are covered by whatever `.python-version` CI runs.
+env_list = ["py311", "py314"]
+requires = ["tox-uv>=1.36"]
+
+[tool.tox.env_run_base]
+description = "Run unit tests on {env_name}"
+runner = "uv-venv-lock-runner"
+with_dev = true
+# --no-cov: these runs must not append to the coverage report the primary run produces.
+commands = [["pytest", "--disable-warnings", "--no-cov", "-m", "unit"]]
 
 [tool.pytest.ini_options]
 addopts = [

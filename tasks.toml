@@ -115,6 +115,10 @@ run = "uv run pytest --disable-warnings --junitxml=reports/junit_sequential.xml 
 description = "Run unit tests against lowest-direct dependency resolution (lower-boundary check)"
 run = "UV_PYTHON=$(mise run python_min_version) uv sync --resolution lowest-direct && uv run pytest -m unit"
 
+["test:python_versions"]
+description = "Run unit tests on the oldest and newest supported Python (tox envs in pyproject.toml)"
+run = "uv run tox --parallel"
+
 ["test:coverage_reset"]
 description = "Reset test coverage data"
 run = "rm -rf .coverage reports/coverage*"
@@ -158,12 +162,13 @@ run = "uv run pre-commit run --all-files"
 description = "Run pre-push hooks on all files (unit tests)"
 run = "uv run pre-commit run --all-files --hook-stage pre-push"
 
-[merge_renovate]
-description = "Merge all origin/renovate/* branches into the current branch, preferring their side on conflicts"
+[merge_bots]
+description = "Merge all origin/renovate/* and origin/dependabot/* branches into the current branch, preferring their side on conflicts"
+alias = "merge_bots"
 run = """
 set -e
 git fetch --prune origin
-for branch in $(git for-each-ref --format='%(refname:short)' 'refs/remotes/origin/renovate/*'); do
+for branch in $(git for-each-ref --format='%(refname:short)' 'refs/remotes/origin/renovate/*' 'refs/remotes/origin/dependabot/*'); do
   echo "==> merging $branch"
   git merge --no-edit -X theirs "$branch" --no-verify || {
     echo "unresolvable conflict in $branch - resolve it, then 'git commit' and re-run this task"

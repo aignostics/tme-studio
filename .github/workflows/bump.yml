@@ -1,0 +1,62 @@
+name: "+ Release Bump"
+
+on:
+  workflow_dispatch:
+    inputs:
+      arguments:
+        description: "Optional arguments passed to `cz bump` (e.g. '--increment major --prerelease rc'). Leave empty for auto-detection from commit messages."
+        required: false
+        type: string
+        default: ""
+  workflow_call:
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          client-id: ${{ secrets.RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Setup Dev Environment
+        uses: ./.github/actions/setup-dev-env
+
+      - name: Configure git identity
+        run: |
+          git config user.name "aignostics-release-bot[bot]"
+          git config user.email "aignostics-release-bot[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        env:
+          BUMP_ARGS: ${{ inputs.arguments }}
+        # Force a full changelog rebuild instead of `cz bump`'s incremental mode: incremental mode
+        # matches CHANGELOG.md's latest entry to a git tag and hard-fails ("No tag found to do an
+        # incremental changelog") if that tag is missing, e.g. after a tag was deleted or never
+        # pushed. Truncating first makes every bump self-healing and independent of changelog/tag drift.
+        run: |
+          : > CHANGELOG.md
+          cz bump --no-verify --yes $BUMP_ARGS
+
+      - name: Update lockfile and amend bump commit
+        run: |
+          uv lock
+          git add uv.lock
+          git commit --amend --no-edit --no-verify
+          git tag -f "v$(cat VERSION)"
+
+      - name: Push version bump and tag
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: git push origin main --tags

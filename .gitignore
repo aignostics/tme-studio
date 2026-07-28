@@ -24,6 +24,7 @@ env/
 # Python virtual environment
 venv/
 .venv/
+.tox/
 
 # Python temps
 *.py[cdo]

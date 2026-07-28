@@ -1,0 +1,131 @@
+name: "+ Scheduled Test (Daily)"
+
+# Single daily run of the full suite via `mise run test:all`. The template ships a
+# staging/production x daily/hourly matrix on top of a reusable `workflow_call`
+# workflow; this repo is a public library with no deployment environments and no
+# WIF, so one cron entry point running everything is the whole requirement.
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  test-scheduled-daily:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Setup Dev Environment
+        uses: ./.github/actions/setup-dev-env
+
+      - name: Test / All
+        id: all
+        continue-on-error: true
+        uses: ./.github/actions/run-tests
+        with:
+          test-type: all
+          mise-task: test:all
+          skip-marker: skip:test:all
+          commit-message: ${{ github.event.head_commit.message }}
+
+      - name: Determine overall test status
+        id: test-status
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.all.outcome }}" == "failure" ]; then
+            echo "exit_code=1" >> "$GITHUB_OUTPUT"
+            echo "Test suite failed" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "exit_code=0" >> "$GITHUB_OUTPUT"
+            echo "Test suite passed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Heartbeat
+        if: always()
+        env:
+          BETTERSTACK_HEARTBEAT_URL: "${{ secrets.BETTERSTACK_HEARTBEAT_URL_DAILY }}"
+          TEST_EXIT_CODE: ${{ steps.test-status.outputs.exit_code }}
+          TEST_OUTCOME: ${{ steps.all.outcome }}
+        shell: bash
+        run: |
+          # Provide heartbeat to BetterStack for monitoring/alerting if heartbeat url is configured as secret
+          if [ -n "$BETTERSTACK_HEARTBEAT_URL" ]; then
+            BETTERSTACK_METADATA_PAYLOAD=$(jq -n \
+              --arg github_workflow "${{ github.workflow }}" \
+              --arg github_run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              --arg github_run_id "${{ github.run_id }}" \
+              --arg github_job "${{ github.job }}" \
+              --arg github_sha "${{ github.sha }}" \
+              --arg github_actor "${{ github.actor }}" \
+              --arg github_repository "${{ github.repository }}" \
+              --arg github_ref "${{ github.ref }}" \
+              --arg job_status "${{ job.status }}" \
+              --arg github_event_name "${{ github.event_name }}" \
+              --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+              --arg all_status "${TEST_OUTCOME}" \
+              '{
+                github: {
+                  workflow: $github_workflow,
+                  run_url: $github_run_url,
+                  run_id: $github_run_id,
+                  job: $github_job,
+                  sha: $github_sha,
+                  actor: $github_actor,
+                  repository: $github_repository,
+                  ref: $github_ref,
+                  event_name: $github_event_name
+                },
+                job: {
+                  status: $job_status,
+                },
+                tests: {
+                  all: $all_status
+                },
+                timestamp: $timestamp,
+              }'
+            )
+            curl \
+              --fail-with-body \
+              --silent \
+              --request POST \
+              --header "Content-Type: application/json" \
+              --data-binary "${BETTERSTACK_METADATA_PAYLOAD}" \
+              "${BETTERSTACK_HEARTBEAT_URL}/${TEST_EXIT_CODE}"
+            echo "INFO: Sent heartbeat to BetterStack with exit code '${TEST_EXIT_CODE}'"
+          else
+            echo "INFO: No BetterStack heartbeat URL configured, skipped heartbeat notification."
+          fi
+
+      - name: Publish test results
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
+        if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
+        with:
+          name: Test Results (Scheduled Daily)
+          path: reports/junit_*.xml
+          reporter: java-junit
+
+      - name: SonarQube Scan
+        if: ${{ !cancelled() && (env.GITHUB_WORKFLOW_RUNTIME != 'ACT') }}
+        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e # v8.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Fail workflow if any tests failed
+        if: always()
+        shell: bash
+        run: |
+          EXIT_CODE=${{ steps.test-status.outputs.exit_code }}
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "Workflow failed due to test failures"
+            exit "${EXIT_CODE}"
+          fi

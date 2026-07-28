@@ -51,8 +51,6 @@ jobs:
       packages: write
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      AIGNOSTICS_TME_STUDIO_LOGFIRE_TOKEN: ${{ secrets.AIGNOSTICS_TME_STUDIO_LOGFIRE_TOKEN }}
-      AIGNOSTICS_TME_STUDIO_SENTRY_DSN: ${{ secrets.AIGNOSTICS_TME_STUDIO_SENTRY_DSN }}
 
   publish_package:
     if: startsWith(github.ref, 'refs/tags/v')

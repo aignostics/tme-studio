@@ -20,17 +20,6 @@ backend = "aqua:cli/cli"
 "platforms.macos-x64" = { checksum = "sha256:4bd449df9ad639391bc62b8032546f0fe9edcd8526e06682a4f88abd8c5d163c", url = "https://github.com/cli/cli/releases/download/v2.96.0/gh_2.96.0_macOS_amd64.zip"}
 "platforms.windows-x64" = { checksum = "sha256:c2d6acc935cd2f00e2144d7e036d5cd82e6b6bd5594e8c75aa75ef2a4ed6aac3", url = "https://github.com/cli/cli/releases/download/v2.96.0/gh_2.96.0_windows_amd64.zip"}
 
-[[tools."github:minamijoyo/hcledit"]]
-version = "0.2.18"
-backend = "github:minamijoyo/hcledit"
-"platforms.linux-arm64" = { checksum = "sha256:e3a3773836d911170ef69d0d3ff8a3be02a37aed2eeece82b68e13444811907d", url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_arm64.tar.gz", url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772779"}
-"platforms.linux-arm64-musl" = { checksum = "sha256:e3a3773836d911170ef69d0d3ff8a3be02a37aed2eeece82b68e13444811907d", url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_arm64.tar.gz", url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772779"}
-"platforms.linux-x64" = { checksum = "sha256:5974db4486a7e7ecbcbce8b96cb77051419575858d0fc97d73af536b18baabe7", url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_amd64.tar.gz", url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772780"}
-"platforms.linux-x64-musl" = { checksum = "sha256:5974db4486a7e7ecbcbce8b96cb77051419575858d0fc97d73af536b18baabe7", url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_amd64.tar.gz", url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772780"}
-"platforms.macos-arm64" = { checksum = "sha256:164ccf392602b332116e7b3344b87ff25237a627144701d02c6d83e7c718049b", url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_darwin_arm64.tar.gz", url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772783"}
-"platforms.macos-x64" = { checksum = "sha256:52f643e9c441747dfd343164516b3e2959a79241ce42a1ac887ff55451bbe055", url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_darwin_amd64.tar.gz", url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772781"}
-"platforms.windows-x64" = { checksum = "sha256:256595df80b616bf211eceef878cef1c443a2f87f1205ae9b22f1a7c32f247cc", url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_windows_amd64.tar.gz", url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772812"}
-
 [[tools.jq]]
 version = "1.8.2"
 backend = "aqua:jqlang/jq"
