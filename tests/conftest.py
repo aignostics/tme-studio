@@ -2,11 +2,22 @@
 
 import logging
 import os
+import re
 
 import psutil
 import pytest
 
 logger = logging.getLogger(__name__)
+
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[mGKH]")
+
+
+def normalize_output(s: str, *, strip_line_endings: bool = True) -> str:
+    """Strip ANSI escape codes from CLI output."""
+    result = _ANSI_ESCAPE.sub("", s)
+    if strip_line_endings:
+        result = result.strip()
+    return result
 
 
 def pytest_xdist_auto_num_workers(config: pytest.Config) -> int:
@@ -34,7 +45,8 @@ def pytest_xdist_auto_num_workers(config: pytest.Config) -> int:
             "Set number of xdist workers to '%s' based on logical CPU count of %s.", num_workers, logical_cpu_count
         )
         return num_workers
-    return config.getoption("numprocesses")
+    result = config.getoption("numprocesses")
+    return int(result) if result is not None else 1
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:

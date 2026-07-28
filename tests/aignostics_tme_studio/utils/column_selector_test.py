@@ -1,10 +1,22 @@
 """Test module for the ColumnSelector element."""
 
+from typing import Any, cast
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from aignostics_tme_studio.utils import column_selector, data_classes, utils
+
+
+def dropdown_values(dropdowns) -> dict[str, Any]:
+    """Selected dropdown values, typed for keyword unpacking (marimo types them as `object`).
+
+    Returns:
+        The values of all dropdowns in the batch, keyed by dropdown name.
+    """
+    return cast("dict[str, Any]", dropdowns.value)
+
 
 MODEL_CONFIG = {
     "cell_cls": ["Carcinoma Cell", "Stroma", "Lymphocyte", "Macrophage"],
@@ -48,7 +60,7 @@ def test_column_selector_get_column_format(dummy_df) -> None:
     # Since `tissue_cls` is the x variable, we don't need a dropdown for it.
     assert len(dropdowns.value) == 1
 
-    df = selector.extract_feature_columns(df=dummy_df, **dropdowns.value)
+    df = selector.extract_feature_columns(df=dummy_df, **dropdown_values(dropdowns))
     assert len(df) == len(dummy_df)
     assert df.shape[1] == len(MODEL_CONFIG["tissue_cls"])
 
@@ -66,7 +78,7 @@ def test_column_selector_multiple_formatters(dummy_df) -> None:
     # 1 dropdown for selecting feature, 1 dropdown for selecting tissue type.
     assert len(dropdowns.value) == 2
 
-    df = selector.extract_feature_columns(df=dummy_df, **dropdowns.value)
+    df = selector.extract_feature_columns(df=dummy_df, **dropdown_values(dropdowns))
     assert len(df) == len(dummy_df)
     assert np.all([c in df.columns for c in MODEL_CONFIG["cell_cls"]])
 
@@ -80,7 +92,7 @@ def test_column_selector_anuclear_regions() -> None:
         model_config=MODEL_CONFIG,
     )
     dropdowns = selector.render_dropdowns()
-    assert "Necrosis" not in dropdowns["tissue_cls"].options
+    assert "Necrosis" not in cast("Any", dropdowns["tissue_cls"]).options
 
 
 @pytest.mark.unit
@@ -92,7 +104,7 @@ def test_column_selector_with_all_tissue(dummy_df) -> None:
         model_config=MODEL_CONFIG,
     )
     dropdowns = selector.render_dropdowns()
-    vals = dropdowns.value
+    vals = dropdown_values(dropdowns)
     vals["tissue_cls"] = None
     df = selector.extract_feature_columns(df=dummy_df, **vals)
     assert np.all([c in df.columns for c in MODEL_CONFIG["cell_cls"]])
@@ -108,5 +120,5 @@ def test_grouping_column_kept(dummy_df) -> None:
         model_config=MODEL_CONFIG,
     )
     dropdowns = selector.render_dropdowns()
-    df = selector.extract_feature_columns(df=dummy_df, **dropdowns.value, grouping_column="group")
+    df = selector.extract_feature_columns(df=dummy_df, **dropdown_values(dropdowns), grouping_column="group")
     assert "group" in df.columns

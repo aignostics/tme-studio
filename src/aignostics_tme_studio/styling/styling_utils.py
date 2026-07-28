@@ -25,7 +25,12 @@ def get_aignx_logo() -> mo.Html:
 
 
 def get_color_map(categories: list[str]) -> dict[str, str]:
-    """Get a discrete color map for a list of categories."""
+    """Get a discrete color map for a list of categories.
+
+    Returns:
+        Aignostics brand colors, keyed by category, cycled if there are more
+        categories than colors.
+    """
     color_map = {}
     for i, cat in enumerate(categories):
         color_map[cat] = aignx_colors[i % len(aignx_colors)]
@@ -34,6 +39,10 @@ def get_color_map(categories: list[str]) -> dict[str, str]:
 
 
 def load_css() -> mo.Html:
-    """Load stylesheet from github and return in HTML style tag."""
+    """Load stylesheet from github and return in HTML style tag.
+
+    Returns:
+        The stylesheet wrapped in a style tag, ready to render in a cell.
+    """
     css = requests.get(config.CSS_FILE_PATH, timeout=60).text
     return mo.Html(f"<style>{css}</style>")

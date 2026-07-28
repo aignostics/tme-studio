@@ -114,7 +114,7 @@ class KaplanMeierPlotter:
             if not color_map or not color_map.get(kmf.label):
                 color = aignx_colors[i % len(aignx_colors)]
             else:
-                color = color_map.get(kmf.label)
+                color = color_map[kmf.label]
 
             rgb = utils.hex_to_rgb(color)
 

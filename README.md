@@ -11,12 +11,12 @@
 
 Welcome to TME Studio! This readme explains the content of TME Studio, and the dataset it is built on:  [OpenTME](https://huggingface.co/datasets/Aignostics/OpenTME).
 
-New to TME Studio? Want to try out the notebooks right away without any set up required? [Try out our interactive demo via molab](https://molab.marimo.io/notebooks/nb_HKTV3XfnhNbsuPN1DwKZ3U/app). 
-Make sure you have [access to OpenTME on Hugging Face](#hugging-face-access), then open the link and start exploring. 
+New to TME Studio? Want to try out the notebooks right away without any set up required? [Try out our interactive demo via molab](https://molab.marimo.io/notebooks/nb_HKTV3XfnhNbsuPN1DwKZ3U/app).
+Make sure you have [access to OpenTME on Hugging Face](#hugging-face-access), then open the link and start exploring.
 
 
-Already familiar with TME Studio? You want to edit the notebooks and adapt them to your needs? 
-You can choose to either 
+Already familiar with TME Studio? You want to edit the notebooks and adapt them to your needs?
+You can choose to either
 * follow the setup instructions to [fork the notebooks into your molab workspace](#edit-notebooks-in-molab) OR
 * follow the setup instructions to [run the notebooks locally](#edit-notebooks-locally) .
 
@@ -29,7 +29,7 @@ You can choose to either
 ## What is OpenTME?
 OpenTME is an open-source project by [Aignostics](https://aignostics.com) that provides academic researchers with pre-computed quantitative TME (Tumor Micro-Environment) features across H&E-stained Whole-Slide Images (WSIs) from The Cancer Genome Atlas (TCGA). It provides comprehensive spatial outputs characterizing key cellular and tissue components of the TME, including cancer cells, immune cells, and stromal features, as well as their relationships within the tissue architecture.
 
-All outputs were generated using [Atlas H&E-TME](https://www.aignostics.com/products/he-tme-profiling-product), Aignostics' AI-powered computational pathology application for the automated identification and quantification of TME features in FFPE H&E-stained tissue samples. 
+All outputs were generated using [Atlas H&E-TME](https://www.aignostics.com/products/he-tme-profiling-product), Aignostics' AI-powered computational pathology application for the automated identification and quantification of TME features in FFPE H&E-stained tissue samples.
 
 
 ## What is TME Studio?
@@ -50,7 +50,7 @@ tme_studio/
             |-- examples/
             |-- tutorials/
 ```
-*Each folder is described below. Follow the links and click the "Fork" button to run the notebooks in molab (make sure 
+*Each folder is described below. Follow the links and click the "Fork" button to run the notebooks in molab (make sure
 you have [access to OpenTME on Hugging Face](#hugging-face-access), and a [molab](https://molab.marimo.io/) account).*
 
 * **Tutorials:** Step-by-step notebooks to help users get started, covering foundational tasks such as loading and exploring the dataset, and providing a guide through the OpenTME features.
@@ -65,26 +65,26 @@ you have [access to OpenTME on Hugging Face](#hugging-face-access), and a [molab
 
 * **Demo:** contains a demo notebook showcasing all features in OpenTME and some example analyses.
     1. [Demo](https://molab.marimo.io/notebooks/nb_HKTV3XfnhNbsuPN1DwKZ3U/app)
-  
+
 If you are unfamiliar with the OpenTME dataset, we suggest beginning at the [getting started](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py) notebook. To get a feeling for all the different features you can find in OpenTME, have a look at the [demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app).
 
 
-# Setup instructions 
+# Setup instructions
 ## Hugging Face access
-Regardless of how you decide to run the notebooks, you will need to get access to OpenTME on Hugging Face 🤗. 
+Regardless of how you decide to run the notebooks, you will need to get access to OpenTME on Hugging Face 🤗.
 ### Creating an access token
 1. Make sure you have a Hugging Face account. If you don't have one, you can create one for free at [hf.co/join](https://hf.co/join).
 2. Get access to the dataset by going to https://huggingface.co/datasets/Aignostics/OpenTME and clicking "Access"
 
 > Note: You will receive an email from Hugging Face as soon as your access request has been reviewed. This may take a few working days.
 
-> Note: No need to download the dataset! The tutorials will show you how to access the dataset via the Hugging Face API. 
+> Note: No need to download the dataset! The tutorials will show you how to access the dataset via the Hugging Face API.
 
 3. Create an access token by going to https://huggingface.co/settings/tokens
 
 ### Authenticating with your token
 You can now use your token in two ways:
-1. Enter it in the designated box for it inside each notebook. This is how you authenticate when you are running a notebook in molab. You will have to repeat this action each time you open a notebook. 
+1. Enter it in the designated box for it inside each notebook. This is how you authenticate when you are running a notebook in molab. You will have to repeat this action each time you open a notebook.
 2. Log in via the Hugging Face CLI (only when running notebooks locally). In this case your token will be stored and you won't have to enter your token each time you open a notebook.
 
     1. Download the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli)
@@ -97,9 +97,9 @@ and log in with your access token.
 > Note: If you invalidated your token, you can force logging in with a new token by calling `hf auth login \--force`
 
 
-## Edit notebooks in molab 
+## Edit notebooks in molab
 To edit your own copy of the TME Studio notebooks in molab, do the following:
-1. Open the notebook of choice via the link in the [content overview](#content-1) above. E.g. our 
+1. Open the notebook of choice via the link in the [content overview](#content-1) above. E.g. our
 [Demo](https://molab.marimo.io/notebooks/nb_6P1wbPYcPEN5GfXbUjVnpg/app) notebook.
 2. Create a molab account, via the "Sign In" button in the upper right corner.
 3. Click the "Fork" button.
@@ -188,26 +188,26 @@ Start marimo by calling the following command and opening the URL in your browse
 ```
 uv run marimo edit
 ```
-Use the marimo UI opened in your browser to navigate to the notebooks. 
+Use the marimo UI opened in your browser to navigate to the notebooks.
 
 Alternatively, you can run
 ```
 uv run marimo edit path/to/notebook.py
 ```
-to open a specific notebook directly.  
+to open a specific notebook directly.
 
 ## Citation
 If you use OpenTME or TME Studio in your research, please cite:
 ```
 @article{galama2026opentme,
-  title={{OpenTME}: An Open Dataset of {AI}-Powered {H\&E} Tumor 
+  title={{OpenTME}: An Open Dataset of {AI}-Powered {H\&E} Tumor
          Microenvironment Profiles from {TCGA}},
-  author={Galama, Maaike and Kozar-Gillan, Nina and Embacher, Christina 
-          and Dembo, Todd and B{\"o}hm, Cornelius and Ramberger, Evelyn 
-          and Ribbat-Idel, Julika and Krupar, Rosemarie and Aumiller, Verena 
-          and H{\"a}gele, Miriam and Standvoss, Kai and Erdmann, Gerrit 
-          and Pablos, Blanca and Angelo, Ari and Schallenberg, Simon 
-          and Norgan, Andrew and Matyas, Viktor and M{\"u}ller, Klaus-Robert 
+  author={Galama, Maaike and Kozar-Gillan, Nina and Embacher, Christina
+          and Dembo, Todd and B{\"o}hm, Cornelius and Ramberger, Evelyn
+          and Ribbat-Idel, Julika and Krupar, Rosemarie and Aumiller, Verena
+          and H{\"a}gele, Miriam and Standvoss, Kai and Erdmann, Gerrit
+          and Pablos, Blanca and Angelo, Ari and Schallenberg, Simon
+          and Norgan, Andrew and Matyas, Viktor and M{\"u}ller, Klaus-Robert
           and Alber, Maximilian and Ruff, Lukas and Klauschen, Frederick},
   journal={arXiv preprint arXiv:2604.12075},
   year={2026},

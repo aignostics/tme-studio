@@ -1,17 +1,28 @@
 [all]
-description = "Run all checks: lint, test, docs, audit"
+description = "Run all checks: lint, test, attributions, audit"
 depends = ["lint"]
 run = """
+mise run lint
 mise run test
-mise run docs
 mise run audit
+mise run attributions
+
+"""
+
+[format]
+description = "Fix formatting and code autofixes ruff can apply"
+run = """
+uv run --all-extras ruff format .
+uv run ruff check --fix .
 """
 
 [lint]
 description = "Run linting and formatting checks"
 run = """
-uv run ruff check --fix .
-uv run ruff format .
+uv run ruff check .
+uv run ruff format --check .
+uv run pyrefly check
+uv run deptry src
 """
 
 [install]
@@ -29,7 +40,7 @@ uv run pre-commit install
 [clean]
 description = "Clean build artifacts and caches"
 run = """
-rm -rf .nox .pytest_cache .ruff_cache .venv .coverage
+rm -rf .pytest_cache .ruff_cache .venv .coverage
 rm -rf dist && mkdir -p dist && touch dist/.keep
 rm -rf reports && mkdir -p reports && touch reports/.keep
 """
@@ -63,40 +74,101 @@ description = "Update from copier template"
 run = """
 copier update --trust --skip-answered --skip-tasks
 mise run lint
-mise run docs
 mise run audit
 """
 
 [test]
 description = "Run tests (default: unit+integration+e2e)"
 run = """
-mise run test_unit
-mise run test_integration
-mise run test_e2e
+mise run test:unit
+mise run test:integration
+mise run test:e2e
 """
 
-[test_unit]
+["test:unit"]
 description = "Run unit tests"
-run = "XDIST_WORKER_FACTOR=0.0 uv run nox -s test -p $(cat .python-version) -- -m unit --cov-append"
+run = "uv run pytest --disable-warnings --junitxml=reports/junit_unit.xml -m unit --cov-append"
 
-[test_integration]
+["test:integration"]
 description = "Run integration tests"
-run = "XDIST_WORKER_FACTOR=0.2 uv run nox -s test -p $(cat .python-version) -- -m integration --cov-append"
+run = """
+uv run pytest --disable-warnings --junitxml=reports/junit_integration_parallel.xml -n auto --dist worksteal -m "integration and not sequential" --cov-append || [ $? -eq 5 ]
+uv run pytest --disable-warnings --junitxml=reports/junit_integration_sequential.xml -m "integration and sequential" --cov-append || [ $? -eq 5 ]
+"""
 
-[test_e2e]
+["test:e2e"]
 description = "Run e2e tests"
-run = "XDIST_WORKER_FACTOR=1 uv run nox -s test -p $(cat .python-version) -- -m e2e --cov-append"
+run = """
+uv run pytest --disable-warnings --junitxml=reports/junit_e2e_parallel.xml -n auto --dist worksteal -m "e2e and not sequential" --cov-append || [ $? -eq 5 ]
+uv run pytest --disable-warnings --junitxml=reports/junit_e2e_sequential.xml -m "e2e and sequential" --cov-append || [ $? -eq 5 ]
+"""
 
+["test:scheduled"]
+description = "Run scheduled tests"
+run = "uv run pytest --disable-warnings --junitxml=reports/junit_scheduled.xml -m scheduled --cov-append"
+
+["test:sequential"]
+description = "Run sequential tests"
+run = "uv run pytest --disable-warnings --junitxml=reports/junit_sequential.xml -m sequential --cov-append"
+
+["test:lowest_direct"]
+description = "Run unit tests against lowest-direct dependency resolution (lower-boundary check)"
+run = "UV_PYTHON=$(mise run python_min_version) uv sync --resolution lowest-direct && uv run pytest -m unit"
+
+["test:coverage_reset"]
+description = "Reset test coverage data"
+run = "rm -rf .coverage reports/coverage*"
+
+
+["test:all"]
+description = "Reset run all the test types"
+run = """
+mise run test:unit
+mise run test:integration
+mise run test:e2e
+mise run test:scheduled
+mise run test:sequential
+mise run test:lowest_direct
+"""
 
 [audit]
 description = "Run security and license compliance audit"
-run = "uv run nox -s audit"
+usage = '''
+flag "--baseline <path>" help="Baseline prod audit JSON for PR diff mode (only new findings fail)"
+flag "--baseline-all <path>" help="Baseline all-packages audit JSON for PR diff mode (only new dev vuln findings fail)"
+'''
+run = "bash .mise/scripts/run_audit.sh ${usage_baseline:+--baseline \"$usage_baseline\"} ${usage_baseline_all:+--baseline-all \"$usage_baseline_all\"}"
 
-[docs]
-description = "Generate ATTRIBUTIONS.md from license data"
-run = "uv run nox -s docs"
+[attributions]
+description = "Generate reports/ATTRIBUTIONS.md from installed package licenses"
+run = "uv run python .mise/scripts/generate_attributions.py"
 
+[bump]
+description = "Trigger the Release Bump workflow on GitHub Actions"
+usage = 'arg "[cz_args]..." help="Arguments to pass to cz bump (e.g. --increment major --prerelease rc)"'
+run = """
+gh workflow run bump.yml -f arguments="${usage_cz_args:-}"
+"""
 
 [pre_commit_run_all]
 description = "Run pre-commit hooks on all files"
 run = "uv run pre-commit run --all-files"
+
+[pre_push_run_all]
+description = "Run pre-push hooks on all files (unit tests)"
+run = "uv run pre-commit run --all-files --hook-stage pre-push"
+
+[merge_renovate]
+description = "Merge all origin/renovate/* branches into the current branch, preferring their side on conflicts"
+run = """
+set -e
+git fetch --prune origin
+for branch in $(git for-each-ref --format='%(refname:short)' 'refs/remotes/origin/renovate/*'); do
+  echo "==> merging $branch"
+  git merge --no-edit -X theirs "$branch" --no-verify || {
+    echo "unresolvable conflict in $branch - resolve it, then 'git commit' and re-run this task"
+    exit 1
+  }
+done
+echo "done - now regenerate lockfiles: uv lock && mise install"
+"""

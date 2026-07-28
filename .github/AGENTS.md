@@ -32,10 +32,9 @@ This project uses a **comprehensive CI/CD pipeline** built on GitHub Actions wit
 +-----------------------------------------------------------+
 |                    Parallel Entry Points                   |
 +-----------------------------------------------------------+
-|  claude-code-*.yml        -> PR reviews                   |
-|  codeql-scheduled.yml     -> Security scanning (weekly)   |
-|  scheduled-audit-*.yml    -> Security audit               |
-|  git-conventions.yml      -> Commit message validation    |
+|  claude-code-*.yml        -> PR reviews (label-gated)     |
+|  audit-scheduled.yml      -> Security audit               |
+|  git-conventions.yml      -> Commit/PR title validation   |
 |  labels-sync.yml          -> GitHub labels management     |
 +-----------------------------------------------------------+
 ```
@@ -53,11 +52,11 @@ This project uses a **comprehensive CI/CD pipeline** built on GitHub Actions wit
 **Concurrency**:
 
 ```yaml
-group: cicd-${{ github.ref }}
+group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
 cancel-in-progress: true
 ```
 
-Cancels in-progress runs for same branch
+Cancels in-progress runs for same branch/PR
 
 **Skip Conditions**:
 
@@ -73,8 +72,7 @@ Cancels in-progress runs for same branch
 
 **What it does**:
 
-* Ruff format check
-* Ruff lint check
+* Runs `mise run pre_commit_run_all` (ruff format, ruff lint, pyrefly, secret detection)
 
 **Fail conditions**: Any check fails
 
@@ -86,8 +84,7 @@ Cancels in-progress runs for same branch
 
 **What it does**:
 
-* `pip-audit` for vulnerability scanning
-* `pip-licenses` for license compliance
+* `trivy` for vulnerability scanning, license compliance, and SBOM generation
 * SBOM generation (CycloneDX + SPDX)
 
 **Fail conditions**: Vulnerabilities found or non-compliant licenses
@@ -103,11 +100,10 @@ Cancels in-progress runs for same branch
 * Unit tests (parallel)
 * Integration tests (parallel)
 * E2E tests
-* Coverage reporting (Codecov + SonarCloud)
+* Coverage reporting (SonarQube)
 
 **Secrets required**:
 
-* `CODECOV_TOKEN`
 * `SONAR_TOKEN`
 
 ## Reusable Workflows
@@ -120,9 +116,7 @@ Cancels in-progress runs for same branch
 
 1. Checkout code
 2. Setup Python + uv
-3. Run `mise run lint`:
-   * `ruff format --check`
-   * `ruff check`
+3. Run `mise run pre_commit_run_all`
 
 **Exit on**: First failure
 
@@ -134,8 +128,8 @@ Cancels in-progress runs for same branch
 
 1. Setup environment
 2. Run `mise run audit`:
-   * `pip-audit` with JSON output
-   * `pip-licenses` with allowed list from `.license-types-allowed`
+   * `trivy` vulnerability scan with `.trivyignore` for known false positives
+   * `trivy` license scan with allowed list from `.license-types-allowed`
    * SBOM generation via Trivy
 
 **Artifacts**:
@@ -155,10 +149,10 @@ Cancels in-progress runs for same branch
 
 1. Setup environment (Python, uv)
 2. Run test categories:
-   * `mise run test_unit`
-   * `mise run test_integration`
-   * `mise run test_e2e`
-3. Upload coverage to Codecov and SonarCloud
+   * `mise run test:unit`
+   * `mise run test:integration`
+   * `mise run test:e2e`
+3. Upload coverage to Codecov and SonarQube
 
 ## Claude Code Integration
 
@@ -166,7 +160,7 @@ Cancels in-progress runs for same branch
 
 **Purpose**: Automated PR code review by Claude
 
-**Trigger**: PR opened/synchronized (excluding bot PRs)
+**Trigger**: PR events (opened, synchronize, labeled, etc.) when the `claude` label is applied; excludes dependabot and renovate bots
 
 **Review focus**:
 
@@ -183,13 +177,12 @@ Cancels in-progress runs for same branch
 
 ### `git-conventions.yml`
 
-**Purpose**: Validate branch names, commit messages, and PR titles
+**Purpose**: Validate commit messages and PR titles
 
 **Trigger**: PR opened/edited/synchronized/reopened
 
 **Checks**:
 
-* Branch name format (e.g., `feat/description`, `fix/description`)
 * Conventional commit format for all PR commits
 * PR title format (for squash merges)
 
@@ -217,53 +210,13 @@ Cancels in-progress runs for same branch
 * Updates existing labels
 * Removes unlisted labels (optional)
 
-## CodeQL Security Scanning
-
-### `codeql-scheduled.yml`
-
-**Purpose**: Static analysis for security vulnerabilities
-
-**Trigger**: Weekly schedule (Tuesdays at 3:22 AM UTC)
-
-**What it does**:
-
-* Analyzes Python code for security vulnerabilities
-* Analyzes GitHub Actions workflow files for misconfigurations
-* Reports findings to GitHub Security tab
-
-**Languages scanned**:
-
-* Python (build-mode: none)
-* GitHub Actions (build-mode: none)
-
-**No secrets required**: Uses built-in GitHub token
-
-### `_codeql.yml`
-
-**Purpose**: Reusable CodeQL analysis workflow
-
-**Steps**:
-
-1. Checkout code
-2. Initialize CodeQL
-3. Autobuild (minimal for Python)
-4. Perform analysis
-
-**Permissions**:
-
-* `actions: read`
-* `contents: read`
-* `packages: read`
-* `security-events: write`
-
 ## Secrets Management
 
 **Required GitHub Secrets**:
 
 **Code Quality**:
 
-* `CODECOV_TOKEN` - Codecov coverage reporting
-* `SONAR_TOKEN` - SonarCloud analysis
+* `SONAR_TOKEN` - SonarQube analysis
 
 **Claude Code**:
 
@@ -283,15 +236,16 @@ mise run lint
 
 * Formatting: `ruff format .`
 * Linting: `ruff check . --fix`
+* Type errors: Check Pyrefly output
 
 ### Test Failures
 
 **Reproduce locally**:
 
 ```bash
-mise run test_unit
-mise run test_integration
-mise run test_e2e
+mise run test:unit
+mise run test:integration
+mise run test:e2e
 ```
 
 **Check CI logs**:
@@ -322,8 +276,8 @@ mise run test_e2e
 
 | Job | Duration | Notes |
 |-----|----------|-------|
-| Lint | ~5 min | Ruff |
-| Audit | ~3 min | pip-audit + licenses + SBOM |
+| Lint | ~5 min | Ruff + Pyrefly (via pre-commit) |
+| Audit | ~3 min | trivy (vulns + licenses + SBOM) |
 | Test | ~15 min | Unit + integration + e2e |
 | Full pipeline | ~25 min | All quality gates |
 
@@ -334,8 +288,7 @@ mise run test_e2e
 
 ### Parallelization
 
-* **Test matrix**: Python 3.11-3.12
-* **Test parallelization**: Via pytest-xdist
+* **Test parallelization**: Via pytest-xdist (single Python version from `.python-version`)
 * **Job parallelization**: Lint, audit, test run in parallel
 
 ## Best Practices

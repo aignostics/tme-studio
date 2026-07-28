@@ -84,6 +84,9 @@ def plot_distribution(
         xtitle: Label to use on the x-axis.
         ytitle: Label to use on the y-axis.
 
+    Returns:
+        The plotly figure holding one distribution per dataframe column.
+
     Raises:
         ValueError: If plot_type is not available.
     """

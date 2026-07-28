@@ -1,12 +1,63 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Berlin",
+  "schedule": ["at any time"],
+  "minimumReleaseAge": "14 days",
+  "automerge": true,
+  "automergeType": "pr",
+  "internalChecksFilter": "strict",
+  "platformAutomerge": "true",
+  "labels": ["bot", "renovate", "dependencies"],
+  "ignorePaths": ["plugins/manifest/package.json"],
+  "pre-commit": {
+    "enabled": true
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true,
+    "minimumReleaseAge": null
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on monday"]
+  },
   "packageRules": [
     {
+      "description": "Widen Python dependency ranges to maximise library compatibility",
+      "matchManagers": ["pep621"],
+      "rangeStrategy": "widen"
+    },
+    {
+      "groupName": "minor and patch dependencies",
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "groupName": "GitHub Actions",
       "matchManagers": ["github-actions"],
-      "pinDigests": true
+      "separateMajorMinor": false
+    },
+    {
+      "groupName": "pre-commit hooks",
+      "matchManagers": ["pre-commit"],
+      "separateMajorMinor": false
+    },
+    {
+      "groupName": "mise tools",
+      "matchManagers": ["mise"],
+      "separateMajorMinor": false
+    },
+    {
+      "description": "Bypass delay for security tools",
+      "matchPackageNames": [
+        "trivy",
+        "aquasecurity/trivy-action"
+      ],
+      "minimumReleaseAge": null,
+      "automerge": true,
+      "automergeType": "pr",
+      "groupName": "security-tool-updates"
     }
   ]
 }

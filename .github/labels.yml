@@ -90,10 +90,6 @@
   description: Skip unit tests
   color: "614318"
 
-- name: skip:codecov
-  description: Skip Codecov reporting and check
-  color: "8b4513"
-
 # AI Assistant Labels
 - name: claude
   description: Trigger Claude Code automation

@@ -158,7 +158,7 @@ def _(df, labels, mo):
     To find out why these slides are marked as outliers, let's have a look at the QC segmentation maps our outliers.
     Select a slide from the dropdown for visual inspection. The average relative area for `Valid tissue` in these slides
     is {round(df["RELATIVE_AREA_VALID_TISSUE"].mean())}%. We expect our outliers to have large invalid tissue regions.
-    """)  # noqa: S608
+    """)  # ruff: ignore[hardcoded-sql-expression]
     outliers = list(df[labels == "outlier"].TCGA_FILE_NAME)
     dropdown = mo.ui.dropdown(options=outliers, value=outliers[0])
 

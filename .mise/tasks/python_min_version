@@ -1,0 +1,10 @@
+#!/usr/bin/env -S uvx --with packaging python
+# mise description="Print the minimum Python version from pyproject.toml requires-python"
+import tomllib
+from packaging.specifiers import SpecifierSet
+
+with open("pyproject.toml", "rb") as f:
+    raw = tomllib.load(f)["project"]["requires-python"]
+
+spec = SpecifierSet(raw)
+print(min(s.version for s in spec if s.operator in (">=", "~=", "==")))

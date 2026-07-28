@@ -20,10 +20,18 @@ repos:
       - id: rst-inline-touching-normal
       - id: text-unicode-replacement-char
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v5.0.0
     hooks:
+      - id: check-added-large-files
+        exclude: |
+          (?x)^(
+            mise\.lock|
+            uv\.lock
+          )$
       - id: check-case-conflict
       - id: check-illegal-windows-names
+      - id: check-merge-conflict
+        args: ["--assume-in-merge"]
       - id: check-shebang-scripts-are-executable
       - id: check-symlinks
       - id: check-toml
@@ -39,30 +47,36 @@ repos:
         exclude: "constants.py|conftest.py|__init__.py"
       - id: requirements-txt-fixer
       - id: trailing-whitespace
-        exclude: "docs/source/_static|ATTRIBUTIONS.md||API_REFEREENCE"
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
         additional_dependencies: ["gibberish-detector"]
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.0
-    hooks:
-      - id: uv-lock
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.13.9
+    rev: v4.8.3
     hooks:
       - id: commitizen
         stages: [commit-msg]
   - repo: local
     hooks:
       - id: mise-lock
+        # always_run, not `files: ^mise\.toml$`: mise itself appends platform checksums to
+        # mise.lock as it installs tools, so the lock drifts without mise.toml ever changing.
+        # Fixing it here means a push never fails on it.
         name: Update mise.lock
         entry: bash -c 'mise lock && git add mise.lock'
         language: system
         pass_filenames: false
-        files: ^mise\.toml$
+        always_run: true
+        stages: [pre-commit]
+
+      - id: uv-lock
+        name: Update uv.lock
+        entry: bash -c 'uv lock && git add uv.lock'
+        language: system
+        pass_filenames: false
+        files: ^(pyproject\.toml|uv\.lock)$
         stages: [pre-commit]
       - id: lint
         name: Lint
@@ -72,19 +86,12 @@ repos:
         always_run: true
         verbose: true
         stages: [pre-commit]
-      - id: docs
-        name: Docs
-        entry: bash -c 'mise run docs'
-        language: system
-        pass_filenames: false
-        always_run: true
-        verbose: true
-        stages: [pre-push]
+
       - id: test-unit
         name: Test (unit)
-        entry: bash -c 'mise run test_unit'
+        entry: bash -c 'mise run test:unit'
         language: system
         pass_filenames: false
-        files: \.(py|toml)$|^conftest\.py$|^noxfile\.py$
+        files: \.(py|toml)$|^conftest\.py$
         verbose: true
         stages: [pre-push]

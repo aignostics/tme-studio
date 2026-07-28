@@ -2,31 +2,56 @@ name: "Audit"
 
 on:
   workflow_call:
-    # No inputs needed at this time
-    secrets:
-      GCP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
+    inputs:
+      mode:
+        description: "'strict' fails on any finding; 'pr' fails only on new findings vs base_ref"
+        type: string
+        default: strict
+      base_ref:
+        description: "Base branch ref for PR diff mode (e.g. 'main')"
+        type: string
+        default: ""
 
 jobs:
   audit:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
       packages: read
     steps:
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
 
       - name: Setup Dev Environment
         uses: ./.github/actions/setup-dev-env
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Audit baseline (base branch)
+        if: ${{ inputs.mode == 'pr' && inputs.base_ref != '' }}
+        env:
+          BASE_REF: ${{ inputs.base_ref }}
+        run: |
+          mkdir -p reports
+          git fetch origin "${BASE_REF}"
+          git worktree add /tmp/audit-baseline "origin/${BASE_REF}"
+          (cd /tmp/audit-baseline && bash .mise/scripts/run_audit.sh --scan-only)
+          cp /tmp/audit-baseline/reports/audit-prod.json "$GITHUB_WORKSPACE/reports/audit-baseline.json"
+          cp /tmp/audit-baseline/reports/audit-all.json "$GITHUB_WORKSPACE/reports/audit-all-baseline.json"
+          git worktree remove --force /tmp/audit-baseline
 
       - name: Audit
-        run: mise run audit
+        env:
+          AUDIT_MODE: ${{ inputs.mode }}
+        run: |
+          if [[ "${AUDIT_MODE}" == "pr" ]]; then
+            mise run audit --baseline reports/audit-baseline.json --baseline-all reports/audit-all-baseline.json
+          else
+            mise run audit
+          fi
+
+      - name: Generate attributions
+        run: mise run attributions
 
       - name: Upload audit results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -34,10 +59,11 @@ jobs:
         with:
           name: audit-results
           path: |
+            reports/audit-prod.json
+            reports/audit-all.json
+            reports/audit-baseline.json
+            reports/audit-all-baseline.json
             reports/sbom.json
             reports/sbom.spdx
-            reports/licenses.csv
-            reports/licenses.json
-            reports/licenses_grouped.json
-            reports/vulnerabilities.json
+            reports/ATTRIBUTIONS.md
           retention-days: 30

@@ -350,7 +350,7 @@ def _(df, features, mo, model_variables, utils):
 
 
 @app.cell(hide_code=True)
-def _(df, features, mo, model_variables, utils):
+def _(config, df, features, mo, model_variables, utils):
     _cls = model_variables["tissue_cls"]
     _feats = features["cell_in_tissue_features"]
 
@@ -369,7 +369,7 @@ def _(df, features, mo, model_variables, utils):
     _columns = []
 
     # Features are not available for anucleated regions blood and necrosis. Filter them from the tissue classes.
-    tissues_with_cells = [cls for cls in _cls if cls not in ["Blood", "Necrosis"]]
+    tissues_with_cells = [cls for cls in _cls if cls not in config.ANUCLEATED_AREAS]
 
     for _tissue_cls in tissues_with_cells:
         for _cell_cls in model_variables["cell_cls"]:

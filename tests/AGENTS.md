@@ -66,7 +66,7 @@ def test_service_initialization(mock_client):
 **Run locally**:
 
 ```bash
-mise run test_unit
+mise run test:unit
 # Or: pytest -m "unit" -v
 ```
 
@@ -98,7 +98,7 @@ def test_database_persistence(db_session):
 **Run locally**:
 
 ```bash
-mise run test_integration
+mise run test:integration
 # Or: pytest -m "integration" -v
 ```
 
@@ -115,7 +115,7 @@ mise run test_integration
 **Run locally**:
 
 ```bash
-mise run test_e2e
+mise run test:e2e
 # Or: pytest -m "e2e" -v
 ```
 
@@ -132,7 +132,7 @@ mise run test_e2e
 **Run locally**:
 
 ```bash
-mise run test_sequential
+mise run test:sequential
 # Or: pytest -m sequential -v
 ```
 
@@ -176,16 +176,19 @@ def pytest_sessionfinish(session, exitstatus) -> None:
 mise run test
 
 # By category
-mise run test_unit              # Unit tests only
-mise run test_integration       # Integration tests only
-mise run test_e2e               # E2E tests (may require .env)
+mise run test:unit              # Unit tests only
+mise run test:integration       # Integration tests only
+mise run test:e2e               # E2E tests (may require .env)
 
 # Special categories
-mise run test_scheduled         # Scheduled tests only
-mise run test_sequential        # Sequential tests only
+mise run test:scheduled         # Scheduled tests only
+mise run test:sequential        # Sequential tests only
+
+# Lower-bound dependency check (library only)
+mise run test:lowest_direct     # Unit tests with lowest-direct resolution
 
 # Coverage reset
-mise run test_coverage_reset
+mise run test:coverage_reset
 ```
 
 ### Direct Pytest Commands
@@ -221,30 +224,12 @@ pytest -n 4  # Fixed 4 workers
 
 ## Test Parallelization
 
-### Worker Configuration
+Integration and e2e tests run in two phases via `tasks.toml`:
 
-From `noxfile.py` and `mise.toml`:
+1. **Parallel phase** — `not sequential` tests via `pytest-xdist` with `-n auto`
+2. **Sequential phase** — `sequential` tests without xdist (protects shared state)
 
-```python
-XDIST_WORKER_FACTOR = {
-    "unit": 0.0,  # No parallelization (fast enough)
-    "integration": 0.2,  # 20% of logical CPUs
-    "e2e": 1.0,  # 100% of logical CPUs (I/O bound)
-    "default": 1.0,
-}
-```
-
-**Example** (8 CPU machine):
-
-- unit: `1 worker` (sequential)
-- integration: `max(1, int(8 * 0.2))` = `1 worker`
-- e2e: `max(1, int(8 * 1.0))` = `8 workers`
-
-### Why Different Factors?
-
-- **Unit tests (0.0)**: Fast enough that parallelization overhead hurts
-- **Integration (0.2)**: Some I/O but mostly CPU-bound
-- **E2E (1.0)**: Network I/O bound, full parallelization maximizes throughput
+Unit tests run without xdist (fast enough that parallelization overhead hurts).
 
 ## Coverage Requirements
 

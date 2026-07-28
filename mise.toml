@@ -1,13 +1,14 @@
 [tools]
 act = "0.2.89"
-gh = "2.95.0"
+"github:minamijoyo/hcledit" = "0.2.18"
+gh = "2.96.0"
 jq = "1.8.2"
 "pipx:keyring" = { version = "25.7.0", uvx_args = "--with keyrings.google-artifactregistry-auth" }
-trivy = "0.69.2"
-uv = "0.11.32"
+trivy = "0.72.0"
+uv = "0.11.26"
 
 [settings]
-lockfile = true # Pins exact versions and checksums of tools
+# lockfile = true # Pins exact versions and checksums of tools -- temporarily off, GitHub API rate limit
 python.uv_venv_auto = "create|source"
 
 # tools can read the versions files used by other version managers

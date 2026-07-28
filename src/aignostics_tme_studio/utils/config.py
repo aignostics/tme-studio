@@ -4,6 +4,10 @@ REPO_ID = "aignostics/OpenTME"
 
 TISSUE_FEATURES_FILES = "data/{}/tme_features_{}_RUO.csv"
 
+# Cell Detection finds no cell nuclei in these tissue classes, so cell-in-tissue
+# features are not available for them.
+ANUCLEATED_AREAS = frozenset({"Blood", "Necrosis"})
+
 INDICATIONS = ["bladder_cancer", "breast_cancer", "lung_cancer", "colorectal_cancer", "liver_cancer"]
 
 THUMBNAIL_FILES = ["wsi.png", "tissue_qc.png", "tissue_segmentation.png", "cell_classification.png"]
