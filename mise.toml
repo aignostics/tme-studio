@@ -7,7 +7,7 @@ trivy = "0.72.0"
 uv = "0.11.26"
 
 [settings]
-# lockfile = true # Pins exact versions and checksums of tools -- temporarily off, GitHub API rate limit
+lockfile = true # Pins exact versions and checksums of tools
 python.uv_venv_auto = "create|source"
 
 # tools can read the versions files used by other version managers
