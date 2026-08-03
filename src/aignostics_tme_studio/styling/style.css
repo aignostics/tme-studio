@@ -56,15 +56,15 @@
 
     /* Muted elements (hover fullscreen, cell action) */
   --muted: light-dark(var(--aignx-lilac), var(--aignx-neutral-dark));
-  --muted-foreground: light-dark(var(--aignx-neutral), hsl(155deg 5% 68.3%)); 
+  --muted-foreground: light-dark(var(--aignx-neutral), hsl(155deg 5% 68.3%));
 
     /* Popovers (menus, snippet panels) */
   --popover: light-dark(var(--aignx-white), var(--aignx-dark-purple));
-  --popover-foreground:  light-dark(var(--aignx-dark-purple), var(--aignx-white)); 
+  --popover-foreground:  light-dark(var(--aignx-dark-purple), var(--aignx-white));
 
     /* Popovers (menus, snippet panels) */
   --radix-popper: light-dark(var(--aignx-white), var(--aignx-primary));
-  --radix-popper-foreground:  light-dark(var(--aignx-dark-purple), var(--aignx-white)); 
+  --radix-popper-foreground:  light-dark(var(--aignx-dark-purple), var(--aignx-white));
 
   /* Cards (even table rows; md tables) */
   --card: light-dark(var(--white), var(--aignx-darkest-purple));
@@ -85,7 +85,7 @@
   /* Accent (floating outlines, left panels) */
   --accent: light-dark(var(--aignx-lilac), var(--aignx-primary));
   --accent-foreground: light-dark(var(--aignx-dark-purple), var(--white));
-  
+
   /* Feedback colors */
   --error: var(--aignx-pink);
   --error-foreground: var(--aignx-dark-purple);

@@ -80,6 +80,8 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(hf_token, pd):
     # Download the OpenTME Bladder dataset features
+    from collections.abc import Callable
+
     from huggingface_hub import errors, hf_hub_download
 
     from aignostics_tme_studio.utils import config as hf_files
@@ -88,7 +90,7 @@ def _(hf_token, pd):
     hf_access_warning = """***⚠️ Enter your Hugging Face token to be able to download the dataset and use this
         notebook.***"""
 
-    def run_with_token(fn: callable):
+    def run_with_token(fn: Callable[..., tuple]):
         token = hf_token.value or None  # don't pass an empty string, instead pass None
         try:
             return fn(token=token), None
@@ -112,7 +114,7 @@ def _(hf_token, pd):
         return df, df_meta
 
     _result, _warning = run_with_token(load_data)
-    if _warning:
+    if _result is None:
         df = pd.DataFrame()
         df_meta = pd.DataFrame()
         _warning
@@ -153,6 +155,8 @@ def _(df, hf_access_warning, hf_files, mo):
         _res = mo.vstack([tcga_file_dropdown, thumbnail_dropdown])
 
     else:
+        tcga_file_dropdown = None
+        thumbnail_dropdown = None
         _res = mo.md(hf_access_warning)
     _res
     return tcga_file_dropdown, thumbnail_dropdown
@@ -203,6 +207,7 @@ def _(df, df_meta, hf_access_warning, mo):
         grouping_column = mo.ui.dropdown(label="Select grouping column", options=_options)
         _res = grouping_column
     else:
+        grouping_column = None
         _res = mo.md(hf_access_warning)
     _res
     return (grouping_column,)
@@ -246,7 +251,7 @@ def _(hf_files, hf_hub_download, run_with_token, utils):
         return model_variables, features
 
     _result, _warning = run_with_token(get_settings)
-    if _warning:
+    if _result is None:
         model_variables = None
         features = None
         _warning
@@ -275,6 +280,8 @@ def _(column_selector, df, features, model_variables):
         cc_dropdowns = cc_col_selector.render_dropdowns()
         _res = cc_dropdowns
     else:
+        cc_col_selector = None
+        cc_dropdowns = None
         _res = None
     _res
     return cc_col_selector, cc_dropdowns
@@ -342,6 +349,8 @@ def _(column_selector, df, features, model_variables):
         nb_dropdowns = nb_col_selector.render_dropdowns()
         _res = nb_dropdowns
     else:
+        nb_col_selector = None
+        nb_dropdowns = None
         _res = None
     _res
     return nb_col_selector, nb_dropdowns
@@ -457,6 +466,8 @@ def _(df, dropdown_metric, hf_access_warning, mo):
         """)
         _res = mo.vstack([carcinoma_thresh, stroma_thresh, _md])
     else:
+        carcinoma_thresh = None
+        stroma_thresh = None
         _res = mo.md(hf_access_warning)
     _res
     return carcinoma_thresh, stroma_thresh

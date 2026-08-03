@@ -1,0 +1,13 @@
+_commit: v2.2.0
+_src_path: git@github.com:aignostics/foundry-python.git
+author_email: support@aignostics.com
+author_github_username: MaaikeG
+author_name: Maaike Galama
+distribution_name: aignostics-tme-studio
+github_repository_name: tme-studio
+import_package_name: aignostics_tme_studio
+project_description: A toolkit to explore the Aignostics OpenTME dataset.
+project_icon: 🎨
+project_name: TME Studio
+project_type: library
+slack_notifications_enabled: false

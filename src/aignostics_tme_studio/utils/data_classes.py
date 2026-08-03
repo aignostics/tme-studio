@@ -1,3 +1,5 @@
+"""Data classes describing OpenTME features."""
+
 from attr import dataclass
 
 
@@ -12,7 +14,8 @@ class Feature:
     def __str__(self) -> str:
         """Format stat as string, using name and unit.
 
-        Returns label string, e.g. "Relative area (%)" or "Region count".
+        Returns:
+            Label string, e.g. "Relative area (%)" or "Region count".
         """
         y_label = self.name
         if self.unit is not None:

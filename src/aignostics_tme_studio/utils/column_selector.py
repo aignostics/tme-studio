@@ -6,8 +6,9 @@ import marimo as mo
 import pandas as pd
 
 from aignostics_tme_studio.utils import utils
+from aignostics_tme_studio.utils.config import ANUCLEATED_AREAS
 from aignostics_tme_studio.utils.data_classes import Feature
-from aignostics_tme_studio.utils.ui_constants import ALL_TISSUES, DROPDOWN_LABELS
+from aignostics_tme_studio.utils.ui_constants import ALL_TISSUES, DROPDOWN_LABELS, TISSUE_CLS
 
 
 def _replace_column_headers(df: pd.DataFrame, columns_map: dict[str, str]) -> pd.DataFrame:
@@ -87,7 +88,7 @@ class FeatureColumnSelector:
 
         self.dropdowns = self._create_dropdowns()
 
-    def render_dropdowns(self) -> mo.Html:
+    def render_dropdowns(self) -> mo.ui.batch:
         """Render dropdowns.
 
         Returns:
@@ -150,6 +151,9 @@ class FeatureColumnSelector:
         2. The dictionary of model_variables contains the placeholders as keys.
 
         E.g. for placeholder {cell_cls} we find the list of cell classes under the key 'cell_cls' in the dictionary.
+
+        Returns:
+            The model output classes available for the placeholder.
         """
         # In case there are multiple placeholders with the same name they are differentiated by post-fixing them.
         # Just compare to the starting substring.
@@ -162,12 +166,19 @@ class FeatureColumnSelector:
 
         We assume that all features have the same placeholders, so we only look at the first one.
         We also filter out the x variable, since that is not a dropdown we want to create.
+
+        Returns:
+            The placeholder names, excluding `x_variable`.
         """
         placeholders = list(string.Formatter().parse(self.features[0].formatter))
         return [v[1] for v in placeholders if v[1] is not None and v[1] != self.x_variable]
 
     def _create_dropdowns(self) -> dict[str, mo.ui.dropdown]:
-        """Create dropdowns to select features and values for each placeholder."""
+        """Create dropdowns to select features and values for each placeholder.
+
+        Returns:
+            One dropdown per placeholder, plus the "feat" feature dropdown.
+        """
         dropdowns = {"feat": _features_to_dropdown(self.features, label=DROPDOWN_LABELS["feat"])}
         for key in self.placeholders:
             values = self._get_model_variables_for_placeholder(key)
@@ -204,11 +215,14 @@ class NoAnucleatedAreasFeatureColumnSelector(FeatureColumnSelector):
         """Get model output classes for the given placeholder.
 
         Remove anucleated areas for these features.
+
+        Returns:
+            The model output classes available for the placeholder, without anucleated areas.
         """
         output_classes = super()._get_model_variables_for_placeholder(placeholder)
 
-        if placeholder == "tissue_cls":
-            output_classes = [c for c in output_classes if c not in ["Blood", "Necrosis"]]
+        if placeholder == TISSUE_CLS:
+            output_classes = [c for c in output_classes if c not in ANUCLEATED_AREAS]
         return output_classes
 
 
@@ -221,19 +235,23 @@ class CellInTissueFeatureColumnSelector(NoAnucleatedAreasFeatureColumnSelector):
     - Allow "All tissue" option that removes the "_{tissue_cls}" column postfix.
     """
 
-    def _create_dropdowns(self):
+    def _create_dropdowns(self) -> dict[str, mo.ui.dropdown]:
         dropdowns = super()._create_dropdowns()
-        dropdowns["tissue_cls"] = mo.ui.dropdown(
-            options={ALL_TISSUES: None} | dropdowns["tissue_cls"].options,
+        dropdowns[TISSUE_CLS] = mo.ui.dropdown(
+            options={ALL_TISSUES: None} | dropdowns[TISSUE_CLS].options,
             allow_select_none=False,
             value=ALL_TISSUES,
-            label=DROPDOWN_LABELS["tissue_cls"],
+            label=DROPDOWN_LABELS[TISSUE_CLS],
         )
 
         return dropdowns
 
     def get_column_format(self, *args, **kwargs) -> str:
-        """Get feature with filled placeholders and remove _IN_None postfix if "All tissue types" is selected."""
+        """Get feature with filled placeholders and remove _IN_None postfix if "All tissue types" is selected.
+
+        Returns:
+            Formatter string with all placeholders resolved except for `x_variable`.
+        """
         column = super().get_column_format(*args, **kwargs)
         # When no tissue is selected, the formatter ends with "_IN_None". Remove it entirely so the
         # resulting column name matches the slide-level aggregate columns in the CSV (e.g.

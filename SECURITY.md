@@ -8,14 +8,13 @@ TME Studio employs several automated tools to continuously monitor and improve s
 
 a. **[GitHub Dependabot](https://github.com/dependabot)**: Detects vulnerabilities in dependencies (including transitive) and creates security update PRs. [Dependabot alerts](https://github.com/aignostics/tme-studio/security/dependabot) published.
 b. **[Renovate](https://www.mend.io/renovate/)**: Automates version updates for direct dependencies and maintains lock file freshness to keep transitive dependencies current. [Dependency Dashboard](https://github.com/aignostics/tme-studio/issues?q=is%3Aissue%20state%3Aopen%20Dependency%20Dashboard) published.
-c. **[pip-audit](https://pypi.org/project/pip-audit/)**: Pre commit to GitHub scans Python dependencies for known vulnerabilities using data from the [Python Advisory Database](https://github.com/pypa/advisory-database). `vulnerabilities.json` published [per release](https://github.com/aignostics/tme-studio/releases).
-d. **[trivy](https://trivy.dev/latest/)**: Pre commit to GitHub scans Python dependencies for known vulnerabilities using data from [GitHub Advisory Database](https://github.com/advisories?query=ecosystem%3Apip) and [OSV.dev](https://osv.dev/list?q=&ecosystem=PyPI). `sbom.spdx` published [per release](https://github.com/aignostics/tme-studio/releases).
+c. **[trivy](https://trivy.dev/latest/)**: Pre commit to GitHub scans Python dependencies for known vulnerabilities using data from [GitHub Advisory Database](https://github.com/advisories?query=ecosystem%3Apip) and [OSV.dev](https://osv.dev/list?q=&ecosystem=PyPI). `vulnerabilities.json` published [per release](https://github.com/aignostics/tme-studio/releases).
 
 ### 2. License Compliance Checks and Software Bill of Materials (SBOM)
 
-a. **[pip-licenses](https://pypi.org/project/pip-licenses/)**: Inspects and matches the licenses of all dependencies with allow list to ensure compliance with licensing requirements and avoid using components with problematic licenses. `licenses.csv`, `licenses.json` and `licenses_grouped.json` published [per release](https://github.com/aignostics/tme-studio/releases).
-a. **[cyclonedx-py](https://github.com/CycloneDX/cyclonedx-python)**: Generates Software Bill of Materials (SBOM) in [CycloneDX](https://cyclonedx.org/) format, listing all components and dependencies used in the project. `sbom.json` published [per release](https://github.com/aignostics/tme-studio/releases).
-d. **[trivy](https://trivy.dev/latest/)**: Generates Software Bill of Materials (SBOM) in [SPDX](https://spdx.dev/) format, listing all components and dependencies used in the project. `sbom.spdx` published [per release](https://github.com/aignostics/tme-studio/releases).
+a. **[trivy](https://trivy.dev/latest/)** (license scanning): Inspects and matches the licenses of all dependencies with an allow list to ensure compliance with licensing requirements and avoid using components with problematic licenses. `licenses.json` published [per release](https://github.com/aignostics/tme-studio/releases).
+b. **[trivy](https://trivy.dev/latest/)** (CycloneDX SBOM): Generates Software Bill of Materials in [CycloneDX](https://cyclonedx.org/) format including per-component license and vulnerability data. `sbom.json` published [per release](https://github.com/aignostics/tme-studio/releases).
+c. **[trivy](https://trivy.dev/latest/)** (SPDX SBOM): Generates Software Bill of Materials in [SPDX](https://spdx.dev/) format from the full dependency lock file including dev deps. `sbom.spdx` published [per release](https://github.com/aignostics/tme-studio/releases).
 
 ### 3. Static Code Analysis
 

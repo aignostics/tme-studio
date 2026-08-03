@@ -1,5 +1,7 @@
 """Test module for Kaplan Meier plots."""
 
+from typing import Any, cast
+
 import numpy as np
 import pytest
 from lifelines import KaplanMeierFitter
@@ -30,12 +32,13 @@ def test_kaplan_meier_plotter(dummy_kmf) -> None:
 
     fig = plotter.render(kmfs=[dummy_kmf])
     assert isinstance(fig, go.Figure)
-    assert len(fig.data) == 4  # graph, upper and lower CI limit, and censors
+    # plotly's Figure.data is untyped, hence the casts
+    assert len(cast("Any", fig.data)) == 4  # graph, upper and lower CI limit, and censors
 
     plotter = KaplanMeierPlotter(show_censors=False)
     fig = plotter.render(kmfs=[dummy_kmf])
     assert isinstance(fig, go.Figure)
-    assert len(fig.data) == 3  # graph, upper and lower CI limit.
+    assert len(cast("Any", fig.data)) == 3  # graph, upper and lower CI limit.
 
 
 @pytest.mark.unit
@@ -47,4 +50,4 @@ def test_kaplan_meier_plotter_multiple_estimators() -> None:
 
     fig = plotter.render(kmfs=kmfs)
     assert isinstance(fig, go.Figure)
-    assert len(fig.data) == 9  # 3 times a graph, upper and lower CI limit.
+    assert len(cast("Any", fig.data)) == 9  # 3 times a graph, upper and lower CI limit.

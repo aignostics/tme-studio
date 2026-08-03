@@ -13,6 +13,7 @@ COLUMN_DENSITY_STROMA = "CELL_DENSITY_LYMPHOCYTE_IN_STROMA"
 COLUMN_DENSITY_CARCINOMA = "CELL_DENSITY_LYMPHOCYTE_IN_CARCINOMA"
 COLUMN_RATIO_STROMA = "CELL_PERCENTAGE_LYMPHOCYTE_IN_STROMA"
 COLUMN_RATIO_CARCINOMA = "CELL_PERCENTAGE_LYMPHOCYTE_IN_CARCINOMA"
+PHENOTYPE_COLUMN = "Tumor immune phenotype"
 
 
 IDE_COLORS = {
@@ -185,4 +186,4 @@ class TIPClassifier:
 
         count_arr = np.asarray(counts["count"])
         counts["count"] = count_arr / count_arr.sum()
-        return counts.sort_values(by=0).rename(columns={0: "Tumor immune phenotype"})
+        return counts.rename(columns={0: PHENOTYPE_COLUMN}).sort_values(by=PHENOTYPE_COLUMN)

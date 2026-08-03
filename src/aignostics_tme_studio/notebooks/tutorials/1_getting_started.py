@@ -123,7 +123,7 @@ def _(config, mo):
     _md = mo.md(f"""# Indications
     There are {len(config.INDICATIONS)} indications available in OpenTME. Select one from
     the dropdown to view some details from this indication below.
-    """)  # noqa: S608
+    """)  # ruff: ignore[hardcoded-sql-expression]
 
     indication_selector = mo.ui.dropdown(
         options=list(config.INDICATIONS),

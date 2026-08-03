@@ -24,6 +24,7 @@ env/
 # Python virtual environment
 venv/
 .venv/
+.tox/
 
 # Python temps
 *.py[cdo]
@@ -42,7 +43,6 @@ develop-eggs/
 .Python
 .pytest_cache/
 .ruff_cache/
-.nox
 .coverage
 .coverage.*
 
@@ -74,6 +74,9 @@ node_modules/
 
 # AI workflow
 .fixme
+
+# GitHub setup (applied once via gh api, then deleted — never committed)
+.github-ruleset.json
 
 # Copier
 *.rej

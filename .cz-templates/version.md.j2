@@ -1,0 +1,37 @@
+{% if previous_version %}
+## [{{ version }}](https://github.com/aignostics/tme-studio/compare/{{ previous_version }}..{{ version }}) - {{ date }}
+{% else %}
+## [{{ version }}] - {{ date }}
+{% endif %}
+{% if sections %}
+{% for section in sections %}
+{% if section.name == "feat" %}
+### Features
+{% elif section.name == "fix" %}
+### Bug Fixes
+{% elif section.name == "docs" %}
+### Documentation
+{% elif section.name == "perf" or section.name == "performance" %}
+### Performance
+{% elif section.name == "refactor" %}
+### Refactor
+{% elif section.name == "style" %}
+### Styling
+{% elif section.name == "test" %}
+### Testing
+{% elif section.name == "sec" or section.name == "security" %}
+### Security
+{% elif section.name == "build" or section.name == "ci" or section.name == "chore" %}
+### Miscellaneous Tasks
+{% elif section.name == "revert" %}
+### Revert
+{% else %}
+### {{ section.name | title }}
+{% endif %}
+{% for commit in section.commits %}
+- {% if commit.scope %}*({{ commit.scope }})* {% endif %}{% if commit.breaking %}[**breaking**] {% endif %}{{ commit.message | capitalize }} - ([{{ commit.short_hash }}](https://github.com/aignostics/tme-studio/commit/{{ commit.hash }}))
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+

@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -30,8 +32,10 @@ def test_plot_distribution(dummy_df, plot_type, grouped) -> None:
 
     feature_cols = {col for col in dummy_df.columns if col != "group"}
 
-    assert set(fig.data[0].x) == feature_cols
-    assert fig.data[0].y.size == len(dummy_df) * len(feature_cols)
+    # plotly's Figure.data/.layout are untyped, hence the casts
+    trace = cast("Any", fig.data)[0]
+    assert set(trace.x) == feature_cols
+    assert trace.y.size == len(dummy_df) * len(feature_cols)
 
 
 @pytest.mark.unit
@@ -44,6 +48,7 @@ def test_plot_distribution_layout(dummy_df) -> None:
         "title": "test_title",
     }
     fig = distributions.plot_distribution(df=dummy_df, plot_type="box", **layout_kwargs)
-    assert fig.layout.title.text == "Distribution of test_title<br><sub>Data from column(s): test_sub_title</sub>"
-    assert fig.layout.xaxis.title.text == "test_x_title"
-    assert fig.layout.yaxis.title.text == "test_y_title"
+    layout = cast("Any", fig.layout)
+    assert layout.title.text == "Distribution of test_title<br><sub>Data from column(s): test_sub_title</sub>"
+    assert layout.xaxis.title.text == "test_x_title"
+    assert layout.yaxis.title.text == "test_y_title"

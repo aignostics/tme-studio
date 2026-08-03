@@ -1,5 +1,7 @@
 """Test module for TIP classifiction."""
 
+from typing import Any, cast
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -71,6 +73,8 @@ def test_plot_ide_classification(dummy_df) -> None:
     """Test the plotter plots all traces."""
     tip = tip_classification.TIPClassifier(dummy_df, carcinoma_thresh=0.5, stroma_thresh=0.5)
     fig = tip.plot_tip_classification()
-    assert len(fig.data) == 6
-    data_labels = {d["name"] for d in fig.data}
+    # plotly's Figure.data is untyped, hence the cast
+    data = cast("Any", fig.data)
+    assert len(data) == 6
+    data_labels = {d["name"] for d in data}
     assert {"excluded", "inflamed", "desert"}.issubset(data_labels)
