@@ -51,8 +51,8 @@ jobs:
           # committing, tagging or pushing. If cz would fail (no bumpable commits,
           # bad --increment, version conflict), fail here — before any tag exists —
           # instead of leaving a half-bumped commit with no tag behind.
-          cz bump --dry-run --yes $BUMP_ARGS
-          cz bump --no-verify --yes $BUMP_ARGS
+          uv run cz bump --dry-run --yes $BUMP_ARGS
+          uv run cz bump --no-verify --yes $BUMP_ARGS
 
       - name: Update lockfile and amend bump commit
         run: |
