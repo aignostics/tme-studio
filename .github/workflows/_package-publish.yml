@@ -7,6 +7,13 @@ on:
 jobs:
   package_publish:
     runs-on: ubuntu-latest
+    # `pypi` environment gates this job: it pauses on the v* tag until a required
+    # reviewer (a tme-studio admin, configured in repo Settings > Environments)
+    # approves. The OIDC id-token is only minted after approval, so a release
+    # triggered by anyone else cannot reach PyPI without an admin.
+    environment:
+      name: pypi
+      url: https://pypi.org/project/aignostics-tme-studio/
     permissions:
       contents: write
       packages: read
