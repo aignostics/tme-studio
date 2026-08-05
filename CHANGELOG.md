@@ -1,3 +1,10 @@
+## v0.4.0 (2026-08-05)
+
+### Fix
+
+- **ci**: invoke cz via uv run in bump workflow (#115) ([e5bec9b](https://github.com/aignostics/tme-studio/commit/e5bec9be0d0c3a94612894eb10ae1d95e46b6f50))
+- **release**: clear stuck 0.4.0 bump remnants, harden bump, merge renovate (#114) ([264068c](https://github.com/aignostics/tme-studio/commit/264068cb8200ea1189877500533ed83ffc2ad615))
+
 ## v0.3.0 (2026-06-18)
 
 ### Feat
