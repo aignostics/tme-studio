@@ -62,6 +62,7 @@ you have [access to OpenTME on Hugging Face](#hugging-face-access), and a [molab
     2. [Outlier detection](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/outlier_detection.py)
     3. [Survival analysis](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/survival_analysis.py)
     4. [Tumor immune phenotyping](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/tumor_immune_phenotyping.py)
+    5. [IDE from the whole tumor region vs. survival](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/ide_wtr_median.py)
 
 * **Demo:** contains a demo notebook showcasing all features in OpenTME and some example analyses.
     1. [Demo](https://molab.marimo.io/notebooks/nb_HKTV3XfnhNbsuPN1DwKZ3U/app)

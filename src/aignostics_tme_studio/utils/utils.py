@@ -1,7 +1,7 @@
 import munch
 import yaml
 
-from .config import TISSUE_FEATURES_FILES
+from .config import TISSUE_FEATURES_FILES, WHOLE_TUMOR_REGION_CELL_FEATURES_FILES
 from .data_classes import Feature
 
 
@@ -44,3 +44,9 @@ def get_features_file_for_indication(indication: str) -> str:
     """Get features file for an indication."""
     # there are two placeholders that both are filled by the indication name.
     return TISSUE_FEATURES_FILES.format(indication, indication)
+
+
+def get_wtr_cell_features_file_for_indication(indication: str) -> str:
+    """Get the whole-tumor-region cell-features file for an indication."""
+    # both placeholders are filled by the indication name.
+    return WHOLE_TUMOR_REGION_CELL_FEATURES_FILES.format(indication, indication)

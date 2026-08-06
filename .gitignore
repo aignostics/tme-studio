@@ -87,3 +87,6 @@ profile.html
 
 
 # Application specific
+
+# marimo runtime cache
+__marimo__/
