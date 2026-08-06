@@ -1,12 +1,12 @@
 """Inflamed / excluded / desert (IDE) immune-phenotype survival analysis on OpenTME features.
 
-Reproduces the tumor-immunology blog analysis: a two-threshold rule on lymphocyte density (in
-carcinoma vs. stroma) partitions patients into the three immune phenotypes, which are then tested
-against overall survival with a three-group log-rank test and pairwise Cox models against the
-inflamed (infiltrated) reference.
+Reproduces the tumor-immunology blog analysis: a two-threshold rule on lymphocyte density (in the
+tumor core vs. the outer invasive margin) partitions patients into the three immune phenotypes,
+which are then tested against overall survival with a three-group log-rank test and pairwise Cox
+models against the inflamed (infiltrated) reference.
 
 The pipeline is deliberately small and side-effect free so it can be unit tested and reused across
-the ``ide_immune_phenotyping`` notebook and any downstream scans:
+the ``ide_wtr_median`` notebook and any downstream scans:
 
     1. :func:`restrict_to_primary_tumors` - keep primary solid tumors only.
     2. :func:`aggregate_slides_to_patient` - average a patient's slides to one profile.
