@@ -1,3 +1,8 @@
+# /// script
+# requires-python = ">=3.11,<3.15"
+# dependencies = ["marimo", "aignostics-tme-studio"]
+# ///
+
 import marimo
 
 __generated_with = "0.23.0"
