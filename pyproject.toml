@@ -112,6 +112,12 @@ override-dependencies = [ # https://github.com/astral-sh/uv/issues/4422
     "cryptography>=48.0.1", # GHSA-537c-gmf6-5ccf
 ]
 
+# Pin the index URL spelling so uv.lock does not churn between uv releases
+# (uv >=0.12 normalizes the implicit default index to a trailing slash).
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+
 
 [project.urls]
 Homepage = "https://github.com/aignostics/tme-studio"
