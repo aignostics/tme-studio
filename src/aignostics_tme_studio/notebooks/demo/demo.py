@@ -1,6 +1,13 @@
 # /// script
 # requires-python = ">=3.11,<3.15"
-# dependencies = ["marimo", "aignostics-tme-studio"]
+# dependencies = [
+#     "aignostics-tme-studio",
+#     "huggingface-hub",
+#     "lifelines",
+#     "marimo",
+#     "numpy",
+#     "pandas",
+# ]
 # ///
 
 import marimo
