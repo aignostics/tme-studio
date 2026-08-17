@@ -1,3 +1,17 @@
+# /// script
+# requires-python = ">=3.11,<3.15"
+# dependencies = [
+#     "aignostics-tme-studio",
+#     "huggingface-hub",
+#     "lifelines",
+#     "marimo",
+#     "numpy",
+#     "pandas",
+#     "plotly",
+#     "scipy",
+# ]
+# ///
+
 import marimo
 
 __generated_with = "0.23.0"
