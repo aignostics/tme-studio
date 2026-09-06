@@ -1,10 +1,10 @@
 [tools]
 act = "0.2.89"
-gh = "2.97.0"
+gh = "2.98.0"
 jq = "1.8.2"
 "pipx:keyring" = { version = "25.7.0", uvx_args = "--with keyrings.google-artifactregistry-auth" }
-trivy = "0.72.0"
-uv = "0.12.0"
+trivy = "0.74.0"
+uv = "0.12.5"
 
 [settings]
 lockfile = true # Pins exact versions and checksums of tools
