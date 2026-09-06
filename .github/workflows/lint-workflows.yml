@@ -30,7 +30,7 @@ jobs:
       - name: Lint with actionlint
         id: actionlint
         continue-on-error: true
-        uses: reviewdog/action-actionlint@50842263c20a7c46bd0065b9e624d3c569db061e # v1.73.0
+        uses: reviewdog/action-actionlint@dbe5299849118fd6f099ba563d263d770955a64a # v1.73.2
         with:
           github_token: ${{ github.token }}
           reporter: github-pr-review
