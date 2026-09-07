@@ -23,17 +23,38 @@ def _():
     # Get Hugging Face token
     import marimo as mo
 
+    hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens").form(
+        submit_button_label="Set token"
+    )
+    return hf_token, mo
+
+
+@app.cell(hide_code=True)
+def _(hf_token, mo):
     _md = mo.md("""Enter your hugging face token in the below box to enable access to OpenTME.""")
 
-    _hf_instructions = """Create an access token by going to [hf.co/settings/tokens](https://hf.co/settings/tokens)
-        1. Go to "Repositories permissions".
-        2. Select "datasets/Aignostics/OpenTME" and check boxes for read and view access.
-        3. Click "create token". Enter your hugging face token in the below box to enable access to OpenTME.
-                         """
-    _acc = mo.accordion({"Click here for instructions to create a Hugging Face token": _hf_instructions})
-    hf_token = mo.ui.text(kind="password", label="Your HF Token from hf.co/settings/tokens")
-    mo.vstack([_md, _acc, hf_token])
-    return hf_token, mo
+    _hf_instructions = mo.md("""
+        1. Go to [hf.co/settings/tokens](https://hf.co/settings/tokens) and click "+ Create new token",
+           choosing "Custom" preset.
+        2. Under "Repositories permissions", select `datasets/Aignostics/OpenTME` with read and view access.
+        3. Click "Create token" and paste the token below.
+    """)
+    _acc = mo.accordion({"How to create a Hugging Face token": _hf_instructions})
+
+    _token = (hf_token.value or "").strip()
+    token_valid = False
+    if not _token:
+        _status = mo.md("⚠️ No token set yet — paste it above and press **Set token**.")
+    else:
+        from huggingface_hub import whoami as _whoami
+
+        try:
+            _status = mo.md(f"✅ Token valid — authenticated as **{_whoami(token=_token)['name']}**.")
+            token_valid = True
+        except Exception:  # noqa: BLE001
+            _status = mo.md("❌ Token rejected by Hugging Face — check for typos or copied whitespace.")
+    mo.vstack([_md, _acc, hf_token, _status])
+    return (token_valid,)
 
 
 @app.cell(hide_code=True)
@@ -127,20 +148,27 @@ def _(
     margin_density,
     min_area,
     pd,
+    token_valid,
     utils,
 ):
+    from pathlib import Path
+
+    _cbioportal_cache = Path.home() / ".cache" / "tme-studio" / "cbioportal"
+
     def build_cohort(indication_name):
         """Load WTR features from HF, pool core/margin densities, join survival, cut at the median.
 
         Returns the prepared patient-level dataframe, the IDE phenotype per patient, and the two
         median thresholds used for the boundary lines.
         """
-        # 1. Whole-tumor-region cell features, restricted to primary tumors.
+        # 1. Whole-tumor-region cell features, restricted to primary tumors. Without a valid token,
+        #    serve only from the local HF cache (no network) instead of failing outright.
         path = hf_hub_download(
             repo_id=config.REPO_ID,
             filename=utils.get_wtr_cell_features_file_for_indication(indication_name),
             repo_type="dataset",
-            token=hf_token.value or None,
+            token=(hf_token.value or "").strip() if token_valid else None,
+            local_files_only=not token_valid,
         )
         slides = ide.restrict_to_primary_tumors(pd.read_csv(path))
 
@@ -158,7 +186,7 @@ def _(
 
         # 3. Join harmonized overall survival and require complete data.
         merged = patients.merge(
-            cbioportal.load_survival(config.CBIOPORTAL_STUDIES[indication_name]),
+            cbioportal.load_survival(config.CBIOPORTAL_STUDIES[indication_name], cache_dir=_cbioportal_cache),
             left_on="TCGA_CASE_ID",
             right_on=cbioportal.PATIENT_ID_COLUMN,
             how="inner",
@@ -177,10 +205,34 @@ def _(
 
 
 @app.cell
-def _(build_cohort, cbioportal, indication, mo):
-    df_ide, _, core_median, margin_median = build_cohort(indication.value)
+def _(build_cohort, cbioportal, indication, mo, token_valid):
+    # App mode hides tracebacks, so surface load failures in the UI and halt the cells below.
+    # Without a valid token this still works from the local cache; a cache miss pauses the notebook.
+    try:
+        df_ide, _, core_median, margin_median = build_cohort(indication.value)
+        _error = None
+    except Exception as _e:  # noqa: BLE001
+        _error = _e
+
+    mo.stop(
+        _error is not None and not token_valid,
+        mo.md("⏸️ Set a valid Hugging Face token above to load the cohort (no cached copy found)."),
+    )
+    mo.stop(
+        _error is not None,
+        mo.callout(
+            mo.md(
+                f"**Could not load `{indication.value}`.**\n\n"
+                f"`{type(_error).__name__}`: {_error}\n\n"
+                "If this is an authentication or 'gated repo' error, set a valid Hugging Face "
+                "token at the top of the notebook and re-run."
+            ),
+            kind="danger",
+        ),
+    )
 
     mo.vstack([
+        *([] if token_valid else [mo.md("⚠️ *No valid token — showing locally cached data.*")]),
         mo.md(f"""**{len(df_ide)}** patients with WTR features and survival for `{indication.value}`
         ({int(df_ide["event"].sum())} deaths)."""),
         df_ide[
@@ -385,20 +437,22 @@ def _(caption, clip_months, duration_clipped, event_clipped, hr, ide, label_colo
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
+    run_all = mo.ui.run_button(label="Run all indications")
+    mo.vstack([
+        mo.md(r"""
     ## Across cohorts
 
     The headline result: the pre-specified median cut run across every indication, with a
-    Benjamini-Hochberg correction for testing them all at once. **★** marks log-rank p < 0.05.
-    Press the button to download and analyze every cohort.
-    """)
-    run_all = mo.ui.run_button(label="Run all indications")
-    run_all
+    **Benjamini-Hochberg (BH)**  correction for testing them all at once. **★** marks log-rank p < 0.05.
+    Press the button to download and analyze every cohort (may take a few minutes on first run).
+    """),
+        run_all,
+    ])
     return (run_all,)
 
 
 @app.cell
-def _(build_cohort, config, ide, mo, pd, run_all):
+def _(build_cohort, config, ide, mo, pd, run_all, token_valid):
     mo.stop(not run_all.value, mo.md("*Press the button above to compute the cross-cohort summary.*"))
 
     def _summarize(indication_name):
@@ -412,11 +466,33 @@ def _(build_cohort, config, ide, mo, pd, run_all):
             ),
         }
 
-    summary = pd.DataFrame([_summarize(name) for name in config.CBIOPORTAL_STUDIES]).set_index("cohort")
+    try:
+        summary = pd.DataFrame([
+            _summarize(_name)
+            for _name in mo.status.progress_bar(
+                list(config.CBIOPORTAL_STUDIES),
+                title="Running all indications",
+                subtitle="Downloading WTR features and survival, then testing each cohort",
+            )
+        ]).set_index("cohort")
+        _error = None
+    except Exception as _e:  # noqa: BLE001
+        _error = _e
+
+    mo.stop(
+        _error is not None and not token_valid,
+        mo.md("⏸️ Set a valid Hugging Face token above — the local cache does not cover all cohorts."),
+    )
+    mo.stop(
+        _error is not None,
+        mo.callout(mo.md(f"**Cross-cohort run failed.** `{type(_error).__name__}`: {_error}"), kind="danger"),
+    )
+
     summary["q_value"] = ide.benjamini_hochberg(summary["logrank_p"])
     summary["★"] = summary["logrank_p"].map(lambda p: "★" if p < 0.05 else "")
 
     mo.vstack([
+        *([] if token_valid else [mo.md("⚠️ *No valid token — computed from locally cached data.*")]),
         mo.md("### Three-group log-rank across cohorts (median WTR cut, BH-corrected)"),
         mo.md(summary.round(4).to_markdown()),
     ])
