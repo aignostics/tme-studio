@@ -324,40 +324,41 @@ def _(
 
 
 @app.cell
-def _(comparison, df_ide, ide, ide_colors, pd, phenotype):
+def _(clip_months, comparison, df_ide, ide, ide_colors, pd, phenotype):
     # Map the comparison choice to per-patient labels, colors, log-rank p and a Cox table.
-    _duration, _event = df_ide[ide.DURATION_COLUMN], df_ide[ide.EVENT_COLUMN]
+    # Administrative censoring: events past the follow-up clip become censored at it.
+    _t = df_ide[ide.DURATION_COLUMN]
+    duration_clipped = _t.clip(upper=clip_months.value)
+    event_clipped = df_ide[ide.EVENT_COLUMN].where(_t <= clip_months.value, 0)
 
     if comparison.value == "Three groups":
         labels = phenotype
         label_colors = dict(ide_colors)
-        hr = ide.cox_hazard_ratios_vs_reference(phenotype, _duration, _event)
+        hr = ide.cox_hazard_ratios_vs_reference(phenotype, duration_clipped, event_clipped)
         caption = "### Hazard ratios vs. inflamed (reference)"
     else:
         _target = comparison.value.split()[0]
         labels = phenotype.where(phenotype == _target, "rest")
         label_colors = {_target: ide_colors[_target], "rest": "#9aa0ae"}
-        _row = ide.cox_hazard_ratio(phenotype == _target, _duration, _event)
+        _row = ide.cox_hazard_ratio(phenotype == _target, duration_clipped, event_clipped)
         hr = pd.DataFrame({_target: _row}).T if _row else pd.DataFrame(columns=["hr", "ci_lower", "ci_upper", "p"])
         caption = f"### Hazard ratio: {_target} vs. rest"
 
-    logrank_p = ide.three_group_logrank_pvalue(_duration, _event, labels)
-    return caption, hr, label_colors, labels, logrank_p
+    logrank_p = ide.three_group_logrank_pvalue(duration_clipped, event_clipped, labels)
+    return caption, duration_clipped, event_clipped, hr, label_colors, labels, logrank_p
 
 
 @app.cell
-def _(caption, clip_months, df_ide, hr, ide, label_colors, labels, logrank_p, mo):
+def _(caption, clip_months, duration_clipped, event_clipped, hr, ide, label_colors, labels, logrank_p, mo):
     from lifelines import KaplanMeierFitter
 
     from aignostics_tme_studio.plotting import kaplan_meier
 
-    _duration, _event = df_ide[ide.DURATION_COLUMN], df_ide[ide.EVENT_COLUMN]
-
     def _fit(group):
         mask = labels == group
         return KaplanMeierFitter().fit(
-            durations=_duration[mask].clip(upper=clip_months.value),
-            event_observed=_event[mask],
+            durations=duration_clipped[mask],
+            event_observed=event_clipped[mask],
             label=f"{group} (n={int(mask.sum())})",
         )
 
@@ -375,7 +376,7 @@ def _(caption, clip_months, df_ide, hr, ide, label_colors, labels, logrank_p, mo
 
     _star = "★" if logrank_p < 0.05 else ""
     mo.vstack([
-        mo.md(f"**Log-rank p = {logrank_p:.4f}** {_star} (follow-up clipped at {clip_months.value} months)"),
+        mo.md(f"**Log-rank p = {logrank_p:.4f}** {_star} (follow-up restricted to {clip_months.value} months)"),
         mo.ui.plotly(_figure),
         mo.md(caption),
         mo.md(_hr_table.to_markdown() if not _hr_table.empty else "_Too few patients/events for a stable estimate._"),
