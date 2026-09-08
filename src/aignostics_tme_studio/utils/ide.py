@@ -160,7 +160,7 @@ def pooled_zone_density(
 
 
 def zone_lymphocyte_density(df: pd.DataFrame, count_column: str, area_column: str) -> pd.Series:
-    """Compute per-patient lymphocyte density (cells/mm²) for a whole-tumor-region zone.
+    """Compute per-patient lymphocyte density (count / area) for a whole-tumor-region zone.
 
     A convenience for deriving density from a zone's lymphocyte count and area when a ready-made
     ``CELL_DENSITY_LYMPHOCYTE_IN_<zone>`` column is not available. Because a patient's slides are
