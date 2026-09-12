@@ -54,7 +54,7 @@ repos:
         args: ["--baseline", ".secrets.baseline"]
         additional_dependencies: ["gibberish-detector"]
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.16.5
+    rev: v4.18.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
