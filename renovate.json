@@ -10,6 +10,20 @@
   "platformAutomerge": "true",
   "labels": ["bot", "renovate", "dependencies"],
   "ignorePaths": ["plugins/manifest/package.json"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Bump the mise CLI version pinned on jdx/mise-action calls",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.+\\.ya?ml$/",
+        "/^\\.github/actions/.+/action\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+version:\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    }
+  ],
   "pre-commit": {
     "enabled": true
   },

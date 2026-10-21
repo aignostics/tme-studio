@@ -38,6 +38,18 @@ jobs:
           git config user.name "aignostics-release-bot[bot]"
           git config user.email "aignostics-release-bot[bot]@users.noreply.github.com"
 
+      - name: Verify mise.lock is in sync
+        # The lockfile verify workflow only runs on pull_request, and only when a
+        # mise file changed -- so version skew, which staleness comes from, never
+        # gates a release. Check it here, before the bump commit and tag exist:
+        # discovering it at push time means unwinding a tag instead of a re-run.
+        run: |
+          mise lock
+          if ! git diff --exit-code -- mise.lock; then
+            echo "::error file=mise.lock::mise.lock is out of date; regenerate and commit it before releasing"
+            exit 1
+          fi
+
       - name: Bump version
         env:
           BUMP_ARGS: ${{ inputs.arguments }}
@@ -51,6 +63,7 @@ jobs:
           # committing, tagging or pushing. If cz would fail (no bumpable commits,
           # bad --increment, version conflict), fail here — before any tag exists —
           # instead of leaving a half-bumped commit with no tag behind.
+          # shellcheck disable=SC2086  # BUMP_ARGS holds multiple flags (e.g. "--increment major --prerelease rc"); word-splitting is intentional
           uv run cz bump --dry-run --yes $BUMP_ARGS
           uv run cz bump --no-verify --yes $BUMP_ARGS
 
@@ -64,4 +77,7 @@ jobs:
       - name: Push version bump and tag
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: git push origin main --tags
+        # --no-verify: the mise-lock pre-push hook regenerates mise.lock and aborts
+        # the push. A release job must push exactly what it built and tagged, not
+        # rewrite tracked files after the commit and tag already exist.
+        run: git push --no-verify origin main --tags
