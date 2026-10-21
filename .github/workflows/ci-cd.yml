@@ -34,6 +34,9 @@ jobs:
       !contains(github.event.head_commit.message, '[skip ci]') &&
       !(github.event_name == 'pull_request' && github.event.action == 'closed')
     uses: ./.github/workflows/_audit.yml
+    with:
+      mode: ${{ github.event_name == 'pull_request' && 'pr' || 'strict' }}
+      base_ref: ${{ github.base_ref }}
     permissions:
       contents: read
       packages: read
