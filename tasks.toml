@@ -34,7 +34,9 @@ if [ -f uv.lock ]; then
 else
   uv sync --all-extras
 fi
-uv run pre-commit install
+if [ -e .git ]; then
+  uv run pre-commit install
+fi
 """
 
 [clean]
@@ -59,7 +61,7 @@ description = "Setup dev environment post project creation"
 run = """
 mise run install
 uv run ruff format .
-if [ -d .git ]; then
+if [ -e .git ]; then
   touch .act-env-secret
   uv run pre-commit install
   uv run detect-secrets scan > .secrets.baseline

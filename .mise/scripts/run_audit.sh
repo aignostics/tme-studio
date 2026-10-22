@@ -57,10 +57,81 @@ pretty_json "$AUDIT_ALL_JSON"
 
 [[ "$SCAN_ONLY" -eq 1 ]] && exit 0
 
-# SBOM outputs derived from prod scan — no re-scan needed
-trivy convert --format cyclonedx --output "$SBOM_CYCLONEDX" "$AUDIT_PROD_JSON" --quiet
+# An SBOM has to say what it describes, and Trivy names one after its scan target:
+# left alone, both SBOMs below describe a thing called "requirements.txt" with no
+# version, and every consumer that reads the root component as a package — Ketryx,
+# Dependency-Track, GitHub's dependency graph — lists the scan target as if it were
+# a dependency. Trivy has no flag for it, but `trivy convert` takes the name from
+# ArtifactName, so set that and the per-target name to the project first. One
+# rewrite, both formats.
+read -r PROJECT_NAME PROJECT_VERSION <<<"$(uv version)"
+if [[ -z "$PROJECT_NAME" || -z "$PROJECT_VERSION" ]]; then
+    echo "Could not read the project name and version from 'uv version'" >&2
+    exit 1
+fi
+
+# `.Results` is null, not empty, when a project has no dependencies at all.
+SCAN_NAMED=$(mktemp)
+jq --arg name "$PROJECT_NAME" \
+    '.ArtifactName = $name | .Results = ((.Results // []) | map(.Target = $name))' \
+    "$AUDIT_PROD_JSON" > "$SCAN_NAMED" || exit 1
+
+trivy convert --format cyclonedx --output "$SBOM_CYCLONEDX" "$SCAN_NAMED" --quiet || exit 1
+trivy convert --format spdx --output "$SBOM_SPDX" "$SCAN_NAMED" --quiet || exit 1
+rm -f "$SCAN_NAMED"
+
+# Two things `trivy convert` still cannot express, both only in CycloneDX:
+#   - the root component's version, which it emits for container images and never
+#     for a filesystem scan;
+#   - the scan target, which it repeats as a second, purl-less component that the
+#     packages hang off. Renaming it above only moved the problem: it would now be
+#     a second component with the project's own name. Drop it and let the packages
+#     hang off the root directly.
+# No purl on the root: `pkg:pypi/...` would claim we publish to PyPI, and we publish
+# to aignx-private-registry. Name and version identify the released subject, which
+# is all CycloneDX asks of a root component.
+jq --arg version "$PROJECT_VERSION" '
+      (.components // []) as $components
+    | (.dependencies // []) as $dependencies
+    | (.metadata.component."bom-ref") as $root
+    | ([$components[] | select(.type == "application" and (has("purl") | not)) | ."bom-ref"]) as $targets
+    | ([$dependencies[] | select(.ref as $r | $targets | index($r)) | .dependsOn[]?]) as $packages
+    | .metadata.component += {version: $version}
+    | .components = ($components | map(select(."bom-ref" as $r | ($targets | index($r)) | not)))
+    | .dependencies = ($dependencies | map(select(.ref as $r | ($targets | index($r)) | not))
+                                     | map(if .ref == $root then .dependsOn = $packages else . end))
+' "$SBOM_CYCLONEDX" > "$SBOM_CYCLONEDX.tmp" || exit 1
+mv "$SBOM_CYCLONEDX.tmp" "$SBOM_CYCLONEDX"
+
+# Trivy mints `pkg:pypi/<name>@<version>` for every pip package, which for our own
+# packages is a false provenance claim: they are on aignx-private-registry and not
+# on PyPI. A scanner resolving that purl either finds nothing or, worse, finds a
+# public package that merely shares the name. purl's answer is the repository_url
+# qualifier, and uv.lock records the registry each package actually resolved from.
+# Only non-PyPI packages get it: qualifying the rest would stop their purls matching
+# public vulnerability databases, which is the whole point of having them.
+REGISTRIES=$(uv run python -c '
+import json, pathlib, tomllib
+lock = pathlib.Path("uv.lock")
+packages = tomllib.loads(lock.read_text(encoding="utf-8")).get("package", []) if lock.is_file() else []
+print(json.dumps({
+    package["name"]: package["source"]["registry"]
+    for package in packages
+    if "pypi.org" not in package.get("source", {}).get("registry", "pypi.org")
+}))
+') || exit 1
+
+# `bom-ref` is left alone on purpose: it is an opaque identifier that the dependency
+# graph refers to, and trivy happens to spell it like the purl. Rewriting it here
+# would mean rewriting every edge that points at it.
+jq --argjson registries "$REGISTRIES" '
+      .components |= map(
+          if .purl and $registries[.name]
+          then .purl += "?repository_url=" + $registries[.name]
+          else . end)
+' "$SBOM_CYCLONEDX" > "$SBOM_CYCLONEDX.tmp" || exit 1
+mv "$SBOM_CYCLONEDX.tmp" "$SBOM_CYCLONEDX"
 pretty_json "$SBOM_CYCLONEDX"
-trivy convert --format spdx --output "$SBOM_SPDX" "$AUDIT_PROD_JSON" --quiet
 
 exit_code=0
 
