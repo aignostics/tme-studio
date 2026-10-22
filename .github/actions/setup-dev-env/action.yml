@@ -16,7 +16,7 @@ runs:
         # mise.lock (see docs/foundry/troubleshooting.md, "mise.lock Keeps Changing").
         # Renovate bumps it automatically via the annotation below.
         # renovate: datasource=github-releases depName=jdx/mise
-        version: "2026.10.3"
+        version: "2026.10.17"
 
     # mise-action caches ~/.local/share/mise, which holds the pipx:keyring venv but not the
     # interpreter its shebang resolves to. On a cache hit the restored venv can't exec ("keyring
