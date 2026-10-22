@@ -3,20 +3,27 @@
   "extends": ["config:recommended"],
   "timezone": "Europe/Berlin",
   "schedule": ["at any time"],
-  "minimumReleaseAge": "14 days",
   "automerge": true,
   "automergeType": "pr",
-  "internalChecksFilter": "strict",
   "platformAutomerge": "true",
   "labels": ["bot", "renovate", "dependencies"],
   "ignorePaths": ["plugins/manifest/package.json"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Bump the mise CLI version pinned on jdx/mise-action calls",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.+\\.ya?ml$/",
+        "/^\\.github/actions/.+/action\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+version:\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    }
+  ],
   "pre-commit": {
     "enabled": true
-  },
-  "vulnerabilityAlerts": {
-    "enabled": true,
-    "automerge": true,
-    "minimumReleaseAge": null
   },
   "lockFileMaintenance": {
     "enabled": true,
@@ -47,17 +54,6 @@
       "groupName": "mise tools",
       "matchManagers": ["mise"],
       "separateMajorMinor": false
-    },
-    {
-      "description": "Bypass delay for security tools",
-      "matchPackageNames": [
-        "trivy",
-        "aquasecurity/trivy-action"
-      ],
-      "minimumReleaseAge": null,
-      "automerge": true,
-      "automergeType": "pr",
-      "groupName": "security-tool-updates"
     }
   ]
 }

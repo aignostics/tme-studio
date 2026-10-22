@@ -20,7 +20,7 @@ jobs:
 
       - name: Lint
         # Skip mise-lock: the hook mutates mise.lock (cannot commit in CI, causes "files modified" failure).
-        # Lock freshness is not verified in CI on purpose: `mise lock` output format varies by mise
-        # version, so a pinned CI mise would fail every contributor whose local mise differs.
-        # The pre-commit mise-lock hook keeps it current locally.
+        # Lock freshness is not verified on PRs on purpose: `mise lock` output format varies by
+        # mise version, so a pinned CI mise would fail every contributor whose local mise differs.
+        # The pre-commit mise-lock hook keeps it current locally; bump.yml gates it before a release.
         run: SKIP=mise-lock mise run pre_commit_run_all

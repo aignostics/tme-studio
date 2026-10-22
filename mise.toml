@@ -1,10 +1,13 @@
 [tools]
 act = "0.2.89"
-gh = "2.97.0"
+gh = "2.102.0"
 jq = "1.8.2"
-"pipx:keyring" = { version = "25.7.0", uvx_args = "--with keyrings.google-artifactregistry-auth" }
-trivy = "0.72.0"
-uv = "0.12.0"
+# certifi>=2026.10.19 removes the compromised eMudhra root (GHSA-hq85-5cpj-mr62). This
+# tool does not use uv.lock, so the floor is set here. Remove it once every install has
+# a fixed certifi.
+"pipx:keyring" = { version = "25.7.0", uvx_args = "--with keyrings.google-artifactregistry-auth --with certifi>=2026.10.19" }
+trivy = "0.75.0"
+uv = "0.13.4"
 
 [settings]
 lockfile = true # Pins exact versions and checksums of tools

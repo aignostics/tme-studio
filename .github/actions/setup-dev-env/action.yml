@@ -10,7 +10,24 @@ runs:
   using: 'composite'
   steps:
     - name: Install mise
-      uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
+      uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+      with:
+        # Keep this pin aligned with contributors' local mise — skew regenerates
+        # mise.lock (see docs/foundry/troubleshooting.md, "mise.lock Keeps Changing").
+        # Renovate bumps it automatically via the annotation below.
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "2026.10.3"
+
+    # mise-action caches ~/.local/share/mise, which holds the pipx:keyring venv but not the
+    # interpreter its shebang resolves to. On a cache hit the restored venv can't exec ("keyring
+    # couldn't exec process: No such file or directory"), and because mise's shim dir precedes
+    # ~/.local/bin on PATH it shadows the working keyring `mise run install` provides — so uv's
+    # subprocess keyring-provider silently loses the private-registry token and later steps 401.
+    # Probe the shim and rebuild it only when it's broken: a no-op on a cache miss / healthy run,
+    # so caching is preserved.
+    - name: Repair pipx:keyring shim if a restored mise cache broke it
+      shell: bash
+      run: keyring --version >/dev/null 2>&1 || mise install pipx:keyring --force
 
     - name: Initialize mise and install Python dependencies
       shell: bash

@@ -39,6 +39,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: POSIX :: Linux",
@@ -86,7 +87,7 @@ dev = [
     "pytest-timeout>=2.3.1,<3",
     "pytest-watcher>=0.4.3,<1",
     "pytest-xdist[psutil]>=3.6.1,<4",
-    "ruff>=0.15.15,<1",
+    "ruff>=0.15.20,<1",
     "tox>=4.58.0",
     "tox-uv>=1.36.0",
     "types-pyyaml>=6.0.12.20250402",
@@ -94,29 +95,31 @@ dev = [
     "watchdog>=6.0.0",
 ]
 
-
-[tool.uv]
-required-version = ">=0.11.14"
-keyring-provider = "subprocess"
-override-dependencies = [ # https://github.com/astral-sh/uv/issues/4422
-    "nbconvert>=7.17.1",    # fix for CVE-2025-53000
-    "pytest>=9.0.2",        # pytest-md-report depends on pytest<9 unnecessarily
-    "pymdown-extensions>=10.21.2",      # 10.21 breaks fenced code blocks with markdown>=3.10 (AttributeError in superfences)
-    "pytest>=9.0.3",                    # CVE-2025-71176; pytest-md-report also depends on pytest<9 unnecessarily
-    "pyasn1>=0.6.3",        # CVE-2026-30922
-    "requests>=2.33.0,<3",  # CVE-2026-25645
-    "lxml>=6.1.0",          # CVE-2026-41066
-    "tifffile<2026.5.15",   # cooldown: 2026.5.15 too young (<10d), pin to older release
-    "pip>=26.1.2",          # PYSEC-2026-196
-    "aiohttp>=3.14.1",      # CVE-2026-54273, CVE-2026-54279, CVE-2026-54277, CVE-2026-54276, CVE-2026-54278, CVE-2026-54280, CVE-2026-54274, CVE-2026-54275
-    "cryptography>=48.0.1", # GHSA-537c-gmf6-5ccf
-]
-
 # Pin the index URL spelling so uv.lock does not churn between uv releases
 # (uv >=0.12 normalizes the implicit default index to a trailing slash).
 [[tool.uv.index]]
 name = "pypi"
 url = "https://pypi.org/simple"
+
+[tool.uv]
+required-version = ">=0.13.4" # eMudhra/emSign CA distrust
+keyring-provider = "subprocess"
+override-dependencies = [ # https://github.com/astral-sh/uv/issues/4422
+    "aiohttp>=3.14.1",      # CVE-2026-54273, CVE-2026-54279, CVE-2026-54277, CVE-2026-54276, CVE-2026-54278, CVE-2026-54280, CVE-2026-54274, CVE-2026-54275
+    "certifi>=2026.10.19",  # eMudhra/emSign CA distrust
+    "cryptography>=48.0.1", # GHSA-537c-gmf6-5ccf
+    "lxml>=6.1.0",          # CVE-2026-41066
+    "nbconvert>=7.17.1",    # fix for CVE-2025-53000
+    "pillow>=13.0.0",       # CVE-2026-112390 and friends
+    "pip>=26.2.2",          # eMudhra/emSign CA distrust, PYSEC-2026-196
+    "pyasn1>=0.6.3",        # CVE-2026-30922
+    "pymdown-extensions>=11.0.1", # CVE-2026-97687; 10.21 also breaks fenced code blocks with markdown>=3.10
+    "pytest>=9.0.3",        # CVE-2025-71176; pytest-md-report also depends on pytest<9 unnecessarily
+    "requests>=2.33.0,<3",  # CVE-2026-25645
+    "urllib3>=2.8.0",       # CVE-2026-102925, CVE-2026-102930, CVE-2026-102937
+    "virtualenv>=21.14.9",  # CVE-2026-113716 and friends
+    "tifffile<2026.5.15",   # cooldown: 2026.5.15 too young (<10d), pin to older release
+]
 
 
 [project.urls]
@@ -147,78 +150,80 @@ line-length = 120
 select = ["ALL"]
 
 ignore = [
-    "missing-type-args",   # missing type annotation for `*args` -> provides no value
-    "missing-type-kwargs",   # missing type annotation for `**kwargs`` -> provides no value
-    "async-function-with-timeout", # async function definition with a `timeout` parameter  -> as mentioned by ruff, "This rule is highly opinionated and may not be suitable for all use cases."
-    "missing-copyright-notice",   # missing copyright notice -> not for OSS
-    "docstring-extraneous-exception",   # docstrings with exceptions not raised in the code of the function -> not always necessary
-    "incorrect-blank-line-before-class",     # incomptatible with D211 -> prefer D211
-    "multi-line-summary-first-line",     # incompatible with D213 -> prefer D213
-    "boolean-type-hint-positional-argument",   # boolean positional arguments -> disagree
-    "boolean-default-value-positional-argument",   # boolean defautl value positionl arguments -> disagree
-    "boolean-positional-value-in-call",   # boolean positional value in function call -> disagree
-    "blanket-type-ignore",   # use specific rule codes when ignoring type issues -> quite a hassle, no value
-    "try-consider-else",   # else instead of return before except. -> strongly disagree, hinders readabilty.
-    "missing-trailing-comma",   # conflicts with ruff formatter -> not feasible nor recommended
-    "single-line-implicit-string-concatenation",   # conflicts with ruff formatter -> not feasible nor recommended
-    "suspicious-subprocess-import",     # subprocess` module is possibly insecure -> as mentioned by ruff, unstable and preview
-    "line-contains-todo",   # line contains todo -> yes, that's what todo's are for?!
-    "missing-todo-link",    # missing issue link for todo -> not in OSS
-    "builtin-open",   # use of open to be replaced with Path.open
-    "print",     # Remove `print`
-    "implicit-namespace-package",   # Checks for packages that are missing an __init__.py file.
-    "non-empty-init-module",   # __init__ module contains conditional imports -> needed for optional dependencies (preview rule)
-    "too-many-statements-in-try-clause",  # try clause too many statements -> conflicts with async DB patterns (preview rule)
-    "fallible-context-manager",   # context manager does not catch exceptions -> false positives on contextlib.suppress (preview rule)
+    "ANN002",   # missing type annotation for `*args` -> provides no value
+    "ANN003",   # missing type annotation for `**kwargs`` -> provides no value
+    "ASYNC109", # async function definition with a `timeout` parameter  -> as mentioned by ruff, "This rule is highly opinionated and may not be suitable for all use cases."
+    "CPY001",   # missing copyright notice -> not for OSS
+    "DOC502",   # docstrings with exceptions not raised in the code of the function -> not always necessary
+    "D203",     # incomptatible with D211 -> prefer D211
+    "D212",     # incompatible with D213 -> prefer D213
+    "FBT001",   # boolean positional arguments -> disagree
+    "FBT002",   # boolean defautl value positionl arguments -> disagree
+    "FBT003",   # boolean positional value in function call -> disagree
+    "PGH003",   # use specific rule codes when ignoring type issues -> quite a hassle, no value
+    "TRY300",   # else instead of return before except. -> strongly disagree, hinders readabilty.
+    "COM812",   # conflicts with ruff formatter -> not feasible nor recommended
+    "ISC001",   # conflicts with ruff formatter -> not feasible nor recommended
+    "S404",     # subprocess` module is possibly insecure -> as mentioned by ruff, unstable and preview
+    "FIX002",   # line contains todo -> yes, that's what todo's are for?!
+    "TD003",    # missing issue link for todo -> not in OSS
+    "PTH123",   # use of open to be replaced with Path.open
+    "T201",     # Remove `print`
+    "INP001",   # Checks for packages that are missing an __init__.py file.
+    "RUF067",   # __init__ module contains conditional imports -> needed for optional dependencies (preview rule)
+    "PLW0717",  # try clause too many statements -> conflicts with async DB patterns (preview rule)
+    "RUF075",   # context manager does not catch exceptions -> false positives on contextlib.suppress (preview rule)
+    "rule-codes-in-selectors", # ruff 0.16 preview: rewrites every code in this file to its name -> churn, no value
+    "noqa-comments",           # ruff 0.16 preview: flags every `# noqa` -> churn, no value
 ]
 
 [tool.ruff.lint.per-file-ignores]
 # marimo notebooks and cell snippets: every cell is a `def _(mo, df)` with imports
 # and bare expressions inside it, which is the marimo authoring model, not a defect
 "**/notebooks/**/*.py" = [
-    "missing-type-function-argument",   # cell arguments are wired up by marimo, not annotated
-    "missing-return-type-private-function",   # cells are generated `def _()` functions
-    "import-outside-top-level",   # imports live in the importing cell
-    "useless-expression",   # a trailing expression is how a cell renders its output
-    "undocumented-public-module",   # notebooks document themselves in markdown cells
-    "docstring-missing-returns",
-    "too-many-arguments",   # a cell takes one argument per upstream cell it consumes
-    "too-many-positional-arguments",
-    "magic-value-comparison",
-    "used-dummy-variable",   # a leading underscore is how marimo scopes a variable to its cell
+    "ANN001",   # cell arguments are wired up by marimo, not annotated
+    "ANN202",   # cells are generated `def _()` functions
+    "PLC0415",  # imports live in the importing cell
+    "B018",     # a trailing expression is how a cell renders its output
+    "D100",     # notebooks document themselves in markdown cells
+    "DOC201",   # `return` is not documented in docstring
+    "PLR0913",  # a cell takes one argument per upstream cell it consumes
+    "PLR0917",  # ... and passes them positionally
+    "PLR2004",  # magic value used in comparison
+    "RUF052",   # a leading underscore is how marimo scopes a variable to its cell
 ]
 "**/snippets/**/*.py" = [
     # same marimo cell structure, reused across notebooks
-    "missing-type-function-argument",
-    "missing-return-type-private-function",
-    "import-outside-top-level",
-    "undocumented-public-module",
-    "used-dummy-variable",   # a leading underscore is how marimo scopes a variable to its cell
+    "ANN001",
+    "ANN202",
+    "PLC0415",
+    "D100",
+    "RUF052",   # a leading underscore is how marimo scopes a variable to its cell
 ]
 "**/tests/**/*.py" = [
     # we are more relaxed in tests, while sill applying hundreds of rules
-    "assert",     # asserts allowed in tests...
+    "S101",     # asserts allowed in tests...
     "ARG",      # unused function args -> fixtures nevertheless are functionally relevant...
     "FBT",      # don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
-    "magic-value-comparison",  # magic value used in comparison, ...
-    "no-self-use",  # method could be a function, class method, or static method -> test organization pattern
-    "pytest-raises-too-broad",    # exception to broad
-    "import-private-name",  # private import, but required for unit testing
-    "import-outside-top-level",  # local import
-    "pytest-raises-with-multiple-statements",    # exception to broad
-    "suspicious-non-cryptographic-random-usage",     # standard pseudo-random generators are not suitable for cryptographic purposes
-    "private-member-access",   # private member access required for unit testing
-    "subprocess-without-shell-equals-true",     # check for execution of untrusted input
-    "missing-type-function-argument",   # missing type annotation for function argument
-    "missing-type-args",   # missing type annotation
-    "missing-type-kwargs",   # missing type annotation
-    "missing-return-type-private-function",   # missing return type annotation
-    "docstring-missing-returns",   # `return` is not documented in docstring
-    "blocking-open-call-in-async-function", # async functions should not open files with blocking methods like `open`
-    "hardcoded-bind-all-interfaces",     # bind to all ports
-    "start-process-with-partial-path",     # subprocess with partial path
-    "pytest-fixture-autouse",   # autouse=True is intentional for setup/teardown fixtures
-    "undocumented-public-module",   # test modules are named after their subject
+    "PLR2004",  # magic value used in comparison, ...
+    "PLR6301",  # method could be a function, class method, or static method -> test organization pattern
+    "PT011",    # exception to broad
+    "PLC2701",  # private import, but required for unit testing
+    "PLC0415",  # local import
+    "PT012",    # exception to broad
+    "S311",     # standard pseudo-random generators are not suitable for cryptographic purposes
+    "SLF001",   # private member access required for unit testing
+    "S603",     # check for execution of untrusted input
+    "ANN001",   # missing type annotation for function argument
+    "ANN002",   # missing type annotation
+    "ANN003",   # missing type annotation
+    "ANN202",   # missing return type annotation
+    "DOC201",   # `return` is not documented in docstring
+    "ASYNC230", # async functions should not open files with blocking methods like `open`
+    "S104",     # bind to all ports
+    "S607",     # subprocess with partial path
+    "D100",     # test modules are named after their subject
+    "pytest-fixture-autouse",   # autouse=True is intentional for setup/teardown fixtures; the rule has no stable code
 ]
 
 [tool.ruff.format]

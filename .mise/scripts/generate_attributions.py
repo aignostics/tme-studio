@@ -25,7 +25,7 @@ def _own_package_name() -> str:
 def _fetch_pypi(name: str, version: str) -> dict[str, str]:
     url = _PYPI_URL.format(name=name, version=version)
     try:
-        with urlopen(url, timeout=_TIMEOUT) as resp:  # ruff: ignore[suspicious-url-open-usage]
+        with urlopen(url, timeout=_TIMEOUT) as resp:  # ruff:ignore[suspicious-url-open-usage]
             info = json.loads(resp.read())["info"]
         project_urls: dict[str, str] = info.get("project_urls") or {}
         return {
@@ -140,7 +140,7 @@ def main() -> None:
             pkg_name = futures[future]
             try:
                 results[pkg_name] = future.result()
-            except Exception as exc:  # ruff: ignore[blind-except]
+            except Exception as exc:  # ruff:ignore[blind-except]
                 print(f"Warning: failed to collect {pkg_name}: {exc}", file=sys.stderr)
 
     content = "# Attributions\n\n"
