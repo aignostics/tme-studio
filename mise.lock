@@ -136,7 +136,7 @@ version = "25.7.0"
 backend = "pipx:keyring"
 
 [tools."pipx:keyring".options]
-uvx_args = "--with keyrings.google-artifactregistry-auth"
+uvx_args = "--with keyrings.google-artifactregistry-auth --with certifi>=2026.10.19"
 
 [[tools.python]]
 version = "3.14.6"
