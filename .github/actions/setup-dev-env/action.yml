@@ -10,13 +10,13 @@ runs:
   using: 'composite'
   steps:
     - name: Install mise
-      uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+      uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # v5.2.4
       with:
         # Keep this pin aligned with contributors' local mise — skew regenerates
         # mise.lock (see docs/foundry/troubleshooting.md, "mise.lock Keeps Changing").
         # Renovate bumps it automatically via the annotation below.
         # renovate: datasource=github-releases depName=jdx/mise
-        version: "2026.10.17"
+        version: "2026.10.24"
 
     # mise-action caches ~/.local/share/mise, which holds the pipx:keyring venv but not the
     # interpreter its shebang resolves to. On a cache hit the restored venv can't exec ("keyring
