@@ -20,7 +20,7 @@ jobs:
       - name: Check action pins
         id: pinact
         continue-on-error: true
-        uses: suzuki-shunsuke/pinact-action@896d595f299e71d65b9d28349d6956abe144390a # v3.0.0
+        uses: suzuki-shunsuke/pinact-action@b1a1f46bb10f2908950d95f626ca8cc109e2cf7d # v3.1.0
         with:
           review: "true"
           skip_push: "true"
@@ -30,7 +30,7 @@ jobs:
       - name: Lint with actionlint
         id: actionlint
         continue-on-error: true
-        uses: reviewdog/action-actionlint@48e36f54d8da326b83ab061aee2cc5e01b5ca46f # v1.80.6
+        uses: reviewdog/action-actionlint@619a81ec64ff8c0211cd6146eb2b21e8f1d7f440 # v1.81.1
         with:
           github_token: ${{ github.token }}
           reporter: github-pr-review
