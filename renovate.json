@@ -1,11 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "timezone": "Europe/Berlin",
-  "schedule": ["at any time"],
-  "automerge": true,
-  "automergeType": "pr",
-  "platformAutomerge": "true",
   "labels": ["bot", "renovate", "dependencies"],
   "ignorePaths": ["plugins/manifest/package.json"],
   "customManagers": [
@@ -30,6 +24,12 @@
     "schedule": ["before 5am on monday"]
   },
   "packageRules": [
+    {
+      "description": "requires-python is a support range that we widen by hand, not a version to bump",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["requires-python"],
+      "enabled": false
+    },
     {
       "description": "Widen Python dependency ranges to maximise library compatibility",
       "matchManagers": ["pep621"],

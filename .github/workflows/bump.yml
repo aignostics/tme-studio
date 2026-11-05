@@ -14,6 +14,7 @@ jobs:
   bump:
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: write
       id-token: write
     steps:
@@ -28,10 +29,21 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Setup Dev Environment
         uses: ./.github/actions/setup-dev-env
+
+      - name: Require green CI on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          conclusion="$(gh run list --commit "$GITHUB_SHA" --workflow ci-cd.yml --event push --json conclusion --jq '.[0].conclusion')"
+          if [ "$conclusion" != success ]; then
+            echo "::error::ci-cd.yml on ${GITHUB_SHA} is '${conclusion:-not finished}'. Release once it is green."
+            exit 1
+          fi
 
       - name: Configure git identity
         run: |
@@ -82,7 +94,9 @@ jobs:
       - name: Push version bump and tag
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        # --no-verify: the mise-lock pre-push hook regenerates mise.lock and aborts
-        # the push. A release job must push exactly what it built and tagged, not
+        # --no-verify: git hooks are installed here too (mise-lock on commit, unit
+        # tests on push). A release job must push exactly what it built and tagged, not
         # rewrite tracked files after the commit and tag already exist.
-        run: git push --no-verify origin main --tags
+        # HEAD:main: the checkout is the commit CI validated. If main moved on, the push is
+        # rejected as non-fast-forward rather than releasing unvalidated commits; re-run.
+        run: git push --no-verify origin HEAD:main --tags

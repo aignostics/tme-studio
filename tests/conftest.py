@@ -10,6 +10,7 @@ import pytest
 logger = logging.getLogger(__name__)
 
 _ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[mGKH]")
+_CATEGORY_MARKERS = frozenset({"unit", "integration", "e2e"})
 
 
 def normalize_output(s: str, *, strip_line_endings: bool = True) -> str:
@@ -18,6 +19,25 @@ def normalize_output(s: str, *, strip_line_endings: bool = True) -> str:
     if strip_line_endings:
         result = result.strip()
     return result
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    """Fail on tests without a category marker: CI selects by marker, so they would never run.
+
+    Runs before `-m` deselects them. Skipped on xdist workers, where the error is unreadable; the
+    serial unit run collects the whole suite anyway.
+
+    Raises:
+        pytest.UsageError: If any collected test lacks a category marker.
+    """
+    if hasattr(config, "workerinput"):
+        return
+    unmarked = [item.nodeid for item in items if not _CATEGORY_MARKERS & {m.name for m in item.iter_markers()}]
+    if unmarked:
+        listing = "\n  ".join(unmarked)
+        msg = f"Tests without a category marker (unit, integration or e2e) would never run in CI:\n  {listing}"
+        raise pytest.UsageError(msg)
 
 
 def pytest_xdist_auto_num_workers(config: pytest.Config) -> int:

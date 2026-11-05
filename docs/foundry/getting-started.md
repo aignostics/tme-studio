@@ -1,9 +1,9 @@
 > [!NOTE]
-> This file is maintained by the [foundry-python](https://github.com/aignostics/foundry-python) template and will be updated when you run `mise run update_from_template`.
+> Maintained by [foundry-python](https://github.com/aignostics/foundry-python) and updated by `mise run update_from_template`. Changed it? [Send it upstream](README.md#changed-a-template-file-send-it-upstream).
 
 # Getting Started: TME Studio
 
-This getting started guide covers everything needed to get this project fully operational.
+Everything needed to get this project fully operational, once, after scaffolding.
 
 ## Toolchain
 
@@ -11,15 +11,14 @@ This project was scaffolded using [foundry-python](https://github.com/aignostics
 
 | Category | Tools |
 |----------|-------|
-| **Code Quality** | [Ruff](https://github.com/astral-sh/ruff) (linting), [Pyrefly](https://github.com/facebook/pyrefly) (type checking) |
-| **Git Hooks** | [pre-commit](https://pre-commit.com/), [detect-secrets](https://github.com/Yelp/detect-secrets), [pygrep](https://github.com/pre-commit/pygrep-hooks), [Commitizen](https://commitizen-tools.github.io/commitizen/) |
-| **Testing** | [pytest](https://docs.pytest.org/) (parallel execution), [mise](https://mise.jdx.dev/) (test orchestration), [SonarCloud](https://sonarcloud.io/) (coverage) |
-| **CI/CD** | [GitHub Actions](https://github.com/features/actions) (workflows), [act](https://github.com/nektos/act) (local testing) |
-| **Security** | [SonarQube](https://www.sonarsource.com/products/sonarcloud), [trivy](https://trivy.dev/) (vulns, licenses, SBOM), [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide) |
-| **Dependencies** | [Renovate](https://github.com/renovatebot/renovate) (updates), [trivy](https://trivy.dev/) (license compliance) |
-| **Observability** | [Sentry](https://sentry.io/) (errors, tracing, profiling), [BetterStack](https://betterstack.com/) (uptime monitoring) |
-| **Documentation** | SBOM generation ([CycloneDX](https://cyclonedx.org/), [SPDX](https://spdx.dev/)), auto-generated attributions, dynamic badges |
-| **AI Assistance** | [GitHub Copilot](https://docs.github.com/en/copilot) (custom instructions), [Claude Code](https://docs.claude.com/en/docs/claude-code/github-actions) (PR reviews) |
+| **Tasks & tools** | [mise](https://mise.jdx.dev/) (tool versions, tasks), [uv](https://docs.astral.sh/uv/) (dependencies, build, publish) |
+| **Code Quality** | [Ruff](https://github.com/astral-sh/ruff) (lint, format), [Pyrefly](https://github.com/facebook/pyrefly) (types), [deptry](https://github.com/fpgmaas/deptry) (dependency hygiene) |
+| **Git Hooks** | [pre-commit](https://pre-commit.com/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Commitizen](https://commitizen-tools.github.io/commitizen/) |
+| **Testing** | [pytest](https://docs.pytest.org/) with xdist and randomized order, coverage floor, [SonarCloud](https://sonarcloud.io/) quality gate |
+| **CI/CD** | [GitHub Actions](https://github.com/features/actions), [act](https://github.com/nektos/act) (run locally), actionlint and pinact (workflow lint) |
+| **Security** | [trivy](https://trivy.dev/) (vulnerabilities, licenses, CycloneDX/SPDX SBOMs), Dependabot alerts, daily scheduled audit |
+| **Dependencies** | [Renovate](https://github.com/renovatebot/renovate) (updates, 14-day minimum release age) |
+| **AI Assistance** | `AGENTS.md` files, [Claude Code](https://docs.claude.com/en/docs/claude-code/github-actions) PR reviews (`claude` label) |
 
 ---
 
@@ -31,7 +30,7 @@ Before configuring services, confirm the local environment is working:
 mise run install
 ```
 
-Then run all git hooks to verify the freshly generated project is clean:
+Then run all git hooks on the fresh project:
 
 ```shell
 # pre-commit stage (runs on every git commit: lint, secret detection, formatting)
@@ -41,15 +40,7 @@ mise run pre_commit_run_all
 mise run pre_push_run_all
 ```
 
-Both should pass without changes. If the first run fixes files, stage them and run again — that is expected on a fresh checkout.
-
-Finally, run the test suite:
-
-```shell
-mise run test
-```
-
-All tests should pass. If not, run `mise run install` first.
+Both should pass. If the first run fixes files, stage them and run again; that is expected on a fresh checkout. Finally, `mise run test` should pass.
 
 ---
 
@@ -62,9 +53,7 @@ All tests should pass. If not, run `mise run install` first.
 | [Google Artifact Registry](#google-artifact-registry) | Package publishing | |
 | [SonarCloud](#sonarcloud) | Code quality analysis | |
 | [Renovate](#renovate) | Dependency updates | |
-| [Sentry](#sentry--advanced-setup) | Error monitoring | |
 | [Repository Polish](#repository-polish) | Discoverability | |
-| [Background Worker](#background-worker) | Chancy job queue | |
 
 ---
 
@@ -82,7 +71,7 @@ All tests should pass. If not, run `mise run install` first.
 
 **Why**: Protects `main` from force-pushes, direct deletions, and merges without reviewed PRs.
 
-> **Prerequisite**: Push the repository to GitHub first (Quick Start step 4). Requires [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated.
+> **Prerequisite**: the repository is pushed to GitHub, and `gh` is authenticated (`mise` installs it).
 
 A `.github-ruleset.json` file was generated in your project root when this project was scaffolded. Apply it once, then delete it:
 
@@ -108,9 +97,11 @@ The file is git-ignored and will not be committed. Do not push it to the remote 
 
 Read access (`python-gar-reader`) is the org-wide default for all repos. No action needed for `uv sync` in CI.
 
+Locally, `gcloud auth login --update-adc` is all it takes: mise hands gcloud's token to uv (`.mise/scripts/registry_token.sh`), and falls back to uv's keyring provider when gcloud has none. If `uv sync` answers 401 or "Missing credentials", that login has expired — run it again.
+
 If this repo publishes packages to GAR (`uv publish`), it needs `python-gar-writer` access. Ask the Platform Engineering team in [#support-platform-engineering](https://aignostics.slack.com/archives/C08SYE0JV3M) to set the `python_gar_access` custom property to `python-gar-writer` on this repo. This is an org-admin operation and cannot be done via repository settings.
 
-**Verify**: the `Setup Dev Environment` step succeeds in lint, test or audit workflow
+**Verify**: the `Setup Dev Environment` step succeeds in the lint, test or audit workflow.
 
 ---
 
@@ -137,7 +128,7 @@ These services are active automatically at the organisation level:
 
 | Service | Purpose | Notes |
 |---------|---------|-------|
-| [SonarCloud](https://sonarcloud.io/project/overview?id=aignostics_tme-studio) | Code quality & security analysis & Coverage tracking | `SONAR_TOKEN` is org-wide; quality gate runs on every PR |
+| [SonarCloud](https://sonarcloud.io/project/overview?id=aignostics_tme-studio) | Code quality, security and coverage | `SONAR_TOKEN` is org-wide; a red quality gate fails the PR |
 | [Sentry](https://sentry.io/) | Error monitoring | Org-level integration; scans PRs automatically |
 | [Ox Security](https://app.ox.security/) | Supply chain security | Org-level integration; scans PRs automatically |
 | [Dependabot](https://github.com/aignostics/tme-studio/settings/security_analysis) | Dependency vulnerability alerts | Enabled by default via enterprise policy |
@@ -145,17 +136,13 @@ These services are active automatically at the organisation level:
 
 ### Renovate
 
-**Why**: Automated dependency updates with smart grouping and scheduling (complements Dependabot which handles security patches).
+**Why**: automated, grouped dependency updates. Dependabot keeps handling security alerts.
 
 1. Go to https://developer.mend.io and sign in with your GitHub account
 2. Go to https://developer.mend.io/github/aignostics/tme-studio and click **Action > Run Renovate scan**
 3. Renovate creates a [Dependency Dashboard](https://github.com/aignostics/tme-studio/issues?q=is%3Aissue%20state%3Aopen%20Dependency%20Dashboard) issue in your repository
 
 **Verify**: Dependency Dashboard issue appears in your repository
-
-### Sentry — Advanced Setup
-
-For error tracking, performance profiling, and release tracking, configure the Sentry DSN in your application code. Basic PR scanning is already active at the org level.
 
 ### Repository Polish
 
@@ -168,68 +155,4 @@ For error tracking, performance profiling, and release tracking, configure the S
 
 ---
 
-## Background Worker
-
-This project includes a [Chancy](https://chancy.readthedocs.io/) background worker powered by PostgreSQL.
-
-### What was scaffolded
-
-- `src/tme_studio/scheduler/` — the scheduler module (service, CLI, API, settings)
-- `src/tme_studio/hello_world/_jobs.py` and `src/tme_studio/system/_jobs.py` — example job definitions
-- `migrations/versions/0002_add_scheduler_heartbeats.py` — database migration for the heartbeat table
-- `deployment/cloudrun/service-worker.template.yaml` — Cloud Run worker service definition
-
-### Run the worker locally
-
-Start everything with Docker Compose (the worker service starts alongside the API and PostgreSQL):
-
-```shell
-docker compose up
-```
-
-Or run the worker directly:
-
-```shell
-# Apply the scheduler database migration first
-uv run tme-studio scheduler db migrate
-
-# Register job definitions
-uv run tme-studio scheduler joblets register
-
-# Start the worker
-uv run tme-studio scheduler execute
-```
-
-The Chancy web UI is available at `http://127.0.0.1:8001` by default (configurable via `TME_STUDIO_SCHEDULER_API_HOST` and `TME_STUDIO_SCHEDULER_API_PORT`).
-
-### Database migration
-
-The scheduler requires its own migration to create the heartbeat table. This runs automatically at startup in production (see `deployment/cloudrun/service.template.yaml`). Locally, run:
-
-```shell
-uv run tme-studio scheduler db migrate
-```
-
-### Chancy metrics
-
-The worker does not load the Chancy Metrics plugin. It loads the metric rows of all workers into memory, and the table grows with each worker restart. Use OpenTelemetry for metrics (see [opentelemetry.md](opentelemetry.md)). The Chancy web UI has no Metrics page.
-
-Chancy adds Metrics as a default plugin. Keep `no_default_plugins=True` and `Leadership()` in `scheduler/_service.py`.
-
-**Upgrade path:** run `mise run update_from_template` and deploy. To remove the old table, add an Alembic migration to your project. Run it only after every instance runs the new code:
-
-```sql
-DROP TABLE IF EXISTS chancy_<name>_metrics;
-DELETE FROM chancy_<name>_schema_version WHERE version_of = 'metrics';
-```
-
-On a new database, the version table does not exist yet. Guard the `DELETE` with `to_regclass('chancy_<name>_schema_version') IS NOT NULL`.
-
----
-
-## Further Reading
-
-- [docs/foundry/testing.md](testing.md) - Test markers, running tests, coverage
-- [docs/foundry/ci-cd.md](ci-cd.md) - CI/CD workflows, releases, versioning
-- [docs/foundry/code-quality.md](code-quality.md) - Linting, pre-commit hooks, task reference
-- [docs/foundry/troubleshooting.md](troubleshooting.md) - Common issues and solutions
+Next: the rest of [docs/foundry](README.md).

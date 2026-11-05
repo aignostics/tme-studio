@@ -1,60 +1,37 @@
 > [!NOTE]
-> This file is maintained by the foundry-python template and will be updated when you run `mise run update_from_template`.
+> Maintained by [foundry-python](https://github.com/aignostics/foundry-python) and updated by `mise run update_from_template`. Changed it? [Send it upstream](README.md#changed-a-template-file-send-it-upstream).
 
 # Troubleshooting
 
-## CI Fails After Initial Push
+## CI Fails After the First Push
 
-**Cause**: Required services not configured.
+Complete [getting-started.md](getting-started.md). No per-repo secrets are needed: `SONAR_TOKEN`, GAR access (WIF) and the Claude and Slack tokens are org-level.
 
-**Solution**: Complete all sections in [docs/foundry/getting-started.md](getting-started.md).
+## "Tests without a category marker" Usage Error
 
-## Missing Secret Errors
+Add `@pytest.mark.unit`, `@pytest.mark.integration` or `@pytest.mark.e2e` to each listed test. Without one, CI would never run it.
 
-**Cause**: Repository secrets not configured.
+## Coverage Floor or Sonar Quality Gate Fails
 
-**Solution**: Add required secrets at https://github.com/aignostics/tme-studio/settings/secrets/actions:
-- `SONAR_TOKEN`
-
-## Tests Not Running in CI
-
-**Cause**: Tests missing category marker.
-
-**Solution**: Add `@pytest.mark.unit`, `@pytest.mark.integration`, or `@pytest.mark.e2e` to each test.
+`mise run test:coverage` reports the files below the floor. Add tests, or check that new tests have a category marker. The Sonar gate measures new code only; see the PR's SonarCloud check for the uncovered lines.
 
 ## Pre-commit Hook Failures
 
-**Cause**: Code doesn't meet quality standards.
-
-**Solution**: Many hooks auto-fix issues. Re-stage files and commit:
-```shell
-git add <fixed-files>
-git commit
-```
-
-## Coverage Dropping
-
-**Cause**: New code not covered by tests.
-
-**Solution**: Add tests for new code, or verify new tests have category markers.
+Many hooks fix files themselves. Stage the fixes and commit again.
 
 ## Commit Message Rejected
 
-**Cause**: Message doesn't follow conventional commit format.
+Commits and PR titles: `type(scope): description`, with a type Commitizen knows. See [Conventional Commits](ci-cd.md#conventional-commits).
 
-**Solution**: Use format `type(scope): description`. Valid types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `perf`, `ci`.
+## Renovate PR Breaks Tests
 
-## Renovate PR Causes Test Failures
+1. Check which package changed, and its changelog.
+2. Push a fix to the Renovate branch (it accepts commits).
+3. If the fix is large, close the PR and cap the version in `pyproject.toml` until you can address it.
 
-**Cause**: A dependency update introduced a breaking change.
+## `update_from_template` Leaves `*.rej` Files or Conflicts Every Time
 
-**Solution**:
-1. Check which package was updated in the Renovate PR description
-2. Review the package changelog for breaking changes
-3. Fix the compatibility issue in a commit on the Renovate branch (Renovate branches accept external commits)
-4. If the fix is complex, close the Renovate PR and pin the dependency version in `pyproject.toml` until you can address it
-
----
+The template changed lines you edited locally. Merge each `*.rej` by hand and delete it. If the same file conflicts on every update, your edit belongs upstream: [send it to foundry-python](README.md#changed-a-template-file-send-it-upstream).
 
 ## mise.lock Keeps Changing / Regenerating in CI
 
@@ -100,16 +77,6 @@ later step in the job.
 
 ---
 
-## Further Reading
-
-- [README.md](../../README.md) - Project documentation
-- [CODE_STYLE.md](../../CODE_STYLE.md) - Code style guide
-- [SECURITY.md](../../SECURITY.md) - Security policy
-- [CONTRIBUTING.md](../../CONTRIBUTING.md) - Contribution guidelines
-
----
-
 ## Feedback
 
-Happy to hear from you if you have any feedback on the DX/UX of using `foundry-python`.
-Please reach out on [Slack](https://aignostics.slack.com/archives/C0AEY02UQD6).
+Feedback on foundry-python is welcome in [#topic-foundry](https://aignostics.slack.com/archives/C0AEY02UQD6). Fixes are even better: [send them upstream](README.md#changed-a-template-file-send-it-upstream).

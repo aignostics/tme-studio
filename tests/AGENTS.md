@@ -20,8 +20,8 @@ in `pyproject.toml`. Task-level flags (xdist, junit output, `--cov-append`) are 
 
 ## MUST
 
-- Mark every test `unit`, `integration` or `e2e`. Unmarked tests are collected by no
-  task, so they never run and rot unnoticed.
+- Mark every test `unit`, `integration` or `e2e`. An unmarked test fails collection
+  (`tests/conftest.py`): CI selects tests by marker, so it would never run.
 - Name test files `<module>_test.py`, mirroring the `src/` layout. The
   `name-tests-test` pre-commit hook enforces it.
 - Add `sequential` to any test that cannot tolerate parallel execution. The

@@ -9,6 +9,19 @@ description: 'mise, uv, and dev tools'
 runs:
   using: 'composite'
   steps:
+    # mise's [env] hook (.mise/scripts/registry_token.sh) mints a gcloud token whenever gcloud
+    # has credentials, and mise-action writes it to $GITHUB_ENV, which GitHub prints in every
+    # later step's header. Mint it here, mask that exact value and set it first: the hook leaves
+    # a password already set alone. Unauthenticated (the normal case here), nothing is minted.
+    - name: Registry token for uv (masked)
+      shell: bash
+      run: |
+        token="$(gcloud auth print-access-token 2>/dev/null)" || token=""
+        if [ -n "${token}" ]; then
+          echo "::add-mask::${token}"
+          echo "UV_INDEX_AIGNX_PRIVATE_REGISTRY_PASSWORD=${token}" >> "$GITHUB_ENV"
+        fi
+
     - name: Install mise
       uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
       with:

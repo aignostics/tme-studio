@@ -21,7 +21,7 @@ mise run all              # everything, run before opening a PR
 ## MUST
 
 - Run `mise run lint` before running tests, and again before declaring work complete.
-- Give every test a `unit`, `integration` or `e2e` marker. Unmarked tests never run.
+- Give every test a `unit`, `integration` or `e2e` marker. An unmarked test fails collection.
 - Extract a string literal into a module-level constant once it appears 3+ times,
   in tests too (SonarQube S1192).
 - Use `uv add` / `uv remove` for dependencies, never hand-edit `dependencies`.

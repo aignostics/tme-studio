@@ -51,6 +51,10 @@ develop-eggs/
 reports/*
 !reports/.keep
 
+# Exported from uv.lock by .mise/scripts/run_audit.sh; uv.lock is the source of truth
+requirements.txt
+requirements-dev.txt
+
 # IDE
 .idea/
 .vscode/

@@ -1,11 +1,11 @@
 > [!NOTE]
-> This file is maintained by the foundry-python template and will be updated when you run `mise run update_from_template`.
+> Maintained by [foundry-python](https://github.com/aignostics/foundry-python) and updated by `mise run update_from_template`. Changed it? [Send it upstream](README.md#changed-a-template-file-send-it-upstream).
 
 # Testing
 
 ## Test Markers
 
-Every test **MUST** have a category marker. Tests without markers won't run in CI.
+Every test needs a category marker (`unit`, `integration` or `e2e`). CI selects tests by marker, so `tests/conftest.py` fails the run with a usage error listing any test without one.
 
 | Marker | Command | Purpose |
 |--------|---------|---------|
@@ -19,12 +19,12 @@ Every test **MUST** have a category marker. Tests without markers won't run in C
 
 ```shell
 # By category
-mise run test:unit              # Fast, isolated (serial execution)
-mise run test:integration       # Real services (20% parallel)
-mise run test:e2e               # Full parallel
+mise run test:unit              # serial
+mise run test:integration       # parallel, then `sequential` tests serially
+mise run test:e2e               # parallel, then `sequential` tests serially
 
-# All tests
-mise run test           # Runs unit → integration → e2e
+# All tests, then the coverage floor
+mise run test
 
 # Specific test
 pytest tests/path/to/test.py::test_function -v
@@ -32,29 +32,18 @@ pytest tests/path/to/test.py::test_function -v
 
 ## Test Parallelization
 
-Controlled by `XDIST_WORKER_FACTOR` environment variable:
-
-| Test Type | Factor | Behavior |
-|-----------|--------|----------|
-| Unit | 0.0 | Serial (parallelization overhead > benefit) |
-| Integration | 0.2 | 20% of logical CPUs |
-| E2E | 1.0 | 100% of logical CPUs (I/O bound) |
+Unit tests run serially: process start-up costs more than they take. Integration and e2e tests run with `-n auto`, one worker per CPU core times `XDIST_WORKER_FACTOR` (default `1`; e.g. `XDIST_WORKER_FACTOR=0.5 mise run test:e2e`). Tests marked `sequential` run afterwards without xdist.
 
 ## Coverage
 
 - **Goal**: 100%
-- **Minimum**: 85%
+- **Minimum**: 85%, checked by `mise run test:coverage` over the combined runs (`mise run test` and CI run it last; CI skips it when a `skip:test:*` marker or label is set)
+- **New code**: on pull requests CI waits for the SonarCloud quality gate and fails if it is red. Its conditions, such as coverage on new code, are configured in SonarCloud, not in the repository.
 - **Reports**: `reports/coverage.xml`, `reports/coverage.md`, `reports/coverage_html/`
 
 ## Test Order Randomization
 
-Tests run in randomized order via [`pytest-randomly`](https://github.com/pytest-dev/pytest-randomly) to surface hidden ordering dependencies between tests.
-
-## Finding Unmarked Tests
-
-```shell
-pytest --collect-only -m "not unit and not integration and not e2e" -q
-```
+Tests run in randomized order via [`pytest-randomly`](https://github.com/pytest-dev/pytest-randomly) to surface hidden ordering dependencies between tests. To reproduce an order-dependent failure, rerun with the seed pytest printed: `pytest -p randomly --randomly-seed=<seed>`.
 
 ---
 
@@ -62,10 +51,12 @@ pytest --collect-only -m "not unit and not integration and not e2e" -q
 
 | Task | Description |
 |------|-------------|
-| `mise run test` | Run all tests (unit → integration → e2e) |
-| `mise run test:unit` | Unit tests only (serial) |
-| `mise run test:integration` | Integration tests (20% parallel) |
-| `mise run test:e2e` | E2E tests (full parallel) |
+| `mise run test` | unit → integration → e2e, then the coverage floor |
+| `mise run test:unit` | Unit tests (serial) |
+| `mise run test:integration` | Integration tests (parallel) |
+| `mise run test:e2e` | E2E tests (parallel) |
+| `mise run test:lowest_direct` | Unit tests against the lowest allowed versions of direct dependencies |
 | `mise run test:scheduled` | Scheduled tests only |
 | `mise run test:sequential` | Non-parallelizable tests |
+| `mise run test:coverage` | Fail if combined coverage is below 85% |
 | `mise run test:coverage_reset` | Clear coverage data |
