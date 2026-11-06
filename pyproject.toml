@@ -40,6 +40,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: POSIX :: Linux",
@@ -48,51 +49,46 @@ classifiers = [
     "Natural Language :: English",
 ]
 
-requires-python = ">=3.11, <3.15"
+requires-python = ">=3.11, <3.16"
 
 dependencies = [
-    "attrs>=25.3.0",
-    "huggingface-hub>=1.7.2",
+    "attrs>=26.1.0",
+    "huggingface-hub>=2.4.0",
     "lifelines>=0.30.0",
-    "marimo>=0.20.4",
+    "marimo>=0.25.2",
     "munch>=4.0.0",
-    "numpy>=2.2.0",
-    "pandas>=3.0.1",
-    "plotly>=6.6.0",
-    "pyyaml>=6.0.2",
-    "requests>=2.33.0",
-    "scikit-learn>=1.8.0",
-    "scipy>=1.15.0",
+    "numpy>=2.4.6",
+    "pandas>=3.1.0",
+    "plotly>=7.1.0",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+    "scikit-learn>=1.9.1",
+    "scipy>=1.17.1",
     "tabulate>=0.10.0",
 ]
 
 [dependency-groups]
 dev = [
-    "commitizen>=4.1.0,<5",
-    "deptry>=0.25.0,<1",
+    "commitizen>=4.19.3",
+    "deptry>=0.25.1",
     "detect-secrets>=1.5.0",
-    "enum-tools>=0.13.0",
-    "pre-commit>=4.5.0,<5",
-    "pyrefly>=1.0.0,<2",
-    "pytest>=9.0.2,<10",
-    "pytest-asyncio>=1.3.0,<2",
-    "pytest-cov>=7.0.0,<8",
-    "pytest-docker>=3.2.5,<4",
-    "pytest-env>=1.1.5,<2",
-    "pytest-md-report>=0.7.0,<1",
-    "pytest-randomly>=4.1.0,<6",
-    "pytest-regressions>=2.7.0,<3",
-    "pytest-retry>=1.7.0,<2",
-    "pytest-subprocess>=1.5.3,<2",
-    "pytest-timeout>=2.3.1,<3",
-    "pytest-watcher>=0.4.3,<1",
-    "pytest-xdist[psutil]>=3.6.1,<4",
-    "ruff>=0.15.20,<1",
-    "tox>=4.58.0",
-    "tox-uv>=1.36.0",
-    "types-pyyaml>=6.0.12.20250402",
-    "types-requests>=2.32.0.20250328",
-    "watchdog>=6.0.0",
+    "pre-commit>=4.7.0",
+    "pyrefly>=1.4.0",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1",
+    "pytest-cov>=7.1.0",
+    "pytest-docker>=3.2.6",
+    "pytest-env>=1.8.4",
+    "pytest-md-report>=0.8.0",
+    "pytest-randomly>=5.0.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-xdist[psutil]>=3.8.0",
+    "ruff>=0.17.3",
+    "tox>=4.67.5",
+    "tox-uv>=1.37.3",
+    "types-pyyaml>=6.0.12.20261030",
+    "types-requests>=2.33.0.20261030",
+    "watchdog>=7.0.0",
 ]
 
 # Pin the index URL spelling so uv.lock does not churn between uv releases
@@ -101,25 +97,18 @@ dev = [
 name = "pypi"
 url = "https://pypi.org/simple"
 
+[[tool.uv.index]]
+name = "aignx-private-registry"
+url = "https://europe-python.pkg.dev/aignx-shared-registries-xyte/python-packages/simple/"
+publish-url = "https://europe-python.pkg.dev/aignx-shared-registries-xyte/python-packages/"
+explicit = true
+authenticate = "always"
+exclude-newer = false # Artifact Registry publishes no upload times, so the cooldown would reject every package
+
 [tool.uv]
 required-version = ">=0.13.4" # eMudhra/emSign CA distrust
+exclude-newer = "5 days" # Renovate's minimumReleaseAge, also for transitive deps that lock file maintenance refreshes
 keyring-provider = "subprocess"
-override-dependencies = [ # https://github.com/astral-sh/uv/issues/4422
-    "aiohttp>=3.14.1",      # CVE-2026-54273, CVE-2026-54279, CVE-2026-54277, CVE-2026-54276, CVE-2026-54278, CVE-2026-54280, CVE-2026-54274, CVE-2026-54275
-    "certifi>=2026.10.19",  # eMudhra/emSign CA distrust
-    "cryptography>=48.0.1", # GHSA-537c-gmf6-5ccf
-    "lxml>=6.1.0",          # CVE-2026-41066
-    "nbconvert>=7.17.1",    # fix for CVE-2025-53000
-    "pillow>=13.0.0",       # CVE-2026-112390 and friends
-    "pip>=26.2.2",          # eMudhra/emSign CA distrust, PYSEC-2026-196
-    "pyasn1>=0.6.3",        # CVE-2026-30922
-    "pymdown-extensions>=11.0.1", # CVE-2026-97687; 10.21 also breaks fenced code blocks with markdown>=3.10
-    "pytest>=9.0.3",        # CVE-2025-71176; pytest-md-report also depends on pytest<9 unnecessarily
-    "requests>=2.33.0,<3",  # CVE-2026-25645
-    "urllib3>=2.8.0",       # CVE-2026-102925, CVE-2026-102930, CVE-2026-102937
-    "virtualenv>=21.14.9",  # CVE-2026-113716 and friends
-    "tifffile<2026.5.15",   # cooldown: 2026.5.15 too young (<10d), pin to older release
-]
 
 
 [project.urls]
@@ -131,7 +120,7 @@ Issues = "https://github.com/aignostics/tme-studio/issues"
 
 
 [build-system]
-requires = ["uv_build>=0.11.14,<0.12.0"]
+requires = ["uv_build>=0.13.6,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -245,7 +234,7 @@ search_path = [".", ".mise/scripts"]  # "." makes tests/ importable as absolute 
 [tool.tox]
 # Boundary check only: oldest and newest interpreter allowed by requires-python.
 # The versions in between are covered by whatever `.python-version` CI runs.
-env_list = ["py311", "py314"]
+env_list = ["py311", "py315"]
 requires = ["tox-uv>=1.36"]
 
 [tool.tox.env_run_base]
@@ -422,4 +411,3 @@ ignored_packages = [
 DEP002 = [
     "tabulate", # backend for pandas `DataFrame.to_markdown()`, never imported directly
 ]
-

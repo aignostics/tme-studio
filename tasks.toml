@@ -28,7 +28,6 @@ uv run deptry src
 [install]
 description = "Install dev dependencies and pre-commit hooks"
 run = """
-uv tool install keyring --with keyrings.google-artifactregistry-auth
 if [ -f uv.lock ]; then
   uv sync --all-extras --frozen
 else
@@ -64,7 +63,7 @@ uv run ruff format .
 if [ -e .git ]; then
   touch .act-env-secret
   uv run pre-commit install
-  uv run detect-secrets scan > .secrets.baseline
+  uv run detect-secrets scan --exclude-lines '^\\s*rev: "?[0-9a-f]{40}"?(\\s|$)' > .secrets.baseline
   git add .
   uv run pre-commit || true
   git add .
@@ -85,6 +84,7 @@ run = """
 mise run test:unit
 mise run test:integration
 mise run test:e2e
+mise run test:coverage
 """
 
 ["test:unit"]
@@ -115,7 +115,11 @@ run = "uv run pytest --disable-warnings --junitxml=reports/junit_sequential.xml 
 
 ["test:lowest_direct"]
 description = "Run unit tests against lowest-direct dependency resolution (lower-boundary check)"
-run = "UV_PYTHON=$(mise run python_min_version) uv sync --resolution lowest-direct && uv run pytest -m unit"
+run = "UV_PYTHON=$(mise run python_min_version) uv sync --resolution lowest-direct && uv run pytest -m unit --no-cov"
+
+["test:coverage"]
+description = "Fail if combined coverage of the test runs so far is below the floor"
+run = "uv run coverage report --skip-covered --skip-empty --fail-under=85"
 
 ["test:python_versions"]
 description = "Run unit tests on the oldest and newest supported Python (tox envs in pyproject.toml)"
@@ -142,8 +146,9 @@ description = "Run security and license compliance audit"
 usage = '''
 flag "--baseline <path>" help="Baseline prod audit JSON for PR diff mode (only new findings fail)"
 flag "--baseline-all <path>" help="Baseline all-packages audit JSON for PR diff mode (only new dev vuln findings fail)"
+flag "--severity <levels>" help="Comma-separated vulnerability severities that fail the audit (default: HIGH,CRITICAL)"
 '''
-run = "bash .mise/scripts/run_audit.sh ${usage_baseline:+--baseline \"$usage_baseline\"} ${usage_baseline_all:+--baseline-all \"$usage_baseline_all\"}"
+run = "bash .mise/scripts/run_audit.sh ${usage_baseline:+--baseline \"$usage_baseline\"} ${usage_baseline_all:+--baseline-all \"$usage_baseline_all\"} ${usage_severity:+--severity \"$usage_severity\"}"
 
 [attributions]
 description = "Generate reports/ATTRIBUTIONS.md from installed package licenses"

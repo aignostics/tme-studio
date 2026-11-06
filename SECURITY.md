@@ -7,7 +7,7 @@ TME Studio employs several automated tools to continuously monitor and improve s
 ### 1. Vulnerability Scanning
 
 a. **[GitHub Dependabot](https://github.com/dependabot)**: Detects vulnerabilities in dependencies (including transitive) and creates security update PRs. [Dependabot alerts](https://github.com/aignostics/tme-studio/security/dependabot) published.
-b. **[Renovate](https://www.mend.io/renovate/)**: Automates version updates for direct dependencies and maintains lock file freshness to keep transitive dependencies current. [Dependency Dashboard](https://github.com/aignostics/tme-studio/issues?q=is%3Aissue%20state%3Aopen%20Dependency%20Dashboard) published.
+b. **[Renovate](https://www.mend.io/renovate/)**: Automates version updates for direct dependencies and maintains lock file freshness to keep transitive dependencies current. Every update, lock file maintenance included, waits 5 days after release (Renovate `minimumReleaseAge`, uv `exclude-newer`). [Dependency Dashboard](https://github.com/aignostics/tme-studio/issues?q=is%3Aissue%20state%3Aopen%20Dependency%20Dashboard) published.
 c. **[trivy](https://trivy.dev/latest/)**: Pre commit to GitHub scans Python dependencies for known vulnerabilities using data from [GitHub Advisory Database](https://github.com/advisories?query=ecosystem%3Apip) and [OSV.dev](https://osv.dev/list?q=&ecosystem=PyPI). `vulnerabilities.json` published [per release](https://github.com/aignostics/tme-studio/releases).
 
 ### 2. License Compliance Checks and Software Bill of Materials (SBOM)
