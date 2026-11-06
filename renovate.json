@@ -1,6 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["local>aignostics/renovate-config"],
+  "schedule": ["before 5am on monday"],
   "labels": ["bot", "renovate", "dependencies"],
   "lockFileMaintenance": {
     "enabled": true,
