@@ -42,4 +42,4 @@ mise run all              # everything, run before opening a PR
   `_`-prefixed names are cell-scoped. Ruff and Sonar exclusions cover them.
 - Do not reformat or refactor code you were not asked to change.
 
-Python is `>=3.11, <3.15`; CI tests the single version in `.python-version`.
+Python is `>=3.11, <3.16`; CI tests the single version in `.python-version`.
