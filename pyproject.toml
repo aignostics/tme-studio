@@ -112,27 +112,6 @@ exclude-newer = false # Artifact Registry publishes no upload times, so the cool
 required-version = ">=0.13.4" # eMudhra/emSign CA distrust
 exclude-newer = "5 days" # Renovate's minimumReleaseAge, also for transitive deps that lock file maintenance refreshes
 keyring-provider = "subprocess"
-override-dependencies = [ # https://github.com/astral-sh/uv/issues/4422
-    "aiohttp>=3.14.1",      # CVE-2026-54273, CVE-2026-54279, CVE-2026-54277, CVE-2026-54276, CVE-2026-54278, CVE-2026-54280, CVE-2026-54274, CVE-2026-54275
-    "certifi>=2026.10.19",  # eMudhra/emSign CA distrust
-    "cryptography>=48.0.1", # GHSA-537c-gmf6-5ccf
-    "lxml>=6.1.0",          # CVE-2026-41066
-    "nbconvert>=7.17.1",    # fix for CVE-2025-53000
-    "pillow>=13.0.0",       # CVE-2026-112390 and friends
-    "pip>=26.2.2",          # eMudhra/emSign CA distrust, PYSEC-2026-196
-    "pyasn1>=0.6.3",        # CVE-2026-30922
-    "pymdown-extensions>=11.0.1", # CVE-2026-97687; 10.21 also breaks fenced code blocks with markdown>=3.10
-    "pytest>=9.2.0",        # CVE-2025-71176; pytest-md-report also depends on pytest<9 unnecessarily
-    "requests>=2.33.0",     # CVE-2026-25645
-    "urllib3>=2.8.0",       # CVE-2026-102925, CVE-2026-102930, CVE-2026-102937
-    "virtualenv>=21.14.9",  # CVE-2026-113716 and friends
-]
-
-# Let the eMudhra/emSign floors above in before their 14 days pass. A stale entry blocks every
-# later release of the package, so remove both on or after 2026-11-03.
-[tool.uv.exclude-newer-package]
-certifi = "2026-10-21T00:00:00Z"
-pip = "2026-10-21T00:00:00Z"
 
 
 [project.urls]
