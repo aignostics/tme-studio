@@ -9,7 +9,7 @@ repos:
     hooks:
       - id: check-useless-excludes
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
+    rev: 3a6eb0fadf60b3cccfd80bad9dbb6fae7e47b316  # frozen: v1.10.0
     hooks:
       - id: python-check-mock-methods
       - id: python-no-eval
@@ -20,7 +20,7 @@ repos:
       - id: rst-inline-touching-normal
       - id: text-unicode-replacement-char
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: check-added-large-files
         exclude: |
@@ -48,13 +48,13 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.5.0
+    rev: 01886c8a910c64595c47f186ca1ffc0b77fa5458  # frozen: v1.5.0
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
         additional_dependencies: ["gibberish-detector"]
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.19.2
+    rev: 57217c394fff5064bedd48421fe4b6f5f73aad47  # frozen: v4.19.2
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -89,7 +89,7 @@ repos:
 
       - id: test-unit
         name: Test (unit)
-        entry: bash -c 'mise run test:unit'
+        entry: bash -c 'mise run test:unit --no-cov -x'
         language: system
         pass_filenames: false
         files: \.(py|toml)$|^conftest\.py$

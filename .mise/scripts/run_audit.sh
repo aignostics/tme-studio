@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 # Usage:
-#   mise run audit                                              # strict: any vuln or illegal prod license fails
+#   mise run audit                                              # strict: any HIGH/CRITICAL vuln or illegal prod license fails
+#   mise run audit --severity MEDIUM,HIGH,CRITICAL              # choose which vuln severities fail
 #   mise run audit --baseline <path> --baseline-all <path>    # PR diff: only new findings fail
 #   bash .mise/scripts/run_audit.sh --scan-only               # produce scan JSONs, skip SBOM and comparison
 set -uo pipefail
 
 BASELINE=""
 BASELINE_ALL=""
+SEVERITY=""
 SCAN_ONLY=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --baseline)     BASELINE="$2";     shift 2 ;;
     --baseline-all) BASELINE_ALL="$2"; shift 2 ;;
+    --severity)     SEVERITY="$2";     shift 2 ;;
     --scan-only)    SCAN_ONLY=1;       shift ;;
     *) echo "Unknown argument: $1" >&2; exit 2 ;;
   esac
@@ -135,8 +138,10 @@ pretty_json "$SBOM_CYCLONEDX"
 
 exit_code=0
 
+# Without --severity, audit_compare.py applies its own default (HIGH,CRITICAL).
 PROD_ARGS=(--current "$AUDIT_PROD_JSON" --scope "Production")
 [[ -n "$BASELINE" ]] && PROD_ARGS+=(--baseline "$BASELINE")
+[[ -n "$SEVERITY" ]] && PROD_ARGS+=(--severity "$SEVERITY")
 uv run .mise/scripts/audit_compare.py "${PROD_ARGS[@]}" || exit_code=1
 
 # In PR mode without a dev baseline, skip: treating all dev vulns as "new" would block PRs on pre-existing issues.
@@ -144,6 +149,7 @@ if [[ -z "$BASELINE" ]] || [[ -n "$BASELINE_ALL" ]]; then
     echo ""
     ALL_ARGS=(--current "$AUDIT_ALL_JSON" --scope "All packages (incl. dev)" --no-license-check)
     [[ -n "$BASELINE_ALL" ]] && ALL_ARGS+=(--baseline "$BASELINE_ALL")
+    [[ -n "$SEVERITY" ]] && ALL_ARGS+=(--severity "$SEVERITY")
     uv run .mise/scripts/audit_compare.py "${ALL_ARGS[@]}" || exit_code=1
 fi
 

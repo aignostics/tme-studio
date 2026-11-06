@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       mode:
-        description: "'strict' fails on any finding; 'pr' fails only on new findings vs base_ref"
+        description: "'strict' fails on any finding at the audit's fail severities; 'pr' fails only on new ones vs base_ref"
         type: string
         default: strict
       base_ref:

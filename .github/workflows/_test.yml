@@ -68,6 +68,11 @@ jobs:
           skip-marker: skip:test:e2e
           commit-message: ${{ github.event.head_commit.message }}
 
+      - name: Test / Coverage floor
+        # Skipped with any skip:test:* marker or label: partial coverage would fail for the wrong reason.
+        if: ${{ !contains(format('{0} {1}', github.event.head_commit.message, join(github.event.pull_request.labels.*.name, ' ')), 'skip:test:') }}
+        run: mise run test:coverage
+
       - name: Test / Unit (lowest-direct)
         uses: ./.github/actions/run-tests
         with:
@@ -98,3 +103,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          # On pull requests, wait for the SonarCloud quality gate and fail this job if it is red, so
+          # its conditions (e.g. coverage on new code) block the merge. Conditions live in SonarCloud.
+          args: ${{ github.event_name == 'pull_request' && '-Dsonar.qualitygate.wait=true' || '' }}
