@@ -56,9 +56,6 @@ dev = [
     { name = "pytest-env" },
     { name = "pytest-md-report" },
     { name = "pytest-randomly" },
-    { name = "pytest-regressions" },
-    { name = "pytest-retry" },
-    { name = "pytest-subprocess" },
     { name = "pytest-timeout" },
     { name = "pytest-xdist", extra = ["psutil"] },
     { name = "ruff" },
@@ -100,9 +97,6 @@ dev = [
     { name = "pytest-env", specifier = ">=1.8.4" },
     { name = "pytest-md-report", specifier = ">=0.8.0" },
     { name = "pytest-randomly", specifier = ">=5.0.0" },
-    { name = "pytest-regressions", specifier = ">=2.11.0" },
-    { name = "pytest-retry", specifier = ">=1.7.0" },
-    { name = "pytest-subprocess", specifier = ">=1.6.0" },
     { name = "pytest-timeout", specifier = ">=2.4.0" },
     { name = "pytest-xdist", extras = ["psutil"], specifier = ">=3.8.0" },
     { name = "ruff", specifier = ">=0.17.3" },
@@ -2348,18 +2342,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pytest-datadir"
-version = "1.8.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b4/46/db060b291999ca048edd06d6fa9ee95945d088edc38b1172c59eeb46ec45/pytest_datadir-1.8.0.tar.gz", hash = "sha256:7a15faed76cebe87cc91941dd1920a9a38eba56a09c11e9ddf1434d28a0f78eb", size = 11848, upload-time = "2025-07-30T13:52:12.518Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/8f/7a/33895863aec26ac3bb5068a73583f935680d6ab6af2a9567d409430c3ee1/pytest_datadir-1.8.0-py3-none-any.whl", hash = "sha256:5c677bc097d907ac71ca418109adc3abe34cf0bddfe6cf78aecfbabd96a15cf0", size = 6512, upload-time = "2025-07-30T13:52:11.525Z" },
-]
-
-[[package]]
 name = "pytest-docker"
 version = "3.2.6"
 source = { registry = "https://pypi.org/simple" }
@@ -2410,44 +2392,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/01/3b/6a40e1b9d925651e601e056a97f60d8a1daeddeac03d5609be60cb4362ce/pytest_randomly-5.0.0.tar.gz", hash = "sha256:e9c575a5873ef168ddbe340ed9e97ce9edb4492ccc821e4b2ac6bb1f0ed515d2", size = 8542, upload-time = "2026-09-01T22:34:20.441Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/10/b4/47e939285caad9a623d021512912ac08dc92a467ad075d179f43729d2934/pytest_randomly-5.0.0-py3-none-any.whl", hash = "sha256:8a0d4703115c0c25b38b6e129fc16b1947b9643ff26a41bc1d185d7e5a7689c1", size = 8920, upload-time = "2026-09-01T22:34:19.227Z" },
-]
-
-[[package]]
-name = "pytest-regressions"
-version = "2.11.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-    { name = "pytest-datadir" },
-    { name = "pyyaml" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ba/0f/1d6b8cc851596be52c401af53fd0d844e72921b0b11866b88995673cd320/pytest_regressions-2.11.0.tar.gz", hash = "sha256:d4a86092f979eb25d2403c51b2b61039781c4c7c7a364a56b9fa838872a650f7", size = 117474, upload-time = "2026-05-25T12:09:01.796Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/61/fe772eda66bb8e2ee72da2937382aa4f803ca1e41092ca8d59953e96262c/pytest_regressions-2.11.0-py3-none-any.whl", hash = "sha256:fcb2bbcfb2fda256624d434c88cb1e4003667b7e078ee4084887cf839bbdf831", size = 25556, upload-time = "2026-05-25T12:09:00.292Z" },
-]
-
-[[package]]
-name = "pytest-retry"
-version = "1.7.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/5b/607b017994cca28de3a1ad22a3eee8418e5d428dcd8ec25b26b18e995a73/pytest_retry-1.7.0.tar.gz", hash = "sha256:f8d52339f01e949df47c11ba9ee8d5b362f5824dff580d3870ec9ae0057df80f", size = 19977, upload-time = "2025-01-19T01:56:13.115Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7c/ff/3266c8a73b9b93c4b14160a7e2b31d1e1088e28ed29f4c2d93ae34093bfd/pytest_retry-1.7.0-py3-none-any.whl", hash = "sha256:a2dac85b79a4e2375943f1429479c65beb6c69553e7dae6b8332be47a60954f4", size = 13775, upload-time = "2025-01-19T01:56:11.199Z" },
-]
-
-[[package]]
-name = "pytest-subprocess"
-version = "1.6.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/76/7a/0d5855132e11de2a96da26e596560757ebbbf8190cfe36cbf85d7423f384/pytest_subprocess-1.6.0.tar.gz", hash = "sha256:b2d746eb1b768a6f9087e5c7c91f87fb9d40c7fdc777550dc00397af428a0654", size = 47910, upload-time = "2026-05-10T08:22:54.207Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/4f/ebe38bf128380f6a8a9b0fbbbe24cbf83915bb2f934717be65cadf55b6fa/pytest_subprocess-1.6.0-py3-none-any.whl", hash = "sha256:00037100f30429c8546adc81f357fddb5213eb036fe3bfb47b7b6befc965e5b2", size = 23803, upload-time = "2026-05-10T08:22:52.52Z" },
 ]
 
 [[package]]
