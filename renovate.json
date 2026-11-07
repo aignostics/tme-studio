@@ -1,6 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>aignostics/renovate-config"],
   "labels": ["bot", "renovate", "dependencies"],
   "lockFileMaintenance": {
     "enabled": true,
