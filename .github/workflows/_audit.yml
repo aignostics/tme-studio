@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Dev Environment
-        uses: ./.github/actions/setup-dev-env
+        uses: $/.github/actions/setup-dev-env
 
       - name: Audit baseline (base branch)
         if: ${{ inputs.mode == 'pr' && inputs.base_ref != '' }}

@@ -24,12 +24,12 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Dev Environment
-        uses: ./.github/actions/setup-dev-env
+        uses: $/.github/actions/setup-dev-env
 
       - name: Test / All
         id: all
         continue-on-error: true
-        uses: ./.github/actions/run-tests
+        uses: $/.github/actions/run-tests
         with:
           test-type: all
           mise-task: test:all
