@@ -29,7 +29,10 @@ uv run deptry src
 description = "Install dev dependencies and pre-commit hooks"
 run = """
 if [ -f uv.lock ]; then
-  uv sync --all-extras --frozen
+  uv sync --all-extras --locked
+elif [ -n "${CI:-}" ]; then
+  echo "uv.lock missing: run uv lock and commit it" >&2
+  exit 1
 else
   uv sync --all-extras
 fi
@@ -114,8 +117,17 @@ description = "Run sequential tests"
 run = "uv run pytest --disable-warnings --junitxml=reports/junit_sequential.xml -m sequential --cov-append"
 
 ["test:lowest_direct"]
-description = "Run unit tests against lowest-direct dependency resolution (lower-boundary check)"
-run = "UV_PYTHON=$(mise run python_min_version) uv sync --resolution lowest-direct && uv run pytest -m unit --no-cov"
+description = "Fail on HIGH/CRITICAL vulnerabilities in the lowest-direct SBOM, then run unit tests at the floors"
+run = """
+mkdir -p reports
+# --no-build: resolve from index metadata only, so no package code runs before the scan
+uv export --preview-features sbom-export --format cyclonedx1.5 --resolution lowest-direct --all-extras --no-build --output-file reports/sbom-lowest-direct-all.json --quiet
+trivy sbom reports/sbom-lowest-direct-all.json --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --ignorefile .trivyignore
+export UV_PYTHON=$(mise run python_min_version)
+uv sync --resolution lowest-direct
+# --frozen: plain uv run re-locks at highest and re-syncs, so the floors never run (#520)
+uv run --frozen pytest -m unit --no-cov
+"""
 
 ["test:coverage"]
 description = "Fail if combined coverage of the test runs so far is below the floor"

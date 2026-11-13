@@ -35,7 +35,7 @@ pretty_json() { jq . "$1" > "$1.tmp" && mv "$1.tmp" "$1"; }
 SCAN_DIR_DEV=$(mktemp -d)
 trap 'rm -rf requirements.txt requirements-dev.txt "$SCAN_DIR_DEV"' EXIT
 
-uv export --all-extras --format requirements-txt --no-dev --output-file requirements.txt --quiet
+uv export --all-extras --format requirements-txt --no-default-groups --output-file requirements.txt --quiet
 uv export --all-extras --format requirements-txt --output-file requirements-dev.txt --quiet
 
 # Trivy's pip analyzer only triggers on files named "requirements.txt".

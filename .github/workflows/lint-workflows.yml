@@ -1,10 +1,10 @@
 name: lint-workflows
 
 on:
+  # Every PR, without a paths filter: repos make "Lint workflow files" a required check,
+  # and a required check whose workflow a paths filter skips never reports, so GitHub
+  # blocks the PR forever. On a PR without workflow changes, pinact and actionlint find nothing.
   pull_request:
-    paths:
-      - '.github/workflows/**'
-      - '.github/actions/**'
 
 jobs:
   lint-workflows:

@@ -108,7 +108,7 @@ The qualifier is what pins one of our packages to the registry it actually came
 from, so nothing downstream can resolve it against public PyPI and match a
 different package of the same name.
 
-Contents are production-only (`uv export --no-dev`): your test and lint tools are
+Contents are production-only (`uv export --no-default-groups`): your test and lint tools are
 not part of what you ship, and an SBOM that lists them is one an auditor has to
 argue with. `reports/audit-all.json` covers dev dependencies for vulnerabilities.
 
@@ -117,6 +117,10 @@ To see the difference on a real, two-dependency project, read
 and [`sbom-after.json`](https://github.com/aignostics/foundry-python/blob/main/tests/fixtures/sbom-after.json)
 in the template repository. They are unedited trivy output, and the test suite
 regenerates the second from the first, so they cannot go stale.
+
+Releases also carry `sbom-lowest-direct.json` and `sbom-highest.json`, which uv writes.
+The root-component and purl rules above apply to `sbom.json` only.
+uv names the root component after the project and adds the `repository_url` qualifier to non-PyPI packages.
 
 ### Security floors
 

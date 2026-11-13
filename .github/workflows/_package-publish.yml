@@ -34,6 +34,15 @@ jobs:
       - name: Have audit checks publish to reports/ for auditing
         run: mise run audit
 
+      - name: Export lowest-direct and highest SBOMs
+        # After the audit: --resolution rewrites uv.lock, and sbom.json must come from the committed lock
+        # --no-default-groups, not --no-dev: --no-dev keeps default groups other than dev in the SBOM
+        run: |
+          uv export --preview-features sbom-export --format cyclonedx1.5 --no-default-groups --all-extras --no-build --quiet \
+            --resolution lowest-direct --output-file reports/sbom-lowest-direct.json
+          uv export --preview-features sbom-export --format cyclonedx1.5 --no-default-groups --all-extras --no-build --quiet \
+            --resolution highest --upgrade --output-file reports/sbom-highest.json
+
       - name: Generate release notes
         shell: bash
         run: |
