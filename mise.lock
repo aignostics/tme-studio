@@ -6,43 +6,36 @@ backend = "aqua:nektos/act"
 
 [tools.act."platforms.linux-arm64"]
 checksum = "sha256:44d48e3d4a6409053fdec6fc6518322467d79a2d5be8f72c021b0421e2ac113d"
-checksum_source = "mise-versions"
 url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Linux_arm64.tar.gz"
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157495"
 
 [tools.act."platforms.linux-arm64-musl"]
 checksum = "sha256:44d48e3d4a6409053fdec6fc6518322467d79a2d5be8f72c021b0421e2ac113d"
-checksum_source = "mise-versions"
 url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Linux_arm64.tar.gz"
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157495"
 
 [tools.act."platforms.linux-x64"]
 checksum = "sha256:67b4976a56f33ea7870b798912e738ec44eef38e7578ae7b532f2def1c73a5ad"
-checksum_source = "mise-versions"
 url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Linux_x86_64.tar.gz"
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157441"
 
 [tools.act."platforms.linux-x64-musl"]
 checksum = "sha256:67b4976a56f33ea7870b798912e738ec44eef38e7578ae7b532f2def1c73a5ad"
-checksum_source = "mise-versions"
 url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Linux_x86_64.tar.gz"
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157441"
 
 [tools.act."platforms.macos-arm64"]
 checksum = "sha256:6dbb1ef34a7e34bb1ee0db188d1682ea35b82d9d9012626497f6c659e55a7cb5"
-checksum_source = "mise-versions"
 url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Darwin_arm64.tar.gz"
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157431"
 
 [tools.act."platforms.macos-x64"]
 checksum = "sha256:cba9cf071f69c47b2fef60a4c735002b6cbd416533920406f72eac0cf7ffec3a"
-checksum_source = "mise-versions"
 url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Darwin_x86_64.tar.gz"
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157430"
 
 [tools.act."platforms.windows-x64"]
 checksum = "sha256:07cb9bbecc5604452dc50e2a485e17e02e38c3735c47ce8adc8ac550ab968a8a"
-checksum_source = "mise-versions"
 url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Windows_x86_64.zip"
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157515"
 
@@ -125,6 +118,7 @@ checksum = "sha256:0c1f09c75561ef34fdf45b0a134f0f5169455d24cabe16646d0b58a667fdd
 url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_darwin_arm64.tar.gz"
 url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698334"
 provenance = "github-attestations"
+provenance_verified = true
 
 [tools."github:minamijoyo/hcledit"."platforms.macos-x64"]
 checksum = "sha256:cef7e1c5483c56424b10636ccf9ff3ba92076f5470a6a87e13fb9968771a8d28"
@@ -281,9 +275,9 @@ version = "0.13.8"
 backend = "aqua:astral-sh/uv"
 
 [tools.uv."platforms.linux-arm64"]
-checksum = "sha256:74f2f5c6024d397481db228db8fc25eed420db192243f88438c118e7e013e585"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-aarch64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313629"
+checksum = "sha256:0c6f8593fcf1eadfc60e663b685c408267559d7c5d61c689bbb9f3a7e369ba32"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313665"
 provenance = "github-attestations"
 
 [tools.uv."platforms.linux-arm64-musl"]
@@ -293,9 +287,9 @@ url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313665"
 provenance = "github-attestations"
 
 [tools.uv."platforms.linux-x64"]
-checksum = "sha256:5acfd9177cfecf0bf87578f059728215ccc884388988f55f7a65041b57387d91"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313966"
+checksum = "sha256:61fb26dabc4f0cf1d050fc6c67d40e43e4fae2994af21ebc1e050b233bf2b5ed"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313983"
 provenance = "github-attestations"
 
 [tools.uv."platforms.linux-x64-musl"]
