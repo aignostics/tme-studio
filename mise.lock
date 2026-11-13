@@ -47,95 +47,95 @@ url = "https://github.com/nektos/act/releases/download/v0.2.97/act_Windows_x86_6
 url_api = "https://api.github.com/repos/nektos/act/releases/assets/710157515"
 
 [[tools.gh]]
-version = "2.103.3"
+version = "2.104.0"
 backend = "aqua:cli/cli"
 
 [tools.gh."platforms.linux-arm64"]
-checksum = "sha256:ee32df2323c8847f5fac6cb6b4b69ca75828e9329a8f22f677021f7b3306ce63"
-url = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/cli/cli/releases/assets/679195636"
+checksum = "sha256:cb34cefc6f4e77b90731374a2b737516bb8f3033c6ca46aa949e5344f68069e3"
+url = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/cli/cli/releases/assets/740718938"
 provenance = "github-attestations"
 
 [tools.gh."platforms.linux-arm64-musl"]
-checksum = "sha256:ee32df2323c8847f5fac6cb6b4b69ca75828e9329a8f22f677021f7b3306ce63"
-url = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/cli/cli/releases/assets/679195636"
+checksum = "sha256:cb34cefc6f4e77b90731374a2b737516bb8f3033c6ca46aa949e5344f68069e3"
+url = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/cli/cli/releases/assets/740718938"
 provenance = "github-attestations"
 
 [tools.gh."platforms.linux-x64"]
-checksum = "sha256:4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d"
-url = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/cli/cli/releases/assets/679195621"
+checksum = "sha256:98cb101ad87dbbd3f6b2f2bfcbd43197ccd07643140121d8a9cfaa91eadbc24e"
+url = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/cli/cli/releases/assets/740718892"
 provenance = "github-attestations"
 
 [tools.gh."platforms.linux-x64-musl"]
-checksum = "sha256:4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d"
-url = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/cli/cli/releases/assets/679195621"
+checksum = "sha256:98cb101ad87dbbd3f6b2f2bfcbd43197ccd07643140121d8a9cfaa91eadbc24e"
+url = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/cli/cli/releases/assets/740718892"
 provenance = "github-attestations"
 
 [tools.gh."platforms.macos-arm64"]
-checksum = "sha256:d700207eae9ae98fe2b89535c2c087c07823d4628c56364695a5a07ef311c062"
-url = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_macOS_arm64.zip"
-url_api = "https://api.github.com/repos/cli/cli/releases/assets/679195704"
+checksum = "sha256:23b12706219b9892e44236f988444a24adcf29284e16b35e03ba5b863fb6eb8e"
+url = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_macOS_arm64.zip"
+url_api = "https://api.github.com/repos/cli/cli/releases/assets/740719079"
 provenance = "github-attestations"
 
 [tools.gh."platforms.macos-x64"]
-checksum = "sha256:a2f86418f4350ae6e9ec60d5000bdf7665728436946a97fc27fe50e6ae752682"
-url = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_macOS_amd64.zip"
-url_api = "https://api.github.com/repos/cli/cli/releases/assets/679195693"
+checksum = "sha256:a8c2a708dbae89dc7c05ba7b0beafc95bd8d09ab4a3505467b77d32ebf364dc6"
+url = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_macOS_amd64.zip"
+url_api = "https://api.github.com/repos/cli/cli/releases/assets/740719067"
 provenance = "github-attestations"
 
 [tools.gh."platforms.windows-x64"]
-checksum = "sha256:98d0cfa794721665d7973dd728c78aff7bd836d58f10f6d7a03568eccb0a22e0"
-url = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_windows_amd64.zip"
-url_api = "https://api.github.com/repos/cli/cli/releases/assets/679195750"
+checksum = "sha256:08c06d10482f12c478018cd259f64acbd5f625712cadf331aad19ba973c879e5"
+url = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_windows_amd64.zip"
+url_api = "https://api.github.com/repos/cli/cli/releases/assets/740719168"
 provenance = "github-attestations"
 
 [[tools."github:minamijoyo/hcledit"]]
-version = "0.2.18"
+version = "0.2.19"
 backend = "github:minamijoyo/hcledit"
 
 [tools."github:minamijoyo/hcledit"."platforms.linux-arm64"]
-checksum = "sha256:e3a3773836d911170ef69d0d3ff8a3be02a37aed2eeece82b68e13444811907d"
-url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772779"
+checksum = "sha256:82787da77998b6cbc0816a20ac3e0752987ffae899dfba47e015dff1d2ae6f12"
+url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698303"
 provenance = "github-attestations"
 
 [tools."github:minamijoyo/hcledit"."platforms.linux-arm64-musl"]
-checksum = "sha256:e3a3773836d911170ef69d0d3ff8a3be02a37aed2eeece82b68e13444811907d"
-url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772779"
+checksum = "sha256:82787da77998b6cbc0816a20ac3e0752987ffae899dfba47e015dff1d2ae6f12"
+url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698303"
 provenance = "github-attestations"
 
 [tools."github:minamijoyo/hcledit"."platforms.linux-x64"]
-checksum = "sha256:5974db4486a7e7ecbcbce8b96cb77051419575858d0fc97d73af536b18baabe7"
-url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772780"
+checksum = "sha256:f95214bae776e9b6bb1406189e438aaa592332e8bb10640099b6fee80b7930a2"
+url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698305"
 provenance = "github-attestations"
 
 [tools."github:minamijoyo/hcledit"."platforms.linux-x64-musl"]
-checksum = "sha256:5974db4486a7e7ecbcbce8b96cb77051419575858d0fc97d73af536b18baabe7"
-url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772780"
+checksum = "sha256:f95214bae776e9b6bb1406189e438aaa592332e8bb10640099b6fee80b7930a2"
+url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698305"
 provenance = "github-attestations"
 
 [tools."github:minamijoyo/hcledit"."platforms.macos-arm64"]
-checksum = "sha256:164ccf392602b332116e7b3344b87ff25237a627144701d02c6d83e7c718049b"
-url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772783"
+checksum = "sha256:0c1f09c75561ef34fdf45b0a134f0f5169455d24cabe16646d0b58a667fddb68"
+url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698334"
 provenance = "github-attestations"
 
 [tools."github:minamijoyo/hcledit"."platforms.macos-x64"]
-checksum = "sha256:52f643e9c441747dfd343164516b3e2959a79241ce42a1ac887ff55451bbe055"
-url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772781"
+checksum = "sha256:cef7e1c5483c56424b10636ccf9ff3ba92076f5470a6a87e13fb9968771a8d28"
+url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698330"
 provenance = "github-attestations"
 
 [tools."github:minamijoyo/hcledit"."platforms.windows-x64"]
-checksum = "sha256:256595df80b616bf211eceef878cef1c443a2f87f1205ae9b22f1a7c32f247cc"
-url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.18/hcledit_0.2.18_windows_amd64.tar.gz"
-url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/412772812"
+checksum = "sha256:351ebdfd914e5c25032ea7141b88beb87e236889537b93a4d99d3d58f62b9055"
+url = "https://github.com/minamijoyo/hcledit/releases/download/v0.2.19/hcledit_0.2.19_windows_amd64.tar.gz"
+url_api = "https://api.github.com/repos/minamijoyo/hcledit/releases/assets/676698311"
 provenance = "github-attestations"
 
 [[tools.jq]]
@@ -277,47 +277,47 @@ url_api = "https://api.github.com/repos/aquasecurity/trivy/releases/assets/71340
 provenance = "cosign"
 
 [[tools.uv]]
-version = "0.13.7"
+version = "0.13.8"
 backend = "aqua:astral-sh/uv"
 
 [tools.uv."platforms.linux-arm64"]
-checksum = "sha256:71279f8d3c67241e807b9d8db872d1bf541579fb9f08b7d1eb1682196d1e57dc"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-aarch64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/704009469"
+checksum = "sha256:74f2f5c6024d397481db228db8fc25eed420db192243f88438c118e7e013e585"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313629"
 provenance = "github-attestations"
 
 [tools.uv."platforms.linux-arm64-musl"]
-checksum = "sha256:2d3ec076a0c4c0e8250bb6418c44080828b544f1a3be0b6e46adf9fb6923de45"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/704009487"
+checksum = "sha256:0c6f8593fcf1eadfc60e663b685c408267559d7c5d61c689bbb9f3a7e369ba32"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313665"
 provenance = "github-attestations"
 
 [tools.uv."platforms.linux-x64"]
-checksum = "sha256:c5221ff41b7892bfc223543883600125f6a47fe845093e0f5bdff4f359196d83"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/704009823"
+checksum = "sha256:5acfd9177cfecf0bf87578f059728215ccc884388988f55f7a65041b57387d91"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313966"
 provenance = "github-attestations"
 
 [tools.uv."platforms.linux-x64-musl"]
-checksum = "sha256:287491da03f2a785c70fa75b13e1f849918c2f2b5415fe84876b8214eeb792f9"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/704009859"
+checksum = "sha256:61fb26dabc4f0cf1d050fc6c67d40e43e4fae2994af21ebc1e050b233bf2b5ed"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313983"
 provenance = "github-attestations"
 
 [tools.uv."platforms.macos-arm64"]
-checksum = "sha256:81b811b57e4624df7ed3aac148e0359100d9962f3d9dce00aec533dc2e086731"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/704009442"
+checksum = "sha256:6b71028a6b904f2ae3340ef52e595512de807d06c0a20eaef2f692581b246558"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313603"
 provenance = "github-attestations"
 
 [tools.uv."platforms.macos-x64"]
-checksum = "sha256:20c47e4c1f630b8abaff8c291fa9b9aa300fef92c4fbff95adf198b55287cda7"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/704009775"
+checksum = "sha256:a04c2ffeac28b2003a2c13caf538ab425fcd7def3e4a41571f4a8fb370a66af3"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313917"
 provenance = "github-attestations"
 
 [tools.uv."platforms.windows-x64"]
-checksum = "sha256:0cdc5b38fe5a8168ed6a25814f5ba43c21d313dd3187314fccb37b7cec46e021"
-url = "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-pc-windows-msvc.zip"
-url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/704009796"
+checksum = "sha256:529e78a9cec6cd7e3e014f7ecd8bda0c113969d4ed0f2efeedb85c30943325b8"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/astral-sh/uv/releases/assets/740313927"
 provenance = "github-attestations"
