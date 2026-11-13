@@ -10,7 +10,7 @@
 | `ci-cd.yml` | PR, push to `main`, version tags | lint → audit → test → publish |
 | `git-conventions.yml` | PR | Validates commit messages and PR titles |
 | `mise-lock-sync.yml` | PR (mise config changes) | Regenerates `mise.lock` on Linux and commits it to the PR branch (`mise lock` output depends on the host OS) |
-| `lint-workflows.yml` | PR (workflow or action changes) | actionlint, and pinact: every action pinned to a SHA with a version comment |
+| `lint-workflows.yml` | PR | actionlint, and pinact: every action pinned to a SHA with a version comment |
 | `labels-sync.yml` | Push to `main` | Syncs GitHub labels from `.github/labels.yml` |
 | `claude-code-automation-pr-review.yml` | PR with `claude` label | AI PR review |
 | `audit-scheduled.yml` | Daily 06:00 UTC | Security audit with BetterStack heartbeat |
@@ -24,7 +24,7 @@
 | `_lint.yml` | Ruff, Pyrefly, deptry, via the git hooks |
 | `_test.yml` | Unit, integration, E2E tests; coverage floor; SonarCloud scan (quality gate blocks pull requests) |
 | `_audit.yml` | Security scanning and SBOM generation. On PRs it scans the base branch too and fails only on findings the PR adds; on `main` it fails on any finding |
-| `_package-publish.yml` | Build, audit, publish to Artifact Registry, GitHub release |
+| `_package-publish.yml` | Build, audit, lowest-direct and highest SBOMs, publish to Artifact Registry, GitHub release |
 
 ## GCP Authentication
 

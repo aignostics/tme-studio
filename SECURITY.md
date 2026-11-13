@@ -15,6 +15,8 @@ c. **[trivy](https://trivy.dev/latest/)**: Pre commit to GitHub scans Python dep
 a. **[trivy](https://trivy.dev/latest/)** (license scanning): Inspects and matches the licenses of all dependencies with an allow list to ensure compliance with licensing requirements and avoid using components with problematic licenses. `licenses.json` published [per release](https://github.com/aignostics/tme-studio/releases).
 b. **[trivy](https://trivy.dev/latest/)** (CycloneDX SBOM): Generates Software Bill of Materials in [CycloneDX](https://cyclonedx.org/) format including per-component license and vulnerability data. `sbom.json` published [per release](https://github.com/aignostics/tme-studio/releases).
 c. **[trivy](https://trivy.dev/latest/)** (SPDX SBOM): Generates Software Bill of Materials in [SPDX](https://spdx.dev/) format from the full dependency lock file including dev deps. `sbom.spdx` published [per release](https://github.com/aignostics/tme-studio/releases).
+d. **[trivy](https://trivy.dev/latest/)** (lowest-direct gate): Scans the SBOM of the oldest dependency versions that the declared ranges allow, dev dependencies included. HIGH and CRITICAL findings fail the `test` job before any lowest-direct package file downloads.
+e. **[uv](https://docs.astral.sh/uv/)** (CycloneDX SBOM, preview): Generates SBOMs for the lowest-direct and the highest dependency versions. `sbom-lowest-direct.json` and `sbom-highest.json` published [per release](https://github.com/aignostics/tme-studio/releases).
 
 ### 3. Static Code Analysis
 

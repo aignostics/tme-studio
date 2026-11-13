@@ -132,7 +132,7 @@ These services are active automatically at the organisation level:
 | [Sentry](https://sentry.io/) | Error monitoring | Org-level integration; scans PRs automatically |
 | [Ox Security](https://app.ox.security/) | Supply chain security | Org-level integration; scans PRs automatically |
 | [Dependabot](https://github.com/aignostics/tme-studio/settings/security_analysis) | Dependency vulnerability alerts | Enabled by default via enterprise policy |
-| [Claude Code](https://github.com/aignostics/tme-studio/actions) | AI-powered PR reviews (`claude` label) | `ANTHROPIC_API_KEY` is org-wide; no setup required |
+| [Claude Code](https://github.com/aignostics/tme-studio/actions) | AI-powered PR reviews (`claude` label) | Workload identity federation via org-level `ANTHROPIC_*` variables; no setup required |
 
 ### Renovate
 
