@@ -1,11 +1,152 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "labels": ["bot", "renovate", "dependencies"],
+
+  // This repo is public. Mend does not apply the org config (aignostics/renovate-config,
+  // org-inherited-config.json) to public repos, so this file holds the parts of it that this repo
+  // needs. Copied from aignostics/renovate-config@74f5148e51fb, in the layout of
+  // aignostics/python-sdk#764. Left out:
+  //   - onboardingPrTitle: a global option. A repo config cannot set it.
+  //   - hostRules: they use {{ secrets.* }} from the Mend org settings. If a secret is not found,
+  //     Renovate stops with a config error. This repo uses no private registry.
+  //   - customManagers: no file in this repo has a "# renovate:" or "_renovate" annotation.
+  //   - packageRules for the custom managers, kustomize, registry mirrors, git-tags, registries
+  //     without release timestamps, terraform and Cloud SQL: this repo has no dependency that
+  //     they match.
+  // The rules of this repo are in the two sections marked "Repo rules". To update the copy, compare
+  // everything else with the new org config.
+  "extends": ["config:best-practices"],
+  "timezone": "Europe/Berlin",
+  "minimumReleaseAge": "5 days",
+
+  // "onboardingConfig" is ignored here: Renovate always finds aignostics/renovate-config
+  // and overwrites this setting with it. Mend won't let us change that lookup, so there's
+  // no way around it. Set onboarding text in default.json instead.
+  // https://docs.renovatebot.com/mend-hosted/hosted-apps-config/
+  // https://github.com/renovatebot/renovate/blob/44.24.0/lib/workers/repository/onboarding/branch/config.ts#L16-L40
+  // "onboardingConfig": { "$schema": "https://docs.renovatebot.com/renovate-schema.json" }
+
+  // Conventional Commits for every Renovate commit and PR title, the onboarding ones included.
+  // Org rulesets reject a PR whose commits do not match "<type>: <lowercase description>", and
+  // a squash merge uses the PR title as the commit message. Renovate creates the onboarding
+  // commit before it resolves semanticCommits "auto" from the repo history, so "auto" always
+  // gives "Add renovate.json". With "enabled" the onboarding commit is
+  // "chore(deps): add renovate.json" and the onboarding PR title is "chore: configure renovate".
+  // Renovate prefixes onboardingPrTitle with the commit type, so it starts lowercase here.
+  // https://github.com/renovatebot/renovate/blob/44.182.0/lib/workers/repository/init/config.ts
+  // https://github.com/renovatebot/renovate/blob/44.182.0/lib/workers/repository/onboarding/common.ts
+  "semanticCommits": "enabled",
+  // onboardingPrTitle of the org config is left out. It is a global option, and a repo config cannot set it.
+
+  // Query osv.dev for CVEs in all tracked dependencies (Docker images, Helm charts, etc.) and
+  // raise immediate fix PRs when a vulnerability is found. The Dependency Dashboard shows all
+  // known CVEs, including ones that already have an open Renovate PR.
+  // https://docs.renovatebot.com/configuration-options/#osvvulnerabilityalerts
+  "osvVulnerabilityAlerts": true,
+  // Renovate 44.232.0 moved the flat dependencyDashboard* options into this object.
+  // https://docs.renovatebot.com/configuration-options/#dependencydashboard
+  "dependencyDashboard": { "osvVulnerabilitySummary": "all" },
+
+  // A vulnerability fix PR skips the 5-day wait by design, so the fixed version can be hours old.
+  // Label it, say so in the body, and keep automerge off, so a person checks the fix before the merge.
+  // Renovate ignores schedule and PR limits for these PRs, that is intended.
+  // The note goes in prHeader, not prBodyNotes: Renovate applies vulnerabilityAlerts as `force`,
+  // which replaces keys instead of merging them, so a prBodyNotes here drops the advisory text
+  // Renovate puts in prBodyNotes.
+  // https://docs.renovatebot.com/configuration-options/#vulnerabilityalerts
+  "vulnerabilityAlerts": {
+    "addLabels": ["security"],
+    "automerge": false,
+    "prHeader": "> [!IMPORTANT]\n> **Security fix, opened without the 5-day wait**\n>\n> Renovate opened this PR because a published advisory affects the current version. It skipped the [**minimum release age** (`minimumReleaseAge`)](https://docs.renovatebot.com/key-concepts/minimum-release-age/) check, so the fixed version might be younger than 5 days. Read the advisory below, check the release age and the upstream release, then merge by hand.\n>\n> This exception is configured in [aignostics/renovate-config](https://github.com/aignostics/renovate-config/blob/main/org-inherited-config.json)."
+  },
+
+  // Release-age wait. Every update waits minimumReleaseAge (above) before its PR exists, so a
+  // compromised release is caught by others first. The three keys below open the PR on the day
+  // the wait is over and hold releases Renovate cannot date.
+  //
+  // The PR opens as soon as the branch exists. "not-pending" would hold it another
+  // prNotPendingHours: our CI runs on pull_request only, and Renovate does not count its own
+  // stability check towards the branch status, so a fresh branch is never "not pending".
+  // https://docs.renovatebot.com/configuration-options/#prcreation
+  "prCreation": "immediate",
+
+  // Create the branch only once a release has passed minimumReleaseAge, with the newest such
+  // release. The PR then appears on the day the wait is over, already green, and never moves
+  // down to an older release.
+  // https://docs.renovatebot.com/configuration-options/#internalchecksfilter
+  "internalChecksFilter": "strict",
+
+  // A release without a registry timestamp counts as too young and gets no PR. Package rules
+  // near the end open some of these PRs anyway. Most of them add the no-release-timestamp
+  // label and a note, so a person checks the release by hand.
+  // https://docs.renovatebot.com/configuration-options/#minimumreleaseagebehaviour
+  "minimumReleaseAgeBehaviour": "timestamp-required",
+
+  // Label every Renovate PR with "renovate" plus its manager, so PRs are filterable and
+  // self-describing regardless of ecosystem. addLabels is additive: it merges with any
+  // labels set by packageRules.
+  // https://docs.renovatebot.com/configuration-options/#addlabels
+  "addLabels": ["renovate", "{{{manager}}}"],
+
+  // Enable GitHub native auto-merge on every Renovate PR. GitHub fires the merge automatically
+  // once all branch-protection requirements are met (checks green + CODEOWNERS approval).
+  // Requires "Allow auto-merge" enabled in repo Settings -> General.
+  // https://docs.renovatebot.com/configuration-options/#platformautomerge
+  "automerge": true,
+  "automergeStrategy": "squash",
+
+  // Default rebaseWhen ("auto") force-pushes every open Renovate PR branch whenever main
+  // advances, even when the dependency update itself is unaffected. That resets CI on PRs main
+  // didn't actually touch. Rebase only when main and the PR branch genuinely conflict.
+  // https://docs.renovatebot.com/configuration-options/#rebasewhen
+  "rebaseWhen": "conflicted",
+
+  // Renovate ships the pre-commit manager disabled, so without this it never reads
+  // .pre-commit-config.yaml. Hook revs pinned to a commit SHA with a "# frozen: <tag>" comment
+  // (the format "pre-commit autoupdate --freeze" writes) would then never get an update PR.
+  // The manager updates SHA and tag together, after minimumReleaseAge like every other update.
+  // https://docs.renovatebot.com/modules/manager/pre-commit/
+  "pre-commit": {
+    "enabled": true
+  },
+
+  // ---- Repo rules: they deviate from the org config ----
+
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 5am on monday"]
   },
+
+  // addLabels above adds "renovate" and the manager name to these.
+  "labels": ["bot", "dependencies"],
+
   "packageRules": [
+    {
+      // Ensures inline comments always show the full vX.Y.Z tag (e.g. '# v5.0.0') instead of
+      // the shortest matching tag (e.g. '# v5'). extractVersion strips floating tags from the
+      // candidate list; regex versioning (unlike versioning:semver) still accepts floating
+      // currentValues as valid, so no dep is skipped. Digest pinning is unaffected.
+      // Derived from helpers:pinGitHubActionDigestsToSemver (minus pinDigests:true, already
+      // handled by config:best-practices):
+      // https://docs.renovatebot.com/presets-helpers/#helperspingithubactiondigeststosemver
+      "description": ["Ensure github-actions inline comments always use full vX.Y.Z semver tags"],
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action"],
+      "extractVersion": "^(?<version>v?\\d+\\.\\d+\\.\\d+)$",
+      "versioning": "regex:^v?(?<major>\\d+)(\\.(?<minor>\\d+)\\.(?<patch>\\d+))?$"
+    },
+
+    // Under timestamp-required, Renovate's branch stage keeps these update types pending forever,
+    // because they carry no release timestamp, so automerge never fires (renovatebot/renovate#45236).
+    // With this rule they count as old enough and automerge, with no label or note.
+    // A pin update fixes a range to the version in use, so a wait protects nothing.
+    // Remove it when renovatebot/renovate#46645 is released.
+    {
+      "description": ["Pin, digest, pinDigest and lock file maintenance updates have no release timestamp: do not hold them"],
+      "matchUpdateTypes": ["pin", "digest", "pinDigest", "lockFileMaintenance"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+
+    // ---- Repo rules: they deviate from the org config ----
     {
       "description": "requires-python is a support range that we widen by hand, not a version to bump",
       "matchManagers": ["pep621"],
