@@ -57,6 +57,7 @@ you have [access to OpenTME on Hugging Face](#hugging-face-access), and a [molab
     1. [Getting started](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/1_getting_started.py)
     2. [Description of the OpenTME features](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/2_description_opentme_features.py)
     3. [Including TCGA metadata](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/3_including_TCGA_metadata.py)
+    4. [Using custom data](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/tutorials/4_using_custom_data.py)
 * **Examples:** Concise notebooks demonstrating specific types of analysis, such as tumor immune phenotype classification and Kaplan–Meier survival plots. Note that these are examples that may be used as a starting point for your own analysis.
     1. [Clustering](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/clustering.py)
     2. [Outlier detection](https://molab.marimo.io/github.com/aignostics/tme-studio/blob/main/src/aignostics_tme_studio/notebooks/examples/outlier_detection.py)
