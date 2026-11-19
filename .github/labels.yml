@@ -69,6 +69,32 @@
   description: Pull requests from Renovate
   color: "d1df30"
 
+# Renovate manager labels (addLabels "{{{manager}}}" in renovate.json)
+- name: github-actions
+  description: Renovate updates of GitHub Actions
+  color: "d1df30"
+
+- name: pep621
+  description: Renovate updates of pyproject.toml dependencies
+  color: "d1df30"
+
+- name: pre-commit
+  description: Renovate updates of pre-commit hooks
+  color: "d1df30"
+
+- name: mise
+  description: Renovate updates of mise tools
+  color: "d1df30"
+
+- name: pyenv
+  description: Renovate updates of .python-version
+  color: "d1df30"
+
+# Security Labels
+- name: security
+  description: Addresses a security advisory, CVE, or hardens security posture
+  color: "b60205"
+
 # CI/CD Skip Labels
 - name: skip:ci
   description: Skip entire CI/CD pipeline
